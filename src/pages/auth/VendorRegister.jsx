@@ -1,0 +1,207 @@
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Store, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+
+const VendorRegister = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    storeName: '',
+    category: 'restaurant',
+    role: 'Vendor'
+  });
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 1. Register the Vendor
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // 2. Log them in immediately
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        
+        // Use the returned user or fall back to form data
+        const userObj = data.user || { 
+            ...formData, 
+            id: data.id || Date.now(),
+            subscriptionStatus: 'unpaid' // Force unpaid status for new vendors
+        };
+        
+        login(userObj);
+        
+        // 3. Redirect to Dashboard
+        navigate('/vendor');
+      } else {
+        setError(data.message || 'فشل إنشاء الحساب. تأكد من صحة البيانات.');
+      }
+    } catch (error) {
+      console.error('Vendor Registration error:', error);
+      setError('حدث خطأ في الاتصال بالسيرفر. تأكد من تشغيل الباك إند.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="landing-container animate-fade-up" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+      
+      <div style={{ width: '100%', maxWidth: '600px', marginBottom: '24px' }}>
+        <Link to="/" className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)' }}>
+          <ArrowLeft size={18} /> العودة للرئيسية
+        </Link>
+      </div>
+
+      <div className="glass-panel" style={{ width: '100%', maxWidth: '600px', padding: '40px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{ width: '64px', height: '64px', background: 'rgba(255, 75, 43, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--accent-primary)' }}>
+            <Store size={32} />
+          </div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>سجل كتاجر (Vendor)</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>ابدأ بيع منتجاتك والوصول لآلاف العملاء اليوم.</p>
+        </div>
+
+        {error && (
+          <div style={{ padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)' }}>
+            <AlertCircle size={24} />
+            <p style={{ fontWeight: 'bold' }}>{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          
+          <div style={{ gridColumn: 'span 2' }}>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>البيانات الشخصية</h3>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>الاسم الكامل</label>
+            <input 
+              type="text" 
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="مثلاً: محمد علي"
+              required
+              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>البريد الإلكتروني</label>
+            <input 
+              type="email" 
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="example@mail.com"
+              required
+              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>رقم الهاتف</label>
+            <input 
+              type="tel" 
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="010xxxxxxx"
+              required
+              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>كلمة المرور</label>
+            <input 
+              type="password" 
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              required
+              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+            />
+          </div>
+
+          <div style={{ gridColumn: 'span 2', marginTop: '12px' }}>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>بيانات المتجر (Store Details)</h3>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>اسم المتجر</label>
+            <input 
+              type="text" 
+              name="storeName"
+              value={formData.storeName}
+              onChange={handleChange}
+              placeholder="مثلاً: مطعم الشرق"
+              required
+              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>نوع النشاط (Category)</label>
+            <select 
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', appearance: 'none' }}
+            >
+              <option value="restaurant">مطعم (Restaurant)</option>
+              <option value="cafe">كافيه (Cafe)</option>
+              <option value="supermarket">سوبر ماركت (Supermarket)</option>
+            </select>
+          </div>
+
+          <div style={{ gridColumn: 'span 2', marginTop: '20px' }}>
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', padding: '16px', fontSize: '1.1rem' }}
+              disabled={loading}
+            >
+              {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب التاجر'}
+            </button>
+          </div>
+        </form>
+
+        <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)' }}>
+          لديك حساب بالفعل؟ <Link to="/login" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>سجل دخول</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default VendorRegister;
