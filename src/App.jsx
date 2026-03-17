@@ -12,6 +12,8 @@ import { Utensils, Coffee, ShoppingBasket } from 'lucide-react';
 import CategoryProductCard from './components/products/CategoryProductCard';
 import CafeCustomizationModal from './components/modals/CafeCustomizationModal';
 
+import { API_URL } from './api/config';
+
 const LandingPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ const LandingPage = () => {
   const fetchAllProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch(`${API_URL}/api/products`);
       if (response.ok) {
         const data = await response.json();
         const productsArray = Array.isArray(data) ? data : data.products || [];
@@ -57,7 +59,7 @@ const LandingPage = () => {
     setIsSearching(true);
     setHasSearched(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/products/search?q=${searchQuery}`);
+      const response = await fetch(`${API_URL}/api/products/search?q=${searchQuery}`);
       if (response.ok) {
         const data = await response.json();
         const productsArray = Array.isArray(data) ? data : data.products || [];

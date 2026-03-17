@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 
+import { API_URL } from '../../api/config';
+
 const VendorProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ const VendorProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch(`${API_URL}/api/products`);
       if (response.ok) {
         const data = await response.json();
         // The API might return the array directly or wrapped in an object like { products: [...] }
@@ -58,7 +60,7 @@ const VendorProducts = () => {
       // Convert price to number before sending
       const payload = { ...formData, price: Number(formData.price) };
 
-      const response = await fetch('http://localhost:5000/api/products', {
+      const response = await fetch(`${API_URL}/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

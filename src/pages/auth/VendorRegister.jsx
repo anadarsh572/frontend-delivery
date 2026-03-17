@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Store, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
+import { API_URL } from '../../api/config';
+
 const VendorRegister = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -31,7 +33,7 @@ const VendorRegister = () => {
 
     try {
       // 1. Register the Vendor
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

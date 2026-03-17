@@ -5,6 +5,8 @@ import { useCart } from '../../context/CartContext';
 import CategoryProductCard from '../../components/products/CategoryProductCard';
 import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
+import { API_URL } from '../../api/config';
+
 const CategoryPage = () => {
     const { category } = useParams();
     const [products, setProducts] = useState([]);
@@ -19,7 +21,7 @@ const CategoryPage = () => {
     const fetchCategoryProducts = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5000/api/products/category/${category}`);
+            const response = await fetch(`${API_URL}/api/products/category/${category}`);
             if (response.ok) {
                 const data = await response.json();
                 const productsArray = Array.isArray(data) ? data : data.products || [];

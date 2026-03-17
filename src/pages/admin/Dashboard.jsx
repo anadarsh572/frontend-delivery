@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Users, Store, Navigation, Activity, Trash2, Edit, CheckCircle, XCircle } from 'lucide-react';
 import { MOCK_USERS, MOCK_STORES, simulateDelay } from '../../data/mockDb';
 
+import { API_URL } from '../../api/config';
+
 const AdminDashboard = () => {
   const { user } = useAuth();
   const [data, setData] = useState({ users: [], stores: [] });
@@ -19,7 +21,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/users');
+      const response = await fetch(`${API_URL}/api/users`);
       if (response.ok) {
         const usersArray = await response.json();
         setData(prev => ({ ...prev, users: usersArray }));
@@ -37,7 +39,7 @@ const AdminDashboard = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${userId}/role`, {
+      const response = await fetch(`${API_URL}/api/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +68,7 @@ const AdminDashboard = () => {
     const newStatus = user.status === 'blocked' ? 'active' : 'blocked';
     
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${userId}/status`, {
+      const response = await fetch(`${API_URL}/api/users/${userId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +92,7 @@ const AdminDashboard = () => {
   const handleDelete = async (userId) => {
     if (window.confirm("هل أنت متأكد يا درش؟")) {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/users/${userId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -277,7 +279,7 @@ const AdminDashboard = () => {
                         style={{ flex: 1, justifyContent: 'center', padding: '8px' }}
                         onClick={async () => {
                           try {
-                            const resp = await fetch('http://localhost:5000/api/admin/notify-vendor', {
+                            const resp = await fetch(`${API_URL}/api/admin/notify-vendor`, {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                               body: JSON.stringify({ vendor_id: vendor.id || vendor._id, message: notificationMsg })

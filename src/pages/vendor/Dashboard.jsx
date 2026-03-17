@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Check, Clock, Package, X, PlusCircle, Store, AlertTriangle, CheckCircle, Copy, MapPin, Phone } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
 
+import { API_URL } from '../../api/config';
+
 const VendorDashboard = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -31,7 +33,7 @@ const VendorDashboard = () => {
       if (!user) return;
       try {
         const storeId = user.storeId || user.id || user._id;
-        const response = await fetch(`http://localhost:5000/api/orders/store/${storeId}`);
+        const response = await fetch(`${API_URL}/api/orders/store/${storeId}`);
         if (response.ok) {
           const data = await response.json();
           const ordersArray = Array.isArray(data) ? data : data.orders || [];
@@ -52,7 +54,7 @@ const VendorDashboard = () => {
 
   const updateOrderStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${id}/status`, {
+      const response = await fetch(`${API_URL}/api/orders/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +81,7 @@ const VendorDashboard = () => {
     try {
       const productData = { ...newProduct, price: Number(newProduct.price) };
       
-      const response = await fetch('http://localhost:5000/api/vendor/products', {
+      const response = await fetch(`${API_URL}/api/vendor/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +107,7 @@ const VendorDashboard = () => {
   const handlePaySubscription = async () => {
     setIsPaying(true);
     try {
-      const response = await fetch('http://localhost:5000/api/vendor/pay-subscription', {
+      const response = await fetch(`${API_URL}/api/vendor/pay-subscription`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +132,7 @@ const VendorDashboard = () => {
   const handleUpdateStoreCategory = async () => {
     setIsSavingCategory(true);
     try {
-      const response = await fetch('http://localhost:5000/api/vendor/update-category', {
+      const response = await fetch(`${API_URL}/api/vendor/update-category`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -4,6 +4,8 @@ import { useCart } from '../../context/CartContext';
 import { MOCK_STORES, MOCK_PRODUCTS, simulateDelay } from '../../data/mockDb';
 import { Star, Clock, MapPin, Plus, ArrowLeft } from 'lucide-react';
 
+import { API_URL } from '../../api/config';
+
 const StoreDetail = () => {
   const { storeId } = useParams();
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const StoreDetail = () => {
 
       // Fetch LIVE products from DB
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch(`${API_URL}/api/products`);
         if (response.ok) {
           const data = await response.json();
           const productsArray = data.data || data.products || (Array.isArray(data) ? data : []);

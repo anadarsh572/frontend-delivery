@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Package, Star, Clock } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
 
+import { API_URL } from '../../api/config';
+
 const Profile = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -14,7 +16,7 @@ const Profile = () => {
       
       try {
         const userId = user.id || user._id;
-        const response = await fetch(`http://localhost:5000/api/orders/user/${userId}`);
+        const response = await fetch(`${API_URL}/api/orders/user/${userId}`);
         
         if (response.ok) {
           const data = await response.json();

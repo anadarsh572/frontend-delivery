@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Trash2, Plus, Minus, CreditCard, Banknote, ArrowRight, X, LogIn, UserPlus, AlertCircle } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
 
+import { API_URL } from '../../api/config';
+
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
   const { user, login } = useAuth();
@@ -50,7 +52,7 @@ const Cart = () => {
     setAuthLoading(true);
     setAuthError(null);
 
-    const endpoint = authMode === 'login' ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register';
+    const endpoint = authMode === 'login' ? `${API_URL}/api/login` : `${API_URL}/api/register`;
 
     try {
       const response = await fetch(endpoint, {
@@ -118,7 +120,7 @@ const Cart = () => {
         }))
       };
 
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
