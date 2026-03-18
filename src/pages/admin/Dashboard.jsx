@@ -114,9 +114,9 @@ const AdminDashboard = () => {
 
   if (!user) return <div style={{ textAlign: 'center', paddingTop: '100px' }}>Log in as Admin</div>;
 
-  const customersCount = data.users.filter(u => u.role === 'Customer').length;
-  const vendorsCount = data.users.filter(u => u.role === 'Vendor').length;
-  const driversCount = data.users.filter(u => u.role === 'Driver').length;
+  const customersCount = data.users.filter(u => u.role?.toLowerCase() === 'user' || u.role?.toLowerCase() === 'customer').length;
+  const vendorsCount = data.users.filter(u => u.role?.toLowerCase() === 'vendor' || u.role?.toLowerCase() === 'seller').length;
+// Removed Driver count
 
   return (
     <div className="animate-fade-up">
@@ -137,24 +137,14 @@ const AdminDashboard = () => {
           </div>
           <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{vendorsCount}</p>
         </div>
-        <div className="glass-panel" style={{ padding: '24px', borderTop: '4px solid var(--success)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-            <Navigation size={18} /> <span>Drivers</span>
-          </div>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{driversCount}</p>
-        </div>
+        {/* Removed Driver card */}
         <div className="glass-panel" style={{ padding: '24px', borderTop: '4px solid var(--accent-primary)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
             <Activity size={18} /> <span>Active Orders</span>
           </div>
           <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>12</p>
         </div>
-        <div className="glass-panel" style={{ padding: '24px', borderTop: '4px solid var(--success)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-            <span style={{ fontWeight: 'bold' }}>EGP</span> <span>أرباح المنصة</span>
-          </div>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{earnings}</p>
-        </div>
+        {/* Removed Platform Earnings card */}
       </div>
 
       <h2 style={{ fontSize: '1.5rem', marginBottom: '16px' }}>Recent Users directory</h2>
@@ -202,7 +192,6 @@ const AdminDashboard = () => {
                       >
                         <option value="Admin">Admin</option>
                         <option value="Vendor">Vendor</option>
-                        <option value="Driver">Driver</option>
                         <option value="Customer">Customer</option>
                       </select>
                     ) : (
@@ -242,73 +231,6 @@ const AdminDashboard = () => {
           </table>
         </div>
       )}
-
-      {/* Vendor Management Section */}
-      <div style={{ marginTop: '60px' }}>
-        <h2 style={{ fontSize: '1.8rem', marginBottom: '24px' }}>إدارة البائعين</h2>
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
-            {data.users.filter(u => u.role?.toLowerCase() === 'vendor').map(vendor => (
-              <div key={vendor.id || vendor._id} className="card-hover" style={{ padding: '20px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                      <Store size={20} />
-                    </div>
-                    <div>
-                      <p style={{ fontWeight: 'bold' }}>{vendor.name}</p>
-                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{vendor.email}</p>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: '0.75rem', padding: '4px 8px', borderRadius: 'var(--radius-sm)', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)' }}>
-                    Active Store
-                  </span>
-                </div>
-
-                {notifyingVendorId === (vendor.id || vendor._id) ? (
-                  <div className="animate-fade-up">
-                    <textarea 
-                      value={notificationMsg}
-                      onChange={(e) => setNotificationMsg(e.target.value)}
-                      style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', marginBottom: '12px', minHeight: '80px', fontSize: '0.9rem' }}
-                      dir="rtl"
-                    />
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button 
-                        className="btn btn-primary" 
-                        style={{ flex: 1, justifyContent: 'center', padding: '8px' }}
-                        onClick={async () => {
-                          try {
-                            const resp = await fetch(`${API_URL}/api/admin/notify-vendor`, {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-                              body: JSON.stringify({ vendor_id: vendor.id || vendor._id, message: notificationMsg })
-                            });
-                            if (resp.ok) alert('تم إرسال التنبيه بنجاح!');
-                            else alert('فشل إرسال التنبيه');
-                          } catch (err) { alert('خطأ في الاتصال بالسيرفر'); }
-                          setNotifyingVendorId(null);
-                        }}
-                      >
-                        إرسال
-                      </button>
-                      <button className="btn" style={{ flex: 1, justifyContent: 'center', padding: '8px' }} onClick={() => setNotifyingVendorId(null)}>إلغاء</button>
-                    </div>
-                  </div>
-                ) : (
-                  <button 
-                    className="btn btn-primary" 
-                    style={{ width: '100%', justifyContent: 'center', background: 'var(--warning)', color: 'black' }}
-                    onClick={() => setNotifyingVendorId(vendor.id || vendor._id)}
-                  >
-                    إرسال تنبيه دفع
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

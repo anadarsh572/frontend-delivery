@@ -22,15 +22,15 @@ const VendorWallet = () => {
     if (user) fetchWallet();
   }, [user]);
 
-  if (!user) return <div style={{ textAlign: 'center', paddingTop: '100px' }}>Log in to view wallet</div>;
+  if (!user) return <div style={{ textAlign: 'center', paddingTop: '100px' }}>سجل الدخول لعرض المحفظة</div>;
 
   const totalEarnings = 5000; // Mock from DB user.walletBalance
   const pendingPayout = 850;
 
   return (
     <div className="animate-fade-up">
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>Store Wallet & Earnings</h1>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Track your sales, platform fees, and payouts.</p>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>محفظة المتجر والأرباح</h1>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>تتبع مبيعاتك، رسوم المنصة، وعمليات سحب الأرباح.</p>
 
       {/* Stats Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
@@ -39,10 +39,10 @@ const VendorWallet = () => {
             <div style={{ padding: '8px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: 'var(--radius-sm)', color: 'var(--success)' }}>
               <DollarSign size={20} />
             </div>
-            <span>Available Balance</span>
+            <span>الرصيد المتاح</span>
           </div>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>EGP {totalEarnings}</p>
-          <button className="btn btn-primary" style={{ marginTop: 'auto', padding: '12px' }}>Request Payout</button>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>{totalEarnings} جنيه</p>
+          <button className="btn btn-primary" style={{ marginTop: 'auto', padding: '12px' }}>طلب سحب الأرباح</button>
         </div>
 
         <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
@@ -50,26 +50,26 @@ const VendorWallet = () => {
             <div style={{ padding: '8px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: 'var(--radius-sm)', color: 'var(--info)' }}>
               <ArrowDownRight size={20} />
             </div>
-            <span>Pending from Cash Orders</span>
+            <span>في انتظار التحصيل من الكاش</span>
           </div>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>EGP {pendingPayout}</p>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px' }}>Waiting for driver settlement with platform.</p>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>{pendingPayout} جنيه</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px' }}>في انتظار تسوية المندوبين للطلبات الكاش مع المنصة.</p>
         </div>
       </div>
 
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '24px' }}>Recent Transactions</h2>
+      <h2 style={{ fontSize: '1.5rem', marginBottom: '24px' }}>أحدث العمليات</h2>
       
       {loading ? (
-        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading ledger...</div>
+        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>جاري تحميل سجل العمليات...</div>
       ) : (
         <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead style={{ background: 'var(--bg-tertiary)', borderBottom: '1px solid var(--border-color)' }}>
               <tr>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Date & ID</th>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Type</th>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Amount</th>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Status</th>
+                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>التاريخ والمرجع</th>
+                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>النوع</th>
+                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>المبلغ</th>
+                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>الحالة</th>
               </tr>
             </thead>
             <tbody>
@@ -77,21 +77,21 @@ const VendorWallet = () => {
                 <tr key={trx.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'var(--transition)' }}>
                   <td style={{ padding: '16px 24px' }}>
                     <p style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{trx.date}</p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Ref: {trx.id} | Order: {trx.orderId}</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>مرجع: {trx.id} | طلب: {trx.orderId}</p>
                   </td>
                   <td style={{ padding: '16px 24px' }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                       {trx.amount > 0 ? <ArrowDownRight size={16} color="var(--success)"/> : <ArrowUpRight size={16} color="var(--danger)"/>}
-                      {trx.type.replace('_', ' ')}
+                      {trx.type === 'Sale' ? 'عملية بيع' : trx.type === 'Commission_Fee' ? 'رسوم المنصة' : trx.type === 'Payout' ? 'سحب أرباح' : trx.type}
                     </span>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>{trx.method}</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>{trx.method === 'Online' ? 'دفع إلكتروني' : trx.method === 'Deduction' ? 'خصم مالي' : trx.method === 'Cash_To_Driver' ? 'كاش مع المندوب' : trx.method === 'Bank Transfer' ? 'تحويل بنكي' : trx.method}</p>
                   </td>
                   <td style={{ padding: '16px 24px', fontWeight: 'bold', fontSize: '1.1rem', color: trx.amount > 0 ? 'var(--success)' : 'var(--text-primary)' }}>
                     {trx.amount > 0 ? '+' : ''}{trx.amount}
                   </td>
                   <td style={{ padding: '16px 24px' }}>
                     <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 'bold', background: trx.status === 'Completed' || trx.status === 'Settled' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: trx.status === 'Completed' || trx.status === 'Settled' ? 'var(--success)' : 'var(--warning)' }}>
-                      {trx.status}
+                      {trx.status === 'Completed' ? 'مكتمل' : trx.status === 'Settled' ? 'تمت التسوية' : trx.status}
                     </span>
                   </td>
                 </tr>

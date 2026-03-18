@@ -12,9 +12,6 @@ const VendorDashboard = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Subscription State
-  const [subscriptionStatus, setSubscriptionStatus] = useState(user?.subscriptionStatus || 'unpaid');
-  const [isPaying, setIsPaying] = useState(false);
 
   // Store Settings
   const [storeCategory, setStoreCategory] = useState(user?.category || 'restaurant');
@@ -73,30 +70,6 @@ const VendorDashboard = () => {
     console.log('Product added successfully from Dashboard');
   };
 
-  const handlePaySubscription = async () => {
-    setIsPaying(true);
-    try {
-      const response = await fetch(`${API_URL}/api/vendor/pay-subscription`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (response.ok) {
-        setSubscriptionStatus('active');
-        alert('تم تفعيل مطعمك بنجاح! 🎉');
-      } else {
-        const error = await response.json();
-        alert(`Payment failed: ${error.error || error.message || 'Unknown error'}`);
-      }
-    } catch (err) {
-      console.error('Subscription payment error:', err);
-      alert('Network error occurred during payment.');
-    } finally {
-      setIsPaying(false);
-    }
-  };
 
   const handleUpdateStoreCategory = async () => {
     setIsSavingCategory(true);
@@ -137,18 +110,12 @@ const VendorDashboard = () => {
         );
       case 'Preparing':
         return (
-          <button className="btn btn-primary" onClick={() => updateOrderStatus(order._id || order.id, 'Out for Delivery')} style={{ background: 'var(--accent-primary)', border: 'none', padding: '8px 16px', fontSize: '0.9rem' }}>
-            <Navigation size={16} /> خرج للتوصيل (Out for Delivery)
-          </button>
-        );
-      case 'Out for Delivery':
-        return (
           <button className="btn btn-primary" onClick={() => updateOrderStatus(order._id || order.id, 'Delivered')} style={{ background: 'var(--success)', border: 'none', padding: '8px 16px', fontSize: '0.9rem' }}>
-            <Check size={16} /> تم التسليم (Mark Delivered)
+            <Check size={16} /> إكمال الطلب (Mark Completed)
           </button>
         );
       case 'Delivered':
-        return <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>تم التوصيل بنجاح ✅</span>;
+        return <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>تم الطلب بنجاح ✅</span>;
       default:
         return <span style={{ color: 'var(--text-secondary)' }}>{order.status}</span>;
     }
@@ -163,14 +130,8 @@ const VendorDashboard = () => {
         </div>
         <button 
           className="btn btn-primary" 
-          onClick={() => {
-            if (subscriptionStatus !== 'active') {
-              alert('عذراً، يجب دفع الاشتراك الشهري أولاً لتتمكن من إضافة المنتجات.');
-              return;
-            }
-            setIsModalOpen(true);
-          }}
-          style={{ opacity: subscriptionStatus !== 'active' ? 0.6 : 1, cursor: subscriptionStatus !== 'active' ? 'not-allowed' : 'pointer', width: 'auto' }}
+          onClick={() => setIsModalOpen(true)}
+          style={{ width: 'auto' }}
         >
           <PlusCircle size={20} /> إضافة منتج جديد
         </button>
@@ -213,42 +174,6 @@ const VendorDashboard = () => {
         </div>
       </div>
 
-      {/* Subscription Banner */}
-      <div style={{
-        marginBottom: '32px',
-        padding: '20px 24px',
-        borderRadius: 'var(--radius-lg)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '16px',
-        background: subscriptionStatus === 'active' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-        border: `1px solid ${subscriptionStatus === 'active' ? 'var(--success)' : 'var(--danger)'}`,
-        color: subscriptionStatus === 'active' ? 'var(--success)' : 'var(--danger)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {subscriptionStatus === 'active' ? <CheckCircle size={28} /> : <AlertTriangle size={28} />}
-          <div>
-            <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 'bold' }}>حالة الحساب</h2>
-            <p style={{ margin: 0, opacity: 0.9, fontSize: '1rem' }}>
-              {subscriptionStatus === 'active' 
-                ? 'حسابك مفعل وجاهز لاستقبال الطلبات' 
-                : 'حسابك غير مفعل، منتجاتك مخفية من المنصة. يرجى دفع الاشتراك الشهري'}
-            </p>
-          </div>
-        </div>
-        {subscriptionStatus !== 'active' && (
-          <button 
-            className="btn btn-primary" 
-            style={{ background: 'var(--danger)', color: 'white', border: 'none', padding: '12px 24px', fontWeight: 'bold' }}
-            onClick={handlePaySubscription}
-            disabled={isPaying}
-          >
-            {isPaying ? 'جاري الدفع...' : 'دفع الاشتراك الشهري (500 ج.م)'}
-          </button>
-        )}
-      </div>
 
 
 
@@ -269,8 +194,8 @@ const VendorDashboard = () => {
                   </div>
                 </div>
                 <div style={{ textAlign: 'left' }}>
-                  <p style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--accent-primary)' }}>{order.total || order.total_price} جنيه</p>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{order.status === 'Pending' ? 'قيد الانتظار' : (order.status === 'Preparing' ? 'جاري التحضير' : (order.status === 'Out for Delivery' ? 'خرج للتوصيل' : 'تم التوصيل'))}</p>
+                   <p style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--accent-primary)' }}>{order.total || order.total_price} جنيه</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{order.status === 'Pending' ? 'جديد' : (order.status === 'Preparing' ? 'جاري التجهيز' : 'مكتمل')}</p>
                 </div>
               </div>
 

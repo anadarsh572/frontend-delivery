@@ -67,7 +67,7 @@ const Cart = () => {
         if (data.token) localStorage.setItem('token', data.token);
         
         const userObj = data.user || data; 
-        const role = userObj.role?.toLowerCase() || data.role?.toLowerCase() || 'customer';
+        const role = userObj.role?.toLowerCase() || data.role?.toLowerCase() || 'user';
         if (!userObj.role && data.role) userObj.role = data.role;
         
         login(userObj);
@@ -154,7 +154,7 @@ const Cart = () => {
         </div>
         <h2 style={{ fontSize: '2.5rem', marginBottom: '16px', fontWeight: '800' }}>تم تأكيد طلبك بنجاح!</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '1.2rem', fontWeight: '500' }}>
-          سيتم التوصيل في أسرع وقت ⚡🏁
+          سيتم التوصيل في أسرع وقت! ⚡🏁
         </p>
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
           <button className="btn btn-secondary" onClick={() => navigate('/customer')}>

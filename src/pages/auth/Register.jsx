@@ -12,7 +12,7 @@ const Register = () => {
     phone: '',
     address: '',
     password: '',
-    role: 'Customer'
+    role: 'user'
   });
   
   const [loading, setLoading] = useState(false);
@@ -40,9 +40,8 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: data.message || 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.' });
-        // Optional: clear form or navigate after delay
-        // setTimeout(() => navigate('/'), 3000);
+        setMessage({ type: 'success', text: data.message || 'تم إنشاء الحساب بنجاح! جاري توجيهك للرئيسية...' });
+        setTimeout(() => navigate('/'), 2000);
       } else {
         setMessage({ type: 'error', text: data.message || 'فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.' });
       }
@@ -134,17 +133,62 @@ const Register = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>نوع الحساب</label>
-            <select 
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', appearance: 'none' }}
-            >
-              <option value="Customer">عميل (طلب طعام ومنتجات)</option>
-              <option value="Vendor">تاجر (صاحب مطعم/متجر)</option>
-              <option value="Driver">مندوب (شريك توصيل)</option>
-            </select>
+            <label style={{ display: 'block', marginBottom: '12px', color: 'var(--text-secondary)' }}>نوع الحساب</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '16px',
+                  borderRadius: 'var(--radius-md)',
+                  border: `2px solid ${formData.role === 'customer' ? 'var(--info)' : 'var(--border-color)'}`,
+                  background: formData.role === 'customer' ? 'rgba(59, 130, 246, 0.05)' : 'var(--bg-tertiary)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center'
+                }}
+              >
+                <input 
+                  type="radio" 
+                  name="role" 
+                  value="user" 
+                  checked={formData.role === 'user'} 
+                  onChange={handleChange} 
+                  style={{ display: 'none' }}
+                />
+                <span style={{ fontSize: '1.2rem' }}>👤</span>
+                <span style={{ fontWeight: 'bold', color: formData.role === 'user' ? 'var(--info)' : 'var(--text-primary)' }}>تسجيل كعميل</span>
+              </label>
+
+              <label 
+                style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '16px',
+                  borderRadius: 'var(--radius-md)',
+                  border: `2px solid ${formData.role === 'seller' ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                  background: formData.role === 'seller' ? 'rgba(255, 90, 31, 0.05)' : 'var(--bg-tertiary)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center'
+                }}
+              >
+                <input 
+                  type="radio" 
+                  name="role" 
+                  value="seller" 
+                  checked={formData.role === 'seller'} 
+                  onChange={handleChange} 
+                  style={{ display: 'none' }}
+                />
+                <span style={{ fontSize: '1.2rem' }}>🏪</span>
+                <span style={{ fontWeight: 'bold', color: formData.role === 'seller' ? 'var(--accent-primary)' : 'var(--text-primary)' }}>تسجيل كبائع</span>
+              </label>
+            </div>
           </div>
 
           <div>

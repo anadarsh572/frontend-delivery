@@ -40,16 +40,16 @@ const Profile = () => {
 
   const renderStatusBadge = (status) => {
     let color, bg;
+    let label;
     switch(status) {
-      case 'Pending': color = 'var(--text-secondary)'; bg = 'var(--bg-tertiary)'; break;
-      case 'Preparing': color = 'var(--warning)'; bg = 'rgba(245, 158, 11, 0.1)'; break;
-      case 'OnTheWay': color = 'var(--info)'; bg = 'rgba(59, 130, 246, 0.1)'; break;
-      case 'Delivered': color = 'var(--success)'; bg = 'rgba(16, 185, 129, 0.1)'; break;
-      default: color = 'var(--text-primary)'; bg = 'var(--bg-tertiary)';
+      case 'Pending': color = 'var(--text-secondary)'; bg = 'var(--bg-tertiary)'; label = 'جديد'; break;
+      case 'Preparing': color = 'var(--warning)'; bg = 'rgba(245, 158, 11, 0.1)'; label = 'جاري التجهيز'; break;
+      case 'Delivered': color = 'var(--success)'; bg = 'rgba(16, 185, 129, 0.1)'; label = 'مكتمل'; break;
+      default: color = 'var(--text-primary)'; bg = 'var(--bg-tertiary)'; label = status;
     }
     return (
       <span style={{ color, background: bg, padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 'bold' }}>
-        {status}
+        {label}
       </span>
     )
   }
@@ -92,18 +92,6 @@ const Profile = () => {
                   <p style={{ color: 'var(--text-secondary)', marginBottom: '8px' }}>
                     Items: {order.items ? (Array.isArray(order.items) ? order.items.map(i => i.name || i).join(', ') : 'Various items') : 'Various items'}
                   </p>
-                  
-                  {order.driver_name && order.driver_phone && (
-                    <div style={{ background: 'var(--bg-tertiary)', padding: '12px', borderRadius: 'var(--radius-md)', display: 'inline-flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: 'var(--radius-full)', background: 'var(--info)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: 'bold' }}>
-                        {order.driver_name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{order.driver_name}</p>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{order.driver_phone}</p>
-                      </div>
-                    </div>
-                  )}
                 </div>
                 
                 <div style={{ textAlign: 'right' }}>

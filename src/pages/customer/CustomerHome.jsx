@@ -7,16 +7,32 @@ import { useSearch } from '../../context/SearchContext';
 
 const CustomerHome = () => {
   const [stores, setStores] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { query } = useSearch();
 
   useEffect(() => {
-    const fetchStores = async () => {
-      await simulateDelay(600);
-      setStores(MOCK_STORES);
-      setLoading(false);
+    const fetchData = async () => {
+      try {
+        const [storesRes, productsRes] = await Promise.all([
+          simulateDelay(600).then(() => ({ ok: true, json: () => MOCK_STORES })),
+          fetch(`${import.meta.env.VITE_API_URL || 'https://talqa-backend.vercel.app'}/api/products`)
+        ]);
+
+        const storesData = await storesRes.json();
+        setStores(storesData);
+
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          setProducts(Array.isArray(productsData) ? productsData : productsData.products || []);
+        }
+      } catch (error) {
+        console.error('Error fetching home data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchStores();
+    fetchData();
   }, []);
 
   const filteredStores = stores.filter(store => 
@@ -34,39 +50,64 @@ const CustomerHome = () => {
           جاري تحميل أرقى المتاجر...
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '32px', marginBottom: '60px' }}>
-          {filteredStores.map(store => (
-            <Link 
-              key={store.id} 
-              to={`/customer/store/${store.id}`} 
-              className="card-hover glass-panel"
-              style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-            >
-              <div style={{ height: '220px', width: '100%', position: 'relative' }}>
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '32px', marginBottom: '60px' }}>
+            {filteredStores.map(store => (
+              <Link 
+                key={store.id} 
+                to={`/customer/store/${store.id}`} 
+                className="card-hover glass-panel"
+                style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+              >
+                <div style={{ height: '220px', width: '100%', position: 'relative' }}>
+                  <img 
+                    src={store.image} 
+                    alt={store.name} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--glass-bg)', padding: '6px 12px', borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '4px', backdropFilter: 'blur(8px)' }}>
+                    <Star size={16} color="var(--warning)" fill="var(--warning)" />
+                    <span style={{ fontWeight: 'bold' }}>{store.averageRating}</span>
+                  </div>
+                </div>
+                
+                <div style={{ padding: '24px' }}>
+                  <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{store.name}</h3>
+                  <div style={{ display: 'flex', gap: '16px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16}/> {store.location}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16}/> ٢٥-٣٥ دقيقة</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* PRODUCTS SECTION */}
+          <h2 style={{ marginBottom: '32px', fontSize: '2rem', textAlign: 'center' }}>منتجات عالمية (من كل البائعين)</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '24px', marginBottom: '60px' }}>
+            {products.map(product => (
+              <div key={product.id || product._id} className="glass-panel card-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <img 
-                  src={store.image} 
-                  alt={store.name} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  src={product.image} 
+                  alt={product.name} 
+                  style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: 'var(--radius-md)' }}
                 />
-                <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--glass-bg)', padding: '6px 12px', borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '4px', backdropFilter: 'blur(8px)' }}>
-                  <Star size={16} color="var(--warning)" fill="var(--warning)" />
-                  <span style={{ fontWeight: 'bold' }}>{store.averageRating}</span>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', marginBottom: '4px' }}>{product.name}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '12px', height: '40px', overflow: 'hidden' }}>{product.description}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem' }}>{product.price} جنيه</span>
+                    <Link to={`/customer/store/${product.storeId || 1}`} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>عرض المتجر</Link>
+                  </div>
                 </div>
               </div>
-              
-              <div style={{ padding: '24px' }}>
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{store.name}</h3>
-                <div style={{ display: 'flex', gap: '16px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16}/> {store.location}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16}/> ٢٥-٣٥ دقيقة</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-          {filteredStores.length === 0 && (
-            <p style={{ color: 'var(--text-secondary)' }}>عذراً، لم نجد مطاعم تطابق بحثك.</p>
+            ))}
+          </div>
+
+          {filteredStores.length === 0 && products.length === 0 && (
+            <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>عذراً، لم نجد نتائج تطابق بحثك.</p>
           )}
-        </div>
+        </>
       )}
     </div>
   );

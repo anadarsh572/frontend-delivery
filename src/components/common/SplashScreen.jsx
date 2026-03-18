@@ -41,7 +41,7 @@ const SplashScreen = ({ onComplete }) => {
           color: 'var(--text-secondary)',
           fontWeight: '500'
         }}>
-          في السريع منه مع اضافه علم السرعه 🏁
+          في السريع منه🏁
         </p>
       </div>
     </div>

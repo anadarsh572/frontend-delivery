@@ -52,8 +52,7 @@ const VendorRegister = () => {
         // Use the returned user or fall back to form data
         const userObj = data.user || { 
             ...formData, 
-            id: data.id || Date.now(),
-            subscriptionStatus: 'unpaid' // Force unpaid status for new vendors
+            id: data.id || Date.now()
         };
         
         login(userObj);
