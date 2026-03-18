@@ -12,7 +12,8 @@ const Register = () => {
     phone: '',
     address: '',
     password: '',
-    role: 'user'
+    role: 'user',
+    store_category: 'restaurant' // Default category if seller
   });
   
   const [loading, setLoading] = useState(false);
@@ -191,6 +192,35 @@ const Register = () => {
             </div>
           </div>
 
+          {/* Conditional Store Category Dropdown for Sellers */}
+          {formData.role === 'seller' && (
+            <div className="animate-fade-down" style={{ marginTop: '-8px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--accent-primary)', fontWeight: 'bold' }}>تصنيف المتجر</label>
+              <select 
+                name="store_category"
+                value={formData.store_category}
+                onChange={handleChange}
+                style={{ 
+                  width: '100%', 
+                  padding: '12px 16px', 
+                  borderRadius: 'var(--radius-md)', 
+                  border: '2px solid var(--accent-primary)', 
+                  background: 'var(--bg-tertiary)', 
+                  color: 'var(--text-primary)',
+                  fontWeight: 'bold',
+                  outline: 'none'
+                }}
+              >
+                <option value="restaurant">مطعم (Restaurant)</option>
+                <option value="cafe">كافيه (Cafe)</option>
+                <option value="supermarket">سوبر ماركت (Supermarket)</option>
+                <option value="pharmacy">صيدلية (Pharmacy)</option>
+                <option value="other">أخرى (Other)</option>
+              </select>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px' }}>هذا التصنيف سيساعد العملاء في العثور عليك بسهولة.</p>
+            </div>
+          )}
+
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Password</label>
             <input 
@@ -218,6 +248,15 @@ const Register = () => {
           <p style={{ fontSize: '0.9rem' }}>هل أنت صاحب متجر؟ <Link to="/vendor/register" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>سجل كتاجر هنا</Link></p>
         </div>
       </div>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-down {
+          animation: fadeDown 0.3s ease-out forwards;
+        }
+      `}} />
     </div>
   );
 }

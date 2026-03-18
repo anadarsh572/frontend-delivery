@@ -13,8 +13,8 @@ const VendorDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-  // Store Settings
-  const [storeCategory, setStoreCategory] = useState(user?.category || 'restaurant');
+  // Store Settings - Initialize with user's current category from registration
+  const [storeCategory, setStoreCategory] = useState(user?.category || user?.store_category || 'restaurant');
   const [isSavingCategory, setIsSavingCategory] = useState(false);
 
   useEffect(() => {
