@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { Trash2, Plus, Minus, CreditCard, Banknote, ArrowRight, X, LogIn, UserPlus, AlertCircle } from 'lucide-react';
+import { Trash2, Plus, Minus, CreditCard, Banknote, ArrowRight, X, LogIn, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
 
 import { API_URL } from '../../api/config';
@@ -148,15 +148,22 @@ const Cart = () => {
 
   if (orderSuccess) {
     return (
-      <div className="glass-panel animate-fade-up" style={{ textAlign: 'center', padding: '60px 20px', maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ width: '80px', height: '80px', background: 'var(--success)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <div className="glass-panel animate-fade-up" style={{ textAlign: 'center', padding: '60px 24px', maxWidth: '600px', margin: '40px auto' }}>
+        <div style={{ width: '80px', height: '80px', background: 'var(--success)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 0 20px rgba(16, 185, 129, 0.2)' }}>
+          <CheckCircle size={40} color="white" />
         </div>
-        <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Order Placed Successfully!</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Your delicious food is being prepared.</p>
-        <button className="btn btn-primary" onClick={() => navigate('/customer/profile')}>
-          Track Order
-        </button>
+        <h2 style={{ fontSize: '2.5rem', marginBottom: '16px', fontWeight: '800' }}>تم تأكيد طلبك بنجاح!</h2>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '1.2rem', fontWeight: '500' }}>
+          سيتم التوصيل في أسرع وقت ⚡🏁
+        </p>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          <button className="btn btn-secondary" onClick={() => navigate('/customer')}>
+            العودة للرئيسية
+          </button>
+          <button className="btn btn-primary" onClick={() => navigate('/customer/profile')}>
+            متابعة الطلب
+          </button>
+        </div>
       </div>
     );
   }

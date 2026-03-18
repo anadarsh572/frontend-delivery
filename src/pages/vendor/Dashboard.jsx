@@ -30,8 +30,6 @@ const VendorDashboard = () => {
           const data = await response.json();
           const ordersArray = Array.isArray(data) ? data : data.orders || [];
           setOrders(ordersArray);
-        } else {
-          console.error('Failed to fetch store orders');
         }
       } catch (error) {
         console.error('Error fetching store orders:', error);
@@ -39,7 +37,11 @@ const VendorDashboard = () => {
         setLoading(false);
       }
     };
+
     fetchStoreOrders();
+    const interval = setInterval(fetchStoreOrders, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(interval);
   }, [user]);
 
   if (!user) return <div style={{ textAlign: 'center', paddingTop: '100px' }}>Log in as Vendor to see your dashboard</div>;
