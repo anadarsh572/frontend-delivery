@@ -23,37 +23,52 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
     <div className="customer-app" dir="rtl">
       {/* Navbar */}
       <nav className="glass-panel" style={{ position: 'sticky', top: 0, zIndex: 100, borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', padding: '12px 0' }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           
-          {/* Logo & Slogan */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button 
-              onClick={() => setIsDrawerOpen(true)} 
-              style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-            >
-              <Menu size={28} />
-            </button>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <Link to={user ? "/customer" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.8rem', fontWeight: '800' }}>
-                <span className="gradient-text">طلقة</span>
-                <span style={{ fontSize: '1.5rem' }}>⚡</span>
+          {/* Top Row: Logo & Hamburger & Icons */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            
+            {/* Logo (Right side in RTL) */}
+            <Link to={user ? "/customer" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.8rem', fontWeight: '800' }}>
+              <span className="gradient-text">طلقة</span>
+              <span style={{ fontSize: '1.5rem' }}>⚡</span>
+            </Link>
+
+            {/* Icons & Menu (Left side in RTL) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div className="hide-mobile" style={{ display: 'flex', gap: '20px', fontWeight: 'bold', marginLeft: '20px' }}>
+                <Link to="/" style={{ color: 'var(--text-primary)' }}>الرئيسية</Link>
+                <Link to="/customer" style={{ color: 'var(--text-primary)' }}>المطاعم</Link>
+              </div>
+
+              <Link to="/cart" className="card-hover" style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+                <ShoppingCart size={24} color="var(--accent-primary)" />
+                {itemCount > 0 && (
+                  <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--danger)', color: 'white', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                    {itemCount}
+                  </span>
+                )}
               </Link>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '500', whiteSpace: 'nowrap' }}>
-                في السريع منه مع علم السرعه 🏁
-              </span>
+
+              <button 
+                onClick={() => setIsDrawerOpen(true)} 
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+              >
+                <Menu size={28} />
+              </button>
             </div>
           </div>
 
-          {/* Search Bar - Integrated in Navbar */}
-          <div style={{ flex: 1, maxWidth: '500px', display: 'flex', alignItems: 'center' }}>
-            <div className="glass-panel" style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '8px 16px', borderRadius: 'var(--radius-full)', background: 'var(--bg-tertiary)' }}>
+          {/* Bottom Row: Search Bar (Full width on mobile) */}
+          <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+            <div className="glass-panel" style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '10px 16px', borderRadius: 'var(--radius-full)', background: 'var(--bg-tertiary)' }}>
               <Search size={20} color="var(--text-secondary)" style={{ marginLeft: '12px' }} />
               <input 
                 type="text" 
-                placeholder="ابحث عن أكلة، مطعم..." 
+                placeholder="ابحث عن أكلة، مطعم، أو صنف..." 
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', fontSize: '0.95rem', outline: 'none' }}
+                style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none' }}
                 dir="rtl"
               />
               {query && (
@@ -64,22 +79,6 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
             </div>
           </div>
 
-          {/* Desktop Nav Links & Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            <div className="hide-mobile" style={{ display: 'flex', gap: '20px', fontWeight: 'bold' }}>
-              <Link to="/" style={{ color: 'var(--text-primary)' }}>الرئيسية</Link>
-              <Link to="/customer" style={{ color: 'var(--text-primary)' }}>المطاعم</Link>
-            </div>
-            
-            <Link to="/cart" className="card-hover" style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-              <ShoppingCart size={24} color="var(--accent-primary)" />
-              {itemCount > 0 && (
-                <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--danger)', color: 'white', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>
-                  {itemCount}
-                </span>
-              )}
-            </Link>
-          </div>
         </div>
       </nav>
 

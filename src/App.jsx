@@ -107,7 +107,7 @@ const LandingPage = () => {
           طلقة ⚡
         </h1>
         <p className="hero-subtitle" style={{ marginBottom: '32px', fontSize: 'clamp(1.1rem, 4vw, 1.4rem)', color: 'var(--text-secondary)' }}>
-          في السريع منه مع اضافه علم السرعه 🏁
+          في السريع منه ⚡
         </p>
         
         {!localStorage.getItem('token') && (

@@ -27,14 +27,14 @@ const CustomerHome = () => {
   return (
     <div className="animate-fade-up">
 
-      <h2 style={{ marginBottom: '24px', fontSize: '2rem' }}>Featured Restaurants</h2>
+      <h2 style={{ marginTop: '40px', marginBottom: '32px', fontSize: '2rem', textAlign: 'center' }}>المطاعم المميزة</h2>
       
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px 0', color: 'var(--text-secondary)' }}>
-          Loading premium stores...
+          جاري تحميل أرقى المتاجر...
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '32px', marginBottom: '60px' }}>
           {filteredStores.map(store => (
             <Link 
               key={store.id} 
