@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { Search, Star, Clock, MapPin } from 'lucide-react';
 import { MOCK_STORES, simulateDelay } from '../../data/mockDb';
 
+import { useSearch } from '../../context/SearchContext';
+
 const CustomerHome = () => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState('');
+  const { query } = useSearch();
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -24,33 +26,6 @@ const CustomerHome = () => {
 
   return (
     <div className="animate-fade-up">
-      {/* Search Bar */}
-      <div 
-        className="glass-panel" 
-        style={{ 
-          padding: 'clamp(12px, 4vw, 24px)', 
-          marginBottom: '32px', 
-          display: 'flex', 
-          gap: '12px',
-          alignItems: 'center'
-        }}
-      >
-        <Search size={24} color="var(--text-secondary)" />
-        <input 
-          type="text" 
-          placeholder="Search for restaurants, cuisines, or locations..." 
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          style={{ 
-            flex: 1, 
-            background: 'transparent', 
-            border: 'none', 
-            color: 'var(--text-primary)',
-            fontSize: 'clamp(1rem, 4vw, 1.2rem)',
-            outline: 'none'
-          }}
-        />
-      </div>
 
       <h2 style={{ marginBottom: '24px', fontSize: '2rem' }}>Featured Restaurants</h2>
       

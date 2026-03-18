@@ -4,9 +4,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { ShoppingCart, User, LogOut, LogIn, Home, Search, Menu, X, Package, ShieldCheck, Navigation, Store, Utensils, Coffee, ShoppingBasket } from 'lucide-react';
 
+import { useSearch } from '../../context/SearchContext';
+
 const CustomerLayout = ({ children, fullWidth = false }) => {
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
+  const { query, setQuery } = useSearch();
   const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -17,11 +20,12 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
   };
 
   return (
-    <div className="customer-app">
+    <div className="customer-app" dir="rtl">
       {/* Navbar */}
-      <nav className="glass-panel" style={{ position: 'sticky', top: 0, zIndex: 100, borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', padding: '16px 0' }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <nav className="glass-panel" style={{ position: 'sticky', top: 0, zIndex: 100, borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', padding: '12px 0' }}>
+        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px' }}>
           
+          {/* Logo & Slogan */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button 
               onClick={() => setIsDrawerOpen(true)} 
@@ -29,12 +33,44 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
             >
               <Menu size={28} />
             </button>
-            <Link to={user ? "/customer" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.5rem', fontWeight: 'bold' }}>
-              <span className="gradient-text">Food</span>Delivery
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <Link to={user ? "/customer" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.8rem', fontWeight: '800' }}>
+                <span className="gradient-text">طلقة</span>
+                <span style={{ fontSize: '1.5rem' }}>⚡</span>
+              </Link>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '500', whiteSpace: 'nowrap' }}>
+                في السريع منه مع علم السرعه 🏁
+              </span>
+            </div>
           </div>
 
+          {/* Search Bar - Integrated in Navbar */}
+          <div style={{ flex: 1, maxWidth: '500px', display: 'flex', alignItems: 'center' }}>
+            <div className="glass-panel" style={{ width: '100%', display: 'flex', alignItems: 'center', padding: '8px 16px', borderRadius: 'var(--radius-full)', background: 'var(--bg-tertiary)' }}>
+              <Search size={20} color="var(--text-secondary)" style={{ marginLeft: '12px' }} />
+              <input 
+                type="text" 
+                placeholder="ابحث عن أكلة، مطعم..." 
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', fontSize: '0.95rem', outline: 'none' }}
+                dir="rtl"
+              />
+              {query && (
+                <button onClick={() => setQuery('')} style={{ color: 'var(--text-secondary)', padding: '4px' }}>
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop Nav Links & Icons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <div className="hide-mobile" style={{ display: 'flex', gap: '20px', fontWeight: 'bold' }}>
+              <Link to="/" style={{ color: 'var(--text-primary)' }}>الرئيسية</Link>
+              <Link to="/customer" style={{ color: 'var(--text-primary)' }}>المطاعم</Link>
+            </div>
+            
             <Link to="/cart" className="card-hover" style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
               <ShoppingCart size={24} color="var(--accent-primary)" />
               {itemCount > 0 && (

@@ -174,7 +174,12 @@ const Cart = () => {
   }
 
   return (
-    <div className="animate-fade-up" style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '32px' }}>
+    <div className="animate-fade-up" style={{ 
+      display: 'grid', 
+      gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', 
+      gap: '32px',
+      alignItems: 'start'
+    }}>
       
       {/* Auth Modal Overlay */}
       {showAuthModal && (
@@ -280,30 +285,73 @@ const Cart = () => {
       )}
 
       {/* Cart Items */}
-      <div>
-        <h2 style={{ fontSize: '2rem', marginBottom: '24px' }}>Your Cart</h2>
+      <div dir="rtl">
+        <h2 style={{ fontSize: '2rem', marginBottom: '24px' }}>سلتك (Your Cart)</h2>
         <div className="glass-panel" style={{ padding: '24px' }}>
           {cartItems.map((item) => (
-            <div key={item.productId} style={{ display: 'flex', gap: '16px', padding: '16px 0', borderBottom: '1px solid var(--border-color)', alignItems: 'center' }}>
-              <img src={item.product.image} alt={item.product.name} style={{ width: '80px', height: '80px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} />
-              <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>{item.product.name}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>EGP {item.product.price}</p>
-              </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--bg-tertiary)', padding: '6px 12px', borderRadius: 'var(--radius-full)' }}>
-                <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} style={{ color: 'var(--text-primary)' }}><Minus size={16} /></button>
-                <span style={{ fontWeight: 'bold' }}>{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} style={{ color: 'var(--text-primary)' }}><Plus size={16} /></button>
-              </div>
-              
-              <div style={{ width: '80px', textAlign: 'right', fontWeight: 'bold' }}>
-                EGP {item.product.price * item.quantity}
-              </div>
-              
-              <button onClick={() => removeFromCart(item.productId)} style={{ color: 'var(--danger)', padding: '8px' }}>
-                <Trash2 size={20} />
+            <div 
+              key={item.productId} 
+              className="flex-responsive" 
+              style={{ 
+                gap: '20px', 
+                padding: '24px 0', 
+                borderBottom: '1px solid var(--border-color)', 
+                alignItems: 'center',
+                position: 'relative'
+              }}
+            >
+              {/* Delete Button - Top Left */}
+              <button 
+                onClick={() => removeFromCart(item.productId)} 
+                style={{ 
+                  position: 'absolute', 
+                  top: '8px', 
+                  left: '0', 
+                  color: 'var(--danger)', 
+                  padding: '8px',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  borderRadius: 'var(--radius-sm)'
+                }}
+              >
+                <Trash2 size={18} />
               </button>
+
+              <img 
+                src={item.product.image} 
+                alt={item.product.name} 
+                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80'; }}
+                style={{ width: '100px', height: '100px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} 
+              />
+              
+              <div style={{ flex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{item.product.name}</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', margin: 0 }}>{item.product.price} جنيه</p>
+                <p style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem', margin: 0 }}>الإجمالي: {item.product.price * item.quantity} جنيه</p>
+              </div>
+              
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '20px', 
+                background: 'var(--bg-tertiary)', 
+                padding: '10px 20px', 
+                borderRadius: 'var(--radius-full)',
+                justifyContent: 'center'
+              }}>
+                <button 
+                  onClick={() => updateQuantity(item.productId, item.quantity - 1)} 
+                  style={{ color: 'var(--text-primary)', padding: '4px' }}
+                >
+                  <Minus size={20} />
+                </button>
+                <span style={{ fontWeight: 'bold', fontSize: '1.2rem', minWidth: '30px', textAlign: 'center' }}>{item.quantity}</span>
+                <button 
+                  onClick={() => updateQuantity(item.productId, item.quantity + 1)} 
+                  style={{ color: 'var(--text-primary)', padding: '4px' }}
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
             </div>
           ))}
         </div>

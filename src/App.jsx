@@ -13,11 +13,13 @@ import CategoryProductCard from './components/products/CategoryProductCard';
 import CafeCustomizationModal from './components/modals/CafeCustomizationModal';
 
 import { API_URL } from './api/config';
+import { SearchProvider, useSearch } from './context/SearchContext';
+import SplashScreen from './components/common/SplashScreen';
 
 const LandingPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { query: searchQuery, setQuery: setSearchQuery } = useSearch();
   const [hasSearched, setHasSearched] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
@@ -101,8 +103,12 @@ const LandingPage = () => {
   return (
     <div className="landing-container animate-fade-up">
       <div className="hero-section" style={{ minHeight: 'auto', padding: 'clamp(40px, 10vw, 80px) 20px' }}>
-        <h1 className="gradient-text hero-title" style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', lineHeight: 1.1 }}>The Future of Delivery</h1>
-        <p className="hero-subtitle" style={{ marginBottom: '32px', fontSize: 'clamp(1rem, 4vw, 1.2rem)' }}>Premium food & e-commerce delivery right to your door.</p>
+        <h1 className="gradient-text hero-title" style={{ fontSize: 'clamp(2.5rem, 10vw, 4.5rem)', lineHeight: 1.1, marginBottom: '24px' }}>
+          طلقة ⚡
+        </h1>
+        <p className="hero-subtitle" style={{ marginBottom: '32px', fontSize: 'clamp(1.1rem, 4vw, 1.4rem)', color: 'var(--text-secondary)' }}>
+          في السريع منه مع اضافه علم السرعه 🏁
+        </p>
         
         {!localStorage.getItem('token') && (
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -117,29 +123,6 @@ const LandingPage = () => {
       </div>
 
       <div className="container" style={{ padding: '0 20px 80px' }}>
-        {/* Search Bar */}
-        <div style={{ maxWidth: '600px', margin: '0 auto 40px' }}>
-          <form onSubmit={handleSearch} className="glass-panel" style={{ display: 'flex', alignItems: 'center', padding: '12px 24px', borderRadius: '50px' }}>
-            <Search size={24} color="var(--text-secondary)" style={{ marginRight: '16px' }} />
-            <input 
-              type="text" 
-              placeholder="البحث عن منتج..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', fontSize: '1.1rem', outline: 'none' }}
-              dir="rtl"
-            />
-            {searchQuery && (
-              <button type="button" onClick={clearSearch} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
-                <X size={20} />
-              </button>
-            )}
-            <button type="submit" className="btn btn-primary" style={{ marginLeft: '16px', borderRadius: '50px' }}>
-              بحث
-            </button>
-          </form>
-        </div>
-
         <div style={{ marginTop: '20px' }}>
           <h2 style={{ fontSize: '2rem', marginBottom: '32px', textAlign: 'center' }}>
             {isSearching ? 'نتائج البحث' : 'جميع المنتجات'}
@@ -213,8 +196,12 @@ const PrivateRoute = ({ allowedRoles }) => {
 };
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
-    <Router>
+    <SearchProvider>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <Router>
       <Routes>
         <Route path="/" element={<CustomerLayout fullWidth><LandingPage /></CustomerLayout>} />
         <Route path="/category/:category" element={<CustomerLayout><CategoryPage /></CustomerLayout>} />
@@ -236,6 +223,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </SearchProvider>
   );
 }
 
