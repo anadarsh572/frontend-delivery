@@ -20,6 +20,7 @@ const Cart = () => {
   const [showModal, setShowModal] = useState(false);
   const [phone, setPhone] = useState(user?.phone || '');
   const [address, setAddress] = useState(user?.address || '');
+  const [customerName, setCustomerName] = useState(user?.name || '');
 
   // Auth Modal State
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -95,8 +96,8 @@ const Cart = () => {
     const token = localStorage.getItem('token');
     if (!user || !token) return;
     
-    if (!phone.trim() || !address.trim()) {
-      alert("Please provide both phone number and delivery address.");
+    if (!phone.trim() || !address.trim() || !customerName.trim()) {
+      alert("يرجى إدخال الاسم، رقم التليفون، وعنوان التوصيل.");
       return;
     }
     
@@ -113,6 +114,7 @@ const Cart = () => {
         payment_method: paymentMethod,
         delivery_address: address,
         customer_phone: phone,
+        customer_name: customerName,
         items: cartItems.map(item => ({
           product_id: parseInt(item.productId || item.product._id || item.product.id, 10),
           quantity: parseInt(item.quantity, 10),
@@ -254,6 +256,18 @@ const Cart = () => {
             </button>
             <h2 style={{ fontSize: '1.8rem', marginBottom: '8px', color: 'var(--accent-primary)', textAlign: 'center' }}>تأكيد الطلب</h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', textAlign: 'center' }}>الإجمالي: <span style={{ fontWeight: 'bold' }}>{grandTotal} جنيه</span></p>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', marginRight: '8px' }}>اسم العميل <span style={{ color: 'var(--danger)' }}>*</span></label>
+              <input 
+                type="text" 
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="مثلاً: محمد علي"
+                required
+                style={{ width: '100%', padding: '12px 16px', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none' }}
+              />
+            </div>
 
             <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', marginRight: '8px' }}>رقم التليفون <span style={{ color: 'var(--danger)' }}>*</span></label>
