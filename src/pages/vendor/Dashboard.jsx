@@ -1,24 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Check, Clock, Package, X, PlusCircle, Store, AlertTriangle, CheckCircle, Copy, MapPin, Phone } from 'lucide-react';
+import { Check, Clock, Package, X, PlusCircle, Store, AlertTriangle, CheckCircle, Copy, MapPin, Phone, RefreshCw } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
-
 import { API_URL } from '../../api/config';
+import AddProductModal from '../../components/modals/AddProductModal';
 
 const VendorDashboard = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // New Product Form State
-  const [isAddingProduct, setIsAddingProduct] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    description: '',
-    price: '',
-    image: '',
-    isAvailable: true
-  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Subscription State
   const [subscriptionStatus, setSubscriptionStatus] = useState(user?.subscriptionStatus || 'unpaid');
@@ -74,34 +66,9 @@ const VendorDashboard = () => {
     }
   };
 
-  const handleAddProduct = async (e) => {
-    e.preventDefault();
-    if (!user) return;
-    
-    try {
-      const productData = { ...newProduct, price: Number(newProduct.price) };
-      
-      const response = await fetch(`${API_URL}/api/vendor/products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(productData)
-      });
-      
-      if (response.ok) {
-        alert('Product added successfully!');
-        setNewProduct({ name: '', description: '', price: '', image: '', isAvailable: true });
-        setIsAddingProduct(false);
-      } else {
-        const error = await response.json();
-        alert(`Failed to add product: ${error.message || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Error adding product:', error);
-      alert('Network error occurred while adding product.');
-    }
+  const onAddProductSuccess = () => {
+    // Optionally refresh orders or show a notification
+    console.log('Product added successfully from Dashboard');
   };
 
   const handlePaySubscription = async () => {
@@ -199,14 +166,20 @@ const VendorDashboard = () => {
               alert('عذراً، يجب دفع الاشتراك الشهري أولاً لتتمكن من إضافة المنتجات.');
               return;
             }
-            setIsAddingProduct(!isAddingProduct);
+            setIsModalOpen(true);
           }}
           style={{ opacity: subscriptionStatus !== 'active' ? 0.6 : 1, cursor: subscriptionStatus !== 'active' ? 'not-allowed' : 'pointer', width: 'auto' }}
         >
-          {isAddingProduct ? <X size={20} /> : <PlusCircle size={20} />}
-          {isAddingProduct ? 'Cancel' : 'Add New Product'}
+          <PlusCircle size={20} /> Add New Product
         </button>
       </div>
+
+      <AddProductModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        storeId={user?.storeId || user?.id}
+        onSuccess={onAddProductSuccess}
+      />
 
       {/* Store Setup Section */}
       <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px', borderLeft: '4px solid var(--accent-primary)' }}>
@@ -275,80 +248,7 @@ const VendorDashboard = () => {
         )}
       </div>
 
-      {isAddingProduct && (
-        <div className="glass-panel animate-fade-up" style={{ marginBottom: '40px', padding: '32px' }}>
-          <h2 style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Store size={24} color="var(--accent-primary)" />
-            Add New Product
-          </h2>
-          <form onSubmit={handleAddProduct} style={{ display: 'grid', gap: '20px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-              <div className="form-group">
-                <label>Product Name</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  required 
-                  value={newProduct.name}
-                  onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                  placeholder="e.g. Cheese Burger"
-                />
-              </div>
-              <div className="form-group">
-                <label>Price (EGP)</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  required 
-                  min="0"
-                  step="0.01"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                  placeholder="e.g. 150"
-                />
-              </div>
-            </div>
-            
-            <div className="form-group">
-              <label>Description</label>
-              <textarea 
-                className="form-control" 
-                required 
-                rows="3"
-                value={newProduct.description}
-                onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-                placeholder="Briefly describe the product..."
-              ></textarea>
-            </div>
 
-            <div className="form-group">
-              <label>Image URL</label>
-              <input 
-                type="url" 
-                className="form-control" 
-                required 
-                value={newProduct.image}
-                onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-              <input 
-                type="checkbox" 
-                checked={newProduct.isAvailable}
-                onChange={(e) => setNewProduct({...newProduct, isAvailable: e.target.checked})}
-                style={{ width: '20px', height: '20px' }}
-              />
-              Product is currently available
-            </label>
-
-            <button type="submit" className="btn btn-primary" style={{ justifySelf: 'start', padding: '12px 32px' }}>
-              Save Product
-            </button>
-          </form>
-        </div>
-      )}
 
       <h2 style={{ fontSize: '1.8rem', marginBottom: '24px' }}>Live Orders</h2>
 
