@@ -62,44 +62,95 @@ const VendorWallet = () => {
       {loading ? (
         <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>جاري تحميل سجل العمليات...</div>
       ) : (
-        <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead style={{ background: 'var(--bg-tertiary)', borderBottom: '1px solid var(--border-color)' }}>
-              <tr>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>التاريخ والمرجع</th>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>النوع</th>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>المبلغ</th>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>الحالة</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map(trx => (
-                <tr key={trx.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'var(--transition)' }}>
-                  <td style={{ padding: '16px 24px' }}>
-                    <p style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{trx.date}</p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>مرجع: {trx.id} | طلب: {trx.orderId}</p>
-                  </td>
-                  <td style={{ padding: '16px 24px' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                      {trx.amount > 0 ? <ArrowDownRight size={16} color="var(--success)"/> : <ArrowUpRight size={16} color="var(--danger)"/>}
-                      {trx.type === 'Sale' ? 'عملية بيع' : trx.type === 'Commission_Fee' ? 'رسوم المنصة' : trx.type === 'Payout' ? 'سحب أرباح' : trx.type}
-                    </span>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>{trx.method === 'Online' ? 'دفع إلكتروني' : trx.method === 'Deduction' ? 'خصم مالي' : trx.method === 'Cash_To_Driver' ? 'كاش مع المندوب' : trx.method === 'Bank Transfer' ? 'تحويل بنكي' : trx.method}</p>
-                  </td>
-                  <td style={{ padding: '16px 24px', fontWeight: 'bold', fontSize: '1.1rem', color: trx.amount > 0 ? 'var(--success)' : 'var(--text-primary)' }}>
-                    {trx.amount > 0 ? '+' : ''}{trx.amount}
-                  </td>
-                  <td style={{ padding: '16px 24px' }}>
-                    <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 'bold', background: trx.status === 'Completed' || trx.status === 'Settled' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: trx.status === 'Completed' || trx.status === 'Settled' ? 'var(--success)' : 'var(--warning)' }}>
-                      {trx.status === 'Completed' ? 'مكتمل' : trx.status === 'Settled' ? 'تمت التسوية' : trx.status}
-                    </span>
-                  </td>
+        <>
+          {/* Desktop Table View */}
+          <div className="glass-panel desktop-only-block" style={{ padding: '0', overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead style={{ background: 'var(--bg-tertiary)', borderBottom: '1px solid var(--border-color)' }}>
+                <tr>
+                  <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>التاريخ والمرجع</th>
+                  <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>النوع</th>
+                  <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>المبلغ</th>
+                  <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>الحالة</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {transactions.map(trx => (
+                  <tr key={trx.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'var(--transition)' }}>
+                    <td style={{ padding: '16px 24px' }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{trx.date}</p>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>مرجع: {trx.id} | طلب: {trx.orderId}</p>
+                    </td>
+                    <td style={{ padding: '16px 24px' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        {trx.amount > 0 ? <ArrowDownRight size={16} color="var(--success)"/> : <ArrowUpRight size={16} color="var(--danger)"/>}
+                        {trx.type === 'Sale' ? 'عملية بيع' : trx.type === 'Commission_Fee' ? 'رسوم المنصة' : trx.type === 'Payout' ? 'سحب أرباح' : trx.type}
+                      </span>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>{trx.method === 'Online' ? 'دفع إلكتروني' : trx.method === 'Deduction' ? 'خصم مالي' : trx.method === 'Cash_To_Driver' ? 'كاش مع المندوب' : trx.method === 'Bank Transfer' ? 'تحويل بنكي' : trx.method}</p>
+                    </td>
+                    <td style={{ padding: '16px 24px', fontWeight: 'bold', fontSize: '1.1rem', color: trx.amount > 0 ? 'var(--success)' : 'var(--text-primary)' }}>
+                      {trx.amount > 0 ? '+' : ''}{trx.amount}
+                    </td>
+                    <td style={{ padding: '16px 24px' }}>
+                      <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 'bold', background: trx.status === 'Completed' || trx.status === 'Settled' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: trx.status === 'Completed' || trx.status === 'Settled' ? 'var(--success)' : 'var(--warning)' }}>
+                        {trx.status === 'Completed' ? 'مكتمل' : trx.status === 'Settled' ? 'تمت التسوية' : trx.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-only-block" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {transactions.map(trx => (
+              <div key={trx.id} className="glass-panel" style={{ padding: '20px', position: 'relative', borderRight: `4px solid ${trx.amount > 0 ? 'var(--success)' : 'var(--danger)'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                  <div>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '4px' }}>{trx.date}</p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>REF: {trx.id}</p>
+                  </div>
+                  <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 'bold', background: trx.status === 'Completed' || trx.status === 'Settled' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: trx.status === 'Completed' || trx.status === 'Settled' ? 'var(--success)' : 'var(--warning)' }}>
+                    {trx.status === 'Completed' ? 'مكتمل' : trx.status === 'Settled' ? 'تمت التسوية' : trx.status}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ padding: '10px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }}>
+                    {trx.amount > 0 ? <ArrowDownRight size={20} color="var(--success)"/> : <ArrowUpRight size={20} color="var(--danger)"/>}
+                  </div>
+                  <div>
+                    <p style={{ fontWeight: 'bold' }}>
+                      {trx.type === 'Sale' ? 'عملية بيع' : trx.type === 'Commission_Fee' ? 'رسوم المنصة' : trx.type === 'Payout' ? 'سحب أرباح' : trx.type}
+                    </p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                      {trx.method === 'Online' ? 'دفع إلكتروني' : trx.method === 'Deduction' ? 'خصم مالي' : trx.method === 'Cash_To_Driver' ? 'كاش مع المندوب' : trx.method === 'Bank Transfer' ? 'تحويل بنكي' : trx.method}
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'left', borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '12px' }}>
+                  <p style={{ fontSize: '1.4rem', fontWeight: 'bold', color: trx.amount > 0 ? 'var(--success)' : 'var(--text-primary)' }}>
+                    {trx.amount > 0 ? '+' : ''}{trx.amount} جنيه
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 767px) {
+          .desktop-only-block { display: none !important; }
+          .mobile-only-block { display: flex !important; }
+        }
+        @media (min-width: 768px) {
+          .mobile-only-block { display: none !important; }
+          .desktop-only-block { display: block !important; }
+        }
+      `}} />
     </div>
   );
 };

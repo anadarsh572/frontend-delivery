@@ -298,8 +298,9 @@ const Cart = () => {
           {cartItems.map((item) => (
             <div 
               key={item.productId} 
-              className="flex-responsive" 
+              className="cart-item-container" 
               style={{ 
+                display: 'flex',
                 gap: '20px', 
                 padding: '24px 0', 
                 borderBottom: '1px solid var(--border-color)', 
@@ -317,7 +318,8 @@ const Cart = () => {
                   color: 'var(--danger)', 
                   padding: '8px',
                   background: 'rgba(239, 68, 68, 0.1)',
-                  borderRadius: 'var(--radius-sm)'
+                  borderRadius: 'var(--radius-sm)',
+                  zIndex: 2
                 }}
               >
                 <Trash2 size={18} />
@@ -328,15 +330,16 @@ const Cart = () => {
                 alt={item.product.name} 
                 onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80'; }}
                 style={{ width: '100px', height: '100px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} 
+                className="cart-item-img"
               />
               
-              <div style={{ flex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="cart-item-info" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{item.product.name}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', margin: 0 }}>{item.product.price} جنيه</p>
-                <p style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem', margin: 0 }}>الإجمالي: {item.product.price * item.quantity} جنيه</p>
+                <p className="cart-item-total" style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem', margin: 0 }}>الإجمالي: {item.product.price * item.quantity} جنيه</p>
               </div>
               
-              <div style={{ 
+              <div className="cart-item-controls" style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '20px', 
@@ -363,6 +366,29 @@ const Cart = () => {
           ))}
         </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 767px) {
+          .cart-item-container {
+            flex-direction: column !important;
+            text-align: center;
+          }
+          .cart-item-img {
+            width: 140px !important;
+            height: 140px !important;
+          }
+          .cart-item-info {
+            width: 100%;
+          }
+          .cart-item-controls {
+            width: 100%;
+            max-width: 200px;
+          }
+          .cart-item-total {
+             margin-top: 8px !important;
+          }
+        }
+      `}} />
 
       {/* Checkout Summary */}
       <div>

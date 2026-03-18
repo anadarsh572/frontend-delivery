@@ -13,9 +13,6 @@ const VendorDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-  // Store Settings - Initialize with user's current category from registration
-  const [storeCategory, setStoreCategory] = useState(user?.category || user?.store_category || 'restaurant');
-  const [isSavingCategory, setIsSavingCategory] = useState(false);
 
   useEffect(() => {
     const fetchStoreOrders = async () => {
@@ -71,29 +68,6 @@ const VendorDashboard = () => {
   };
 
 
-  const handleUpdateStoreCategory = async () => {
-    setIsSavingCategory(true);
-    try {
-      const response = await fetch(`${API_URL}/api/vendor/update-category`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ category: storeCategory })
-      });
-      if (response.ok) {
-        alert('تم تحديث نوع المتجر بنجاح!');
-      } else {
-        alert('فشل تحديث نوع المتجر');
-      }
-    } catch (err) {
-      console.error('Update category error:', err);
-      alert('خطأ في الاتصال بالسيرفر');
-    } finally {
-      setIsSavingCategory(false);
-    }
-  };
 
   const getActionButtons = (order) => {
     switch (order.status) {
@@ -144,35 +118,6 @@ const VendorDashboard = () => {
         onSuccess={onAddProductSuccess}
       />
 
-      {/* Store Setup Section */}
-      <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px', borderLeft: '4px solid var(--accent-primary)' }}>
-        <h2 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Store size={20} /> إعدادات المتجر
-        </h2>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '16px', flexWrap: 'wrap' }}>
-          <div className="form-group" style={{ flex: '1 1 250px' }}>
-            <label style={{ fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>تصنيف المتجر</label>
-            <select 
-              className="form-control"
-              value={storeCategory}
-              onChange={(e) => setStoreCategory(e.target.value)}
-              style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', width: '100%' }}
-            >
-              <option value="restaurant">مطعم</option>
-              <option value="cafe">كافيه</option>
-              <option value="supermarket">سوبر ماركت</option>
-            </select>
-          </div>
-          <button 
-            className="btn btn-primary" 
-            onClick={handleUpdateStoreCategory}
-            disabled={isSavingCategory}
-            style={{ padding: '12px 32px', flex: '0 0 auto' }}
-          >
-            {isSavingCategory ? 'جاري الحفظ...' : 'حفظ الإعدادات'}
-          </button>
-        </div>
-      </div>
 
 
 
