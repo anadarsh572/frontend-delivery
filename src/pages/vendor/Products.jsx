@@ -39,12 +39,12 @@ const VendorProducts = () => {
 
   return (
     <div className="animate-fade-up">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
-        <div>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>منتجات المنيو</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '20px', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: '280px' }}>
+          <h1 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', marginBottom: '8px' }}>منتجات المنيو</h1>
           <p style={{ color: 'var(--text-secondary)' }}>إدارة مخزون متجرك وأسعارك بسهولة. مرتبطة بقاعدة البيانات الحية.</p>
         </div>
-        <button className="btn btn-primary" style={{ padding: '12px 24px' }} onClick={() => setIsModalOpen(true)}>
+        <button className="btn btn-primary" style={{ padding: '12px 24px', whiteSpace: 'nowrap' }} onClick={() => setIsModalOpen(true)}>
           <Plus size={20} /> إضافة منتج
         </button>
       </div>

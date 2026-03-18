@@ -75,8 +75,8 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '20px' }}>
-      <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '600px', padding: 'clamp(24px, 5vw, 40px)', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '15px' }}>
+      <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '600px', padding: 'clamp(20px, 5vw, 40px)', position: 'relative', maxHeight: '95vh', overflowY: 'auto', border: '1px solid var(--accent-primary)', boxShadow: '0 0 40px rgba(255, 90, 31, 0.2)' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
           <X size={24} />
         </button>
