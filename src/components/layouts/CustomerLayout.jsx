@@ -136,7 +136,12 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
       </div>
 
       {/* Main Content */}
-      <main className={fullWidth ? "" : "container"} style={{ paddingTop: fullWidth ? 0 : '40px', paddingBottom: fullWidth ? 0 : '40px' }}>
+      <main className={fullWidth ? "" : "container"} style={{ 
+        paddingTop: fullWidth ? 0 : '24px', 
+        paddingBottom: fullWidth ? 0 : '40px',
+        paddingLeft: fullWidth ? 0 : '16px',
+        paddingRight: fullWidth ? 0 : '16px'
+      }}>
         {children}
       </main>
     </div>

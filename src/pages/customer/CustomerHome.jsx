@@ -28,10 +28,10 @@ const CustomerHome = () => {
       <div 
         className="glass-panel" 
         style={{ 
-          padding: '24px', 
+          padding: 'clamp(12px, 4vw, 24px)', 
           marginBottom: '32px', 
           display: 'flex', 
-          gap: '16px',
+          gap: '12px',
           alignItems: 'center'
         }}
       >
@@ -46,7 +46,7 @@ const CustomerHome = () => {
             background: 'transparent', 
             border: 'none', 
             color: 'var(--text-primary)',
-            fontSize: '1.2rem',
+            fontSize: 'clamp(1rem, 4vw, 1.2rem)',
             outline: 'none'
           }}
         />
@@ -59,7 +59,7 @@ const CustomerHome = () => {
           Loading premium stores...
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '24px' }}>
           {filteredStores.map(store => (
             <Link 
               key={store.id} 

@@ -100,16 +100,16 @@ const LandingPage = () => {
 
   return (
     <div className="landing-container animate-fade-up">
-      <div className="hero-section" style={{ minHeight: 'auto', padding: '60px 20px 40px' }}>
-        <h1 className="gradient-text hero-title" style={{ fontSize: '3rem' }}>The Future of Delivery</h1>
-        <p className="hero-subtitle" style={{ marginBottom: '32px' }}>Premium food & e-commerce delivery right to your door.</p>
+      <div className="hero-section" style={{ minHeight: 'auto', padding: 'clamp(40px, 10vw, 80px) 20px' }}>
+        <h1 className="gradient-text hero-title" style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', lineHeight: 1.1 }}>The Future of Delivery</h1>
+        <p className="hero-subtitle" style={{ marginBottom: '32px', fontSize: 'clamp(1rem, 4vw, 1.2rem)' }}>Premium food & e-commerce delivery right to your door.</p>
         
         {!localStorage.getItem('token') && (
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <Link to="/login" className="btn btn-secondary">
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/login" className="btn btn-secondary" style={{ minWidth: '140px' }}>
               Sign In
             </Link>
-            <Link to="/register" className="btn btn-primary">
+            <Link to="/register" className="btn btn-primary" style={{ minWidth: '140px' }}>
               Create an Account
             </Link>
           </div>

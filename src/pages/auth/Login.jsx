@@ -93,7 +93,7 @@ const Login = () => {
         </Link>
       </div>
 
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '40px' }}>
+      <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: 'clamp(24px, 5vw, 40px)' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ width: '64px', height: '64px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--info)' }}>
             <LogIn size={32} />

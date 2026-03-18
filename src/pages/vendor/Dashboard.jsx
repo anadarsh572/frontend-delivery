@@ -187,9 +187,9 @@ const VendorDashboard = () => {
 
   return (
     <div className="animate-fade-up">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>Store Dashboard</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '20px' }}>
+        <div style={{ flex: 1, minWidth: '280px' }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginBottom: '8px' }}>Store Dashboard</h1>
           <p style={{ color: 'var(--text-secondary)' }}>Manage products and incoming orders for your store.</p>
         </div>
         <button 
@@ -201,7 +201,7 @@ const VendorDashboard = () => {
             }
             setIsAddingProduct(!isAddingProduct);
           }}
-          style={{ opacity: subscriptionStatus !== 'active' ? 0.6 : 1, cursor: subscriptionStatus !== 'active' ? 'not-allowed' : 'pointer' }}
+          style={{ opacity: subscriptionStatus !== 'active' ? 0.6 : 1, cursor: subscriptionStatus !== 'active' ? 'not-allowed' : 'pointer', width: 'auto' }}
         >
           {isAddingProduct ? <X size={20} /> : <PlusCircle size={20} />}
           {isAddingProduct ? 'Cancel' : 'Add New Product'}
@@ -213,14 +213,14 @@ const VendorDashboard = () => {
         <h2 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Store size={20} /> إعدادات المتجر (Store Setup)
         </h2>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px', flexWrap: 'wrap' }}>
-          <div className="form-group" style={{ flex: 1, minWidth: '250px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '16px', flexWrap: 'wrap' }}>
+          <div className="form-group" style={{ flex: '1 1 250px' }}>
             <label style={{ fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>نوع المتجر (Store Category)</label>
             <select 
               className="form-control"
               value={storeCategory}
               onChange={(e) => setStoreCategory(e.target.value)}
-              style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+              style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', width: '100%' }}
             >
               <option value="restaurant">مطعم (Restaurant)</option>
               <option value="cafe">كافيه (Cafe)</option>
@@ -231,7 +231,7 @@ const VendorDashboard = () => {
             className="btn btn-primary" 
             onClick={handleUpdateStoreCategory}
             disabled={isSavingCategory}
-            style={{ padding: '12px 32px' }}
+            style={{ padding: '12px 32px', flex: '0 0 auto' }}
           >
             {isSavingCategory ? 'جاري الحفظ...' : 'حفظ الإعدادات'}
           </button>
@@ -355,7 +355,7 @@ const VendorDashboard = () => {
       {loading ? (
         <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading orders...</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 350px), 1fr))', gap: '24px' }}>
           {orders.map(order => (
             <div key={order.id || order._id} className="glass-panel" style={{ padding: '24px', borderLeft: `4px solid ${order.status === 'Pending' ? 'var(--warning)' : (order.status === 'Preparing' || order.status === 'Accepted') ? 'var(--info)' : 'var(--success)'}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>

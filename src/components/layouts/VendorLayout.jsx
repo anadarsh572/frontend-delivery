@@ -12,25 +12,34 @@ const VendorLayout = ({ children }) => {
   };
 
   return (
-    <div className="admin-app" style={{ display: 'flex', minHeight: '100vh' }}>
+    <div className="admin-app flex-responsive" style={{ minHeight: '100vh' }}>
       {/* Sidebar */}
-      <aside className="glass-panel" style={{ width: '280px', borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderBottom: 'none', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', marginBottom: '24px' }}>
+      <aside className="glass-panel" style={{ 
+        width: 'auto', 
+        minWidth: '280px',
+        borderRadius: 0, 
+        borderTop: 'none', 
+        borderLeft: 'none', 
+        borderBottom: 'none', 
+        display: 'flex', 
+        flexDirection: 'column' 
+      }}>
+        <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
           <Link to="/vendor" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.5rem', fontWeight: 'bold' }}>
             <span className="gradient-text">Vendor</span>Hub
           </Link>
         </div>
 
-        <nav style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <nav style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
           {user ? (
             <>
-              <Link to="/vendor" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
+              <Link to="/vendor" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
                 <Store size={20} /> Order Management
               </Link>
-              <Link to="/vendor/products" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
+              <Link to="/vendor/products" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
                 <Package size={20} /> Products
               </Link>
-              <Link to="/vendor/wallet" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
+              <Link to="/vendor/wallet" className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
                 <Wallet size={20} /> Earnings Wallet
               </Link>
             </>
@@ -49,8 +58,8 @@ const VendorLayout = ({ children }) => {
               <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-full)', background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                 {user.name.charAt(0)}
               </div>
-              <div>
-                <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{user.name}</p>
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                <p style={{ fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Vendor Account</p>
               </div>
             </div>
@@ -62,7 +71,7 @@ const VendorLayout = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: '40px' }}>
+      <main style={{ flex: 1, padding: 'clamp(16px, 5vw, 40px)', overflowX: 'hidden' }}>
         {children}
       </main>
     </div>
