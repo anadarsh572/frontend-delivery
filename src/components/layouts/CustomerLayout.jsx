@@ -92,13 +92,13 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
 
       {/* Side Drawer */}
       <div style={{
-        position: 'fixed', top: 0, left: isDrawerOpen ? 0 : '-300px', width: '280px', height: '100vh',
+        position: 'fixed', top: 0, right: isDrawerOpen ? 0 : '-300px', width: '280px', height: '100vh',
         background: 'var(--bg-secondary)', zIndex: 1000, transition: 'var(--transition)',
-        boxShadow: isDrawerOpen ? '4px 0 24px rgba(0,0,0,0.2)' : 'none',
+        boxShadow: isDrawerOpen ? '-4px 0 24px rgba(0,0,0,0.2)' : 'none',
         display: 'flex', flexDirection: 'column'
       }}>
         <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Menu</span>
+          <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>القائمة</span>
           <button onClick={() => setIsDrawerOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
             <X size={24} />
           </button>
@@ -106,7 +106,7 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
 
         <div style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Link to="/" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)', transition: 'var(--transition)', textDecoration: 'none', color: 'var(--text-primary)' }} className="card-hover">
-            <Home size={20} /> Home Page
+            <Home size={20} /> الصفحة الرئيسية
           </Link>
 
           <div style={{ margin: '12px 0 8px', padding: '0 12px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -127,24 +127,24 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
           
           {!user ? (
             <Link to="/login" onClick={() => setIsDrawerOpen(false)} className="btn btn-primary" style={{ justifyContent: 'center', marginTop: '16px' }}>
-              <LogIn size={20} /> Login / Register
+              <LogIn size={20} /> تسجيل الدخول / إنشاء حساب
             </Link>
           ) : (
             <>
               {(!user.role || user.role.toLowerCase() === 'customer') && (
                 <>
                   <Link to="/customer/profile" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)' }} className="card-hover">
-                    <User size={20} /> My Profile
+                    <User size={20} /> بروفيلي (Profile)
                   </Link>
                   <Link to="/customer/profile" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)' }} className="card-hover">
-                    <Package size={20} /> My Orders
+                    <Package size={20} /> طلباتي
                   </Link>
                 </>
               )}
 
               {user.role?.toLowerCase() === 'vendor' && (
                 <Link to="/vendor" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)', color: 'var(--success)' }} className="card-hover">
-                  <Store size={20} /> Vendor Dashboard
+                  <Store size={20} /> لوحة تحكم التاجر
                 </Link>
               )}
               {/* Note: Admin link explicitly omitted to keep it strictly hidden */}
@@ -160,11 +160,11 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
                 <p style={{ fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.role}</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.role === 'vendor' ? 'حساب تاجر' : 'حساب عميل'}</p>
               </div>
             </div>
             <button onClick={handleLogout} className="btn" style={{ width: '100%', color: 'var(--danger)', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)' }}>
-              <LogOut size={18} /> Logout
+              <LogOut size={18} /> تسجيل الخروج
             </button>
           </div>
         )}

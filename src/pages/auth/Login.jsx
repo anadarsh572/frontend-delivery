@@ -89,7 +89,7 @@ const Login = () => {
       
       <div style={{ width: '100%', maxWidth: '400px', marginBottom: '24px' }}>
         <Link to="/" className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)' }}>
-          <ArrowLeft size={18} /> Back to Home
+          <ArrowLeft size={18} style={{ marginLeft: '8px', transform: 'rotate(180deg)' }} /> العودة للرئيسية
         </Link>
       </div>
 
@@ -98,8 +98,8 @@ const Login = () => {
           <div style={{ width: '64px', height: '64px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--info)' }}>
             <LogIn size={32} />
           </div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Welcome Back</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Sign in to your account.</p>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>أهلاً بك مجدداً</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>سجل دخولك إلى حسابك.</p>
         </div>
 
         {error && (
@@ -112,7 +112,7 @@ const Login = () => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Email Address</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>البريد الإلكتروني</label>
             <input 
               type="email" 
               name="email"
@@ -125,7 +125,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Password</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>كلمة المرور</label>
             <input 
               type="password" 
               name="password"
@@ -143,13 +143,13 @@ const Login = () => {
             style={{ width: '100%', padding: '16px', marginTop: '12px', fontSize: '1.1rem', background: 'var(--info)' }}
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'جاري الدخول...' : 'تسجيل الدخول'}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <p>Don't have an account? <Link to="/register" style={{ color: 'var(--info)', fontWeight: 'bold' }}>Register</Link></p>
-          <p style={{ fontSize: '0.9rem' }}>Are you a store owner? <Link to="/vendor/register" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>Register as Vendor</Link></p>
+          <p>ليس لديك حساب؟ <Link to="/register" style={{ color: 'var(--info)', fontWeight: 'bold' }}>سجل الآن</Link></p>
+          <p style={{ fontSize: '0.9rem' }}>هل أنت صاحب مطجر؟ <Link to="/vendor/register" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>سجل كتاجر</Link></p>
         </div>
       </div>
     </div>

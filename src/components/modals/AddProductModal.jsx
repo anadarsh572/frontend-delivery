@@ -49,7 +49,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setStatus({ type: 'success', text: 'Product added successfully!' });
+        setStatus({ type: 'success', text: 'تم إضافة المنتج بنجاح!' });
         setTimeout(() => {
           onSuccess();
           onClose();
@@ -64,11 +64,11 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           setStatus(null);
         }, 1500);
       } else {
-        setStatus({ type: 'error', text: data.message || 'Error adding product.' });
+        setStatus({ type: 'error', text: data.message || 'خطأ في إضافة المنتج.' });
       }
     } catch (error) {
       console.error('Submit Error:', error);
-      setStatus({ type: 'error', text: 'Network error. Please check your connection.' });
+      setStatus({ type: 'error', text: 'خطأ في الاتصال. يرجى التأكد من تشغيل السيرفر.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -85,8 +85,8 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           <div style={{ width: '64px', height: '64px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--accent-primary)' }}>
             <PlusCircle size={32} />
           </div>
-          <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Add New Product</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Fill in the details to add a product to your menu.</p>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>إضافة منتج جديد</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>املأ البيانات لإضافة صنف جديد للمنيو الخاص بك.</p>
         </div>
 
         {status && (
@@ -99,27 +99,27 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Product Name</label>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>اسم المنتج</label>
               <input 
                 type="text" 
                 name="name" 
                 value={formData.name} 
                 onChange={handleInputChange} 
                 required 
-                placeholder="e.g. Cheese Burger" 
+                placeholder="مثلاً: بيف برجر عائلي" 
                 style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} 
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Price (EGP)</label>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>السعر (جنيه)</label>
               <input 
                 type="number" 
                 name="price" 
                 value={formData.price} 
                 onChange={handleInputChange} 
                 required 
-                placeholder="e.g. 150" 
+                placeholder="مثلاً: 150" 
                 min="0" 
                 step="0.01" 
                 style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} 
@@ -128,20 +128,20 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Description</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>الوصف</label>
             <textarea 
               name="description" 
               value={formData.description} 
               onChange={handleInputChange} 
               required 
               rows="3" 
-              placeholder="Delicious beef burger..." 
+              placeholder="وصف مشهي للمنتج..." 
               style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', resize: 'vertical' }} 
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Image URL</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>رابط صورة المنتج</label>
             <input 
               type="url" 
               name="image" 
@@ -161,7 +161,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
               onChange={handleInputChange} 
               style={{ width: '20px', height: '20px', cursor: 'pointer' }} 
             />
-            <label htmlFor="isAvailable" style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}>Product is currently available</label>
+            <label htmlFor="isAvailable" style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}>المنتج متوفر حالياً</label>
           </div>
 
           <button 
@@ -170,7 +170,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
             disabled={isSubmitting} 
             style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: '12px', justifyContent: 'center' }}
           >
-            {isSubmitting ? 'Saving...' : 'Add Product'}
+            {isSubmitting ? 'جاري الحفظ...' : 'إضافة المنتج'}
           </button>
         </form>
       </div>

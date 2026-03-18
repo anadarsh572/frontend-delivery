@@ -56,9 +56,9 @@ const CategoryPage = () => {
 
     const getCategoryTitle = () => {
         switch (category) {
-            case 'restaurant': return 'المطاعم (Restaurants)';
-            case 'cafe': return 'الكافيهات (Cafes)';
-            case 'supermarket': return 'السوبر ماركت (Supermarkets)';
+            case 'restaurant': return 'المطاعم';
+            case 'cafe': return 'الكافيهات';
+            case 'supermarket': return 'السوبر ماركت';
             default: return category;
         }
     };
@@ -70,7 +70,7 @@ const CategoryPage = () => {
                 className="btn" 
                 style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-                <ArrowRight size={18} /> العودة للرئيسية
+                <ArrowRight size={18} style={{ transform: 'rotate(180deg)' }} /> العودة للرئيسية
             </button>
 
             <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '40px' }}>
@@ -79,7 +79,7 @@ const CategoryPage = () => {
 
             {loading ? (
                 <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px' }}>
-                    Loading products...
+                    جاري تحميل المنتجات...
                 </div>
             ) : products.length === 0 ? (
                 <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', padding: '100px 0' }}>

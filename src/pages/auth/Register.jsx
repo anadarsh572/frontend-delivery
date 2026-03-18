@@ -40,11 +40,11 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: data.message || 'Account created successfully! You can now log in.' });
+        setMessage({ type: 'success', text: data.message || 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.' });
         // Optional: clear form or navigate after delay
         // setTimeout(() => navigate('/'), 3000);
       } else {
-        setMessage({ type: 'error', text: data.message || 'Failed to create account. Please try again.' });
+        setMessage({ type: 'error', text: data.message || 'فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.' });
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -59,7 +59,7 @@ const Register = () => {
       
       <div style={{ width: '100%', maxWidth: '500px', marginBottom: '24px' }}>
         <Link to="/" className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)' }}>
-          <ArrowLeft size={18} /> Back to Home
+          <ArrowLeft size={18} style={{ marginLeft: '8px', transform: 'rotate(180deg)' }} /> العودة للرئيسية
         </Link>
       </div>
 
@@ -68,8 +68,8 @@ const Register = () => {
           <div style={{ width: '64px', height: '64px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--accent-primary)' }}>
             <UserPlus size={32} />
           </div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Create an Account</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Join our premium delivery platform today.</p>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>إنشاء حساب جديد</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>انضم إلى منصتنا المميزة للتوصيل اليوم.</p>
         </div>
 
         {message && (
@@ -82,13 +82,13 @@ const Register = () => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Full Name</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>الاسم بالكامل</label>
             <input 
               type="text" 
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="e.g. Mostafa Ali"
+              placeholder="مثلاً: مصطفى علي"
               required
               style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
             />
@@ -134,16 +134,16 @@ const Register = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Account Type</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>نوع الحساب</label>
             <select 
               name="role"
               value={formData.role}
               onChange={handleChange}
               style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', appearance: 'none' }}
             >
-              <option value="Customer">Customer (Buy Food/Products)</option>
-              <option value="Vendor">Vendor (Restaurant/Store)</option>
-              <option value="Driver">Driver (Delivery Partner)</option>
+              <option value="Customer">عميل (طلب طعام ومنتجات)</option>
+              <option value="Vendor">تاجر (صاحب مطعم/متجر)</option>
+              <option value="Driver">مندوب (شريك توصيل)</option>
             </select>
           </div>
 
@@ -166,12 +166,12 @@ const Register = () => {
             style={{ width: '100%', padding: '16px', marginTop: '12px', fontSize: '1.1rem' }}
             disabled={loading}
           >
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? 'جاري إنشاء الحساب...' : 'تسجيل الحساب'}
           </button>
         </form>
         <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <p>Already have an account? <Link to="/login" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>Login</Link></p>
-          <p style={{ fontSize: '0.9rem' }}>Are you a store owner? <Link to="/vendor/register" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>Register as Vendor Here</Link></p>
+          <p>لديك حساب بالفعل؟ <Link to="/login" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>تسجيل الدخول</Link></p>
+          <p style={{ fontSize: '0.9rem' }}>هل أنت صاحب متجر؟ <Link to="/vendor/register" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>سجل كتاجر هنا</Link></p>
         </div>
       </div>
     </div>

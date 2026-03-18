@@ -89,10 +89,10 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
 
   // Default Fallback
   return (
-    <div className="glass-panel">
+    <div className="glass-panel" style={{ textAlign: 'right', padding: '20px' }}>
         <h3>{product.name}</h3>
-        <p>{product.price} EGP</p>
-        <button onClick={() => onAddToCart(product, 1)}>Add to Cart</button>
+        <p>{product.price} جنيه</p>
+        <button onClick={() => onAddToCart(product, 1)} className="btn btn-primary" style={{ width: '100%' }}>أضف للسلة</button>
     </div>
   );
 };

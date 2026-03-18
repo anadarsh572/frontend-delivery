@@ -110,16 +110,16 @@ const LandingPage = () => {
           في السريع منه ⚡
         </p>
         
-        {!localStorage.getItem('token') && (
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/login" className="btn btn-secondary" style={{ minWidth: '140px' }}>
-              Sign In
-            </Link>
-            <Link to="/register" className="btn btn-primary" style={{ minWidth: '140px' }}>
-              Create an Account
-            </Link>
-          </div>
-        )}
+          {!localStorage.getItem('token') && (
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link to="/login" className="btn btn-secondary" style={{ minWidth: '140px' }}>
+                تسجيل الدخول
+              </Link>
+              <Link to="/register" className="btn btn-primary" style={{ minWidth: '140px' }}>
+                إنشاء حساب جديد
+              </Link>
+            </div>
+          )}
       </div>
 
       <div className="container" style={{ padding: '0 20px 80px' }}>
@@ -130,7 +130,7 @@ const LandingPage = () => {
           
           {loading ? (
             <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px 0' }}>
-              Loading delicious items...
+              جاري تحميل أشهى المأكولات...
             </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', padding: '40px 0' }}>
@@ -184,7 +184,7 @@ import VendorGuard from './components/guards/VendorGuard';
 const PrivateRoute = ({ allowedRoles }) => {
   const { user, loading } = useAuth();
   
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-secondary)' }}>جاري التحميل...</div>;
   
   if (!user) return <Navigate to="/login" replace />;
   

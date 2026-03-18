@@ -58,13 +58,13 @@ const CustomerHome = () => {
                 <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{store.name}</h3>
                 <div style={{ display: 'flex', gap: '16px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16}/> {store.location}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16}/> 25-35 min</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16}/> ٢٥-٣٥ دقيقة</span>
                 </div>
               </div>
             </Link>
           ))}
           {filteredStores.length === 0 && (
-            <p style={{ color: 'var(--text-secondary)' }}>No restaurants found matching your search.</p>
+            <p style={{ color: 'var(--text-secondary)' }}>عذراً، لم نجد مطاعم تطابق بحثك.</p>
           )}
         </div>
       )}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   /* Premium Dark/Orange Palette */
@@ -31,7 +31,7 @@
   --radius-full: 9999px;
   
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family: 'Cairo', sans-serif;
 }
 
 * {
@@ -48,7 +48,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   overflow-x: hidden;
-  direction: ltr; /* Keeping it LTR by default, can swap to RTL if needed based on the Arabic prompt */
+  direction: rtl; 
 }
 
 /* Base Styles */

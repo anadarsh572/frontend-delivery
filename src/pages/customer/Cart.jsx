@@ -171,10 +171,10 @@ const Cart = () => {
   if (cartItems.length === 0) {
     return (
       <div className="glass-panel animate-fade-up" style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Your cart is empty</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Looks like you haven't added any premium food yet.</p>
+        <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>سلتك فارغة</h2>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>يبدو أنك لم تضف أي أكلات مميزة بعد.</p>
         <button className="btn btn-primary" onClick={() => navigate('/customer')}>
-          Browse Restaurants
+          تصفح المطاعم
         </button>
       </div>
     );
@@ -191,8 +191,8 @@ const Cart = () => {
       {/* Auth Modal Overlay */}
       {showAuthModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-          <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '400px', padding: '32px', position: 'relative' }} dir="ltr">
-            <button onClick={() => setShowAuthModal(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+          <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '400px', padding: '32px', position: 'relative' }} dir="rtl">
+            <button onClick={() => setShowAuthModal(false)} style={{ position: 'absolute', top: '16px', left: '16px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
               <X size={24} />
             </button>
             
@@ -200,8 +200,8 @@ const Cart = () => {
               <div style={{ width: '56px', height: '56px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--info)' }}>
                 {authMode === 'login' ? <LogIn size={28} /> : <UserPlus size={28} />}
               </div>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{authMode === 'login' ? 'Welcome Back' : 'Create an Account'}</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>{authMode === 'login' ? 'Sign in to complete your order.' : 'Register to complete your order.'}</p>
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{authMode === 'login' ? 'أهلاً بك مجدداً' : 'إنشاء حساب جديد'}</h2>
+              <p style={{ color: 'var(--text-secondary)' }}>{authMode === 'login' ? 'سجل دخولك لإتمام الطلب.' : 'أنشئ حساباً لإتمام الطلب.'}</p>
             </div>
 
             {authError && (
@@ -214,31 +214,31 @@ const Cart = () => {
             <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {authMode === 'register' && (
                 <div>
-                  <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Full Name</label>
-                  <input type="text" name="name" value={authFormData.name} onChange={handleAuthChange} placeholder="John Doe" required style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} />
+                  <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>الاسم بالكامل</label>
+                  <input type="text" name="name" value={authFormData.name} onChange={handleAuthChange} placeholder="مثلاً: محمد علي" required style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} />
                 </div>
               )}
               
               <div>
-                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Email Address</label>
-                <input type="email" name="email" value={authFormData.email} onChange={handleAuthChange} placeholder="john@example.com" required style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} />
+                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>البريد الإلكتروني</label>
+                <input type="email" name="email" value={authFormData.email} onChange={handleAuthChange} placeholder="example@mail.com" required style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} />
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Password</label>
+                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>كلمة المرور</label>
                 <input type="password" name="password" value={authFormData.password} onChange={handleAuthChange} placeholder="••••••••" required style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} />
               </div>
 
               <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px', marginTop: '8px', justifyContent: 'center' }} disabled={authLoading}>
-                {authLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Sign Up')}
+                {authLoading ? 'جاري التنفيذ...' : (authMode === 'login' ? 'تسجيل الدخول' : 'إنشاء الحساب')}
               </button>
             </form>
 
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
               {authMode === 'login' ? (
-                <>Don't have an account? <button type="button" onClick={() => { setAuthMode('register'); setAuthError(null); }} style={{ background: 'none', border: 'none', color: 'var(--info)', fontWeight: 'bold', cursor: 'pointer', padding: 0 }}>Register</button></>
+                <>ليس لديك حساب؟ <button type="button" onClick={() => { setAuthMode('register'); setAuthError(null); }} style={{ background: 'none', border: 'none', color: 'var(--info)', fontWeight: 'bold', cursor: 'pointer', padding: 0 }}>سجل الآن</button></>
               ) : (
-                <>Already have an account? <button type="button" onClick={() => { setAuthMode('login'); setAuthError(null); }} style={{ background: 'none', border: 'none', color: 'var(--info)', fontWeight: 'bold', cursor: 'pointer', padding: 0 }}>Sign In</button></>
+                <>لديك حساب بالفعل؟ <button type="button" onClick={() => { setAuthMode('login'); setAuthError(null); }} style={{ background: 'none', border: 'none', color: 'var(--info)', fontWeight: 'bold', cursor: 'pointer', padding: 0 }}>تسجيل الدخول</button></>
               )}
             </div>
           </div>
@@ -367,33 +367,33 @@ const Cart = () => {
       {/* Checkout Summary */}
       <div>
         <div className="glass-panel" style={{ padding: '24px', position: 'sticky', top: '100px' }}>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '24px' }}>Order Summary</h3>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '24px' }}>ملخص الطلب</h3>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', color: 'var(--text-secondary)' }}>
-            <span>Subtotal</span>
-            <span>EGP {cartTotal}</span>
+            <span>المجموع الفرعي</span>
+            <span>{cartTotal} جنيه</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', color: 'var(--text-secondary)' }}>
-            <span>Delivery Fee</span>
-            <span>EGP {deliveryFee}</span>
+            <span>رسوم التوصيل</span>
+            <span>{deliveryFee} جنيه</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px', fontSize: '1.2rem', fontWeight: 'bold', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-            <span>Total</span>
-            <span className="gradient-text">EGP {grandTotal}</span>
+            <span>الإجمالي</span>
+            <span className="gradient-text">{grandTotal} جنيه</span>
           </div>
 
-          <h4 style={{ marginBottom: '16px' }}>Payment Method</h4>
+          <h4 style={{ marginBottom: '16px' }}>طريقة الدفع</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: `1px solid ${paymentMethod === 'Cash' ? 'var(--accent-primary)' : 'var(--border-color)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'var(--transition)' }}>
               <input type="radio" name="payment" checked={paymentMethod === 'Cash'} onChange={() => setPaymentMethod('Cash')} style={{ display: 'none' }} />
               <Banknote size={24} color={paymentMethod === 'Cash' ? 'var(--accent-primary)' : 'var(--text-secondary)'} />
-              <span style={{ fontWeight: paymentMethod === 'Cash' ? 'bold' : 'normal' }}>Cash on Delivery</span>
+              <span style={{ fontWeight: paymentMethod === 'Cash' ? 'bold' : 'normal' }}>الدفع عند الاستلام</span>
             </label>
             
             <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: `1px solid ${paymentMethod === 'Online' ? 'var(--accent-primary)' : 'var(--border-color)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'var(--transition)' }}>
               <input type="radio" name="payment" checked={paymentMethod === 'Online'} onChange={() => setPaymentMethod('Online')} style={{ display: 'none' }} />
               <CreditCard size={24} color={paymentMethod === 'Online' ? 'var(--accent-primary)' : 'var(--text-secondary)'} />
-              <span style={{ fontWeight: paymentMethod === 'Online' ? 'bold' : 'normal' }}>Online Payment</span>
+              <span style={{ fontWeight: paymentMethod === 'Online' ? 'bold' : 'normal' }}>دفع أونلاين</span>
             </label>
           </div>
 
@@ -403,8 +403,8 @@ const Cart = () => {
             onClick={triggerCheckout}
             disabled={isPlacingOrder}
           >
-            {isPlacingOrder ? 'Processing...' : `Place Order • EGP ${grandTotal}`} 
-            {!isPlacingOrder && <ArrowRight size={20} />}
+            {isPlacingOrder ? 'جاري التنفيذ...' : `إتمام الطلب • ${grandTotal} جنيه`} 
+            {!isPlacingOrder && <ArrowRight size={20} style={{ marginRight: '8px', transform: 'rotate(180deg)' }} />}
           </button>
         </div>
       </div>

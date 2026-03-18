@@ -79,7 +79,7 @@ const VendorLayout = ({ children }) => {
           ) : (
              <div style={{ padding: '20px', textAlign: 'center' }}>
                <Link to="/login" className="btn btn-primary">
-                 Vendor Login
+                 دخول التجار
                </Link>
              </div>
           )}
@@ -93,11 +93,11 @@ const VendorLayout = ({ children }) => {
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
                 <p style={{ fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Vendor Account</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>حساب تاجر</p>
               </div>
             </div>
             <button onClick={handleLogout} className="btn" style={{ width: '100%', color: 'var(--danger)', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)' }}>
-              <LogOut size={18} /> Logout
+              <LogOut size={18} /> تسجيل الخروج
             </button>
           </div>
         )}

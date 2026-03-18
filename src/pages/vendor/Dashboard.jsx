@@ -158,8 +158,8 @@ const VendorDashboard = () => {
     <div className="animate-fade-up">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '20px' }}>
         <div style={{ flex: 1, minWidth: '280px' }}>
-          <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginBottom: '8px' }}>Store Dashboard</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Manage products and incoming orders for your store.</p>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginBottom: '8px' }}>لوحة تحكم المتجر</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>إدارة المنتجات والطلبات الواردة لمتجرك بكل سهولة.</p>
         </div>
         <button 
           className="btn btn-primary" 
@@ -172,7 +172,7 @@ const VendorDashboard = () => {
           }}
           style={{ opacity: subscriptionStatus !== 'active' ? 0.6 : 1, cursor: subscriptionStatus !== 'active' ? 'not-allowed' : 'pointer', width: 'auto' }}
         >
-          <PlusCircle size={20} /> Add New Product
+          <PlusCircle size={20} /> إضافة منتج جديد
         </button>
       </div>
 
@@ -186,20 +186,20 @@ const VendorDashboard = () => {
       {/* Store Setup Section */}
       <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px', borderLeft: '4px solid var(--accent-primary)' }}>
         <h2 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Store size={20} /> إعدادات المتجر (Store Setup)
+          <Store size={20} /> إعدادات المتجر
         </h2>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: '16px', flexWrap: 'wrap' }}>
           <div className="form-group" style={{ flex: '1 1 250px' }}>
-            <label style={{ fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>نوع المتجر (Store Category)</label>
+            <label style={{ fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>تصنيف المتجر</label>
             <select 
               className="form-control"
               value={storeCategory}
               onChange={(e) => setStoreCategory(e.target.value)}
               style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', width: '100%' }}
             >
-              <option value="restaurant">مطعم (Restaurant)</option>
-              <option value="cafe">كافيه (Cafe)</option>
-              <option value="supermarket">سوبر ماركت (Supermarket)</option>
+              <option value="restaurant">مطعم</option>
+              <option value="cafe">كافيه</option>
+              <option value="supermarket">سوبر ماركت</option>
             </select>
           </div>
           <button 
@@ -230,7 +230,7 @@ const VendorDashboard = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {subscriptionStatus === 'active' ? <CheckCircle size={28} /> : <AlertTriangle size={28} />}
           <div>
-            <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 'bold' }}>حالة الحساب (Account Status)</h2>
+            <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 'bold' }}>حالة الحساب</h2>
             <p style={{ margin: 0, opacity: 0.9, fontSize: '1rem' }}>
               {subscriptionStatus === 'active' 
                 ? 'حسابك مفعل وجاهز لاستقبال الطلبات' 
@@ -252,10 +252,10 @@ const VendorDashboard = () => {
 
 
 
-      <h2 style={{ fontSize: '1.8rem', marginBottom: '24px' }}>Live Orders</h2>
+      <h2 style={{ fontSize: '1.8rem', marginBottom: '24px' }}>الطلبات الحالية</h2>
 
       {loading ? (
-        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading orders...</div>
+        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>جاري تحميل الطلبات...</div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 350px), 1fr))', gap: '24px' }}>
           {orders.map(order => (
@@ -265,33 +265,33 @@ const VendorDashboard = () => {
                   <h3 style={{ fontSize: '1.2rem', marginBottom: '4px' }}>#{order.id || (order._id && order._id.slice(-6))}</h3>
                   <div style={{ display: 'flex', gap: '12px', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14}/> {order.date || new Date().toLocaleString()}</span>
-                    <span style={{ color: order.type === 'Online' || order.payment_method === 'Online' ? 'var(--success)' : 'var(--warning)' }}>{order.type || order.payment_method || 'Cash'} Payment</span>
+                    <span style={{ color: order.type === 'Online' || order.payment_method === 'Online' ? 'var(--success)' : 'var(--warning)' }}>دفع {order.type === 'Online' || order.payment_method === 'Online' ? 'أونلاين' : 'كاش'}</span>
                   </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--accent-primary)' }}>EGP {order.total}</p>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{order.status}</p>
+                <div style={{ textAlign: 'left' }}>
+                  <p style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--accent-primary)' }}>{order.total || order.total_price} جنيه</p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{order.status === 'Pending' ? 'قيد الانتظار' : (order.status === 'Preparing' ? 'جاري التحضير' : (order.status === 'Out for Delivery' ? 'خرج للتوصيل' : 'تم التوصيل'))}</p>
                 </div>
               </div>
 
               <div style={{ marginBottom: '24px', background: 'var(--bg-tertiary)', padding: '20px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
                 <div style={{ marginBottom: '16px' }}>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>Customer Name</p>
-                  <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{order.customer_name || order.customerName || 'Customer'}</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>اسم العميل</p>
+                  <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{order.customer_name || order.customerName || 'عميل'}</p>
                 </div>
                 
                 <div style={{ marginBottom: '16px' }}>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>Delivery Address</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>عنوان التوصيل</p>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                     <MapPin size={18} color="var(--accent-primary)" style={{ marginTop: '2px', flexShrink: 0 }} />
                     <p style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>
-                      {order.address || order.deliveryAddress || 'No address provided'}
+                      {order.address || order.deliveryAddress || 'لا يوجد عنوان'}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>Phone Number</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>رقم الهاتف</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-primary)', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px dashed var(--accent-primary)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Phone size={18} color="var(--success)" />
@@ -316,9 +316,9 @@ const VendorDashboard = () => {
               </div>
 
               <div style={{ marginBottom: '24px', padding: '0 12px' }}>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>Order Items:</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>أصناف الطلب:</p>
                 <p style={{ fontSize: '1rem', lineHeight: '1.5' }}>
-                  {order.items ? (Array.isArray(order.items) ? order.items.map(i => i.name || i).join(', ') : 'Various items') : 'Various items'}
+                  {order.items ? (Array.isArray(order.items) ? order.items.map(i => i.name || i).join('، ') : 'أصناف متنوعة') : 'أصناف متنوعة'}
                 </p>
               </div>
 
@@ -328,7 +328,7 @@ const VendorDashboard = () => {
             </div>
           ))}
           {orders.length === 0 && (
-            <p style={{ color: 'var(--text-secondary)' }}>No active orders at the moment.</p>
+            <p style={{ color: 'var(--text-secondary)' }}>لا توجد طلبات نشطة حالياً.</p>
           )}
         </div>
       )}
