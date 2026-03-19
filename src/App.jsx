@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Store, Navigation, ShieldCheck, Plus, ShoppingCart, LogIn, Search, X } from 'lucide-react';
+import { ShoppingBag, Store, Navigation, ShieldCheck, Plus, ShoppingCart, LogIn, Search, X, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import apiClient from './api/client';
 import './App.css';
 
 // Placeholder Components
@@ -12,16 +14,11 @@ import { Utensils, Coffee, ShoppingBasket } from 'lucide-react';
 import CategoryProductCard from './components/products/CategoryProductCard';
 import CafeCustomizationModal from './components/modals/CafeCustomizationModal';
 
-import { API_URL } from './api/config';
 import { SearchProvider, useSearch } from './context/SearchContext';
 import SplashScreen from './components/common/SplashScreen';
 
 const LandingPage = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { query: searchQuery, setQuery: setSearchQuery } = useSearch();
-  const [hasSearched, setHasSearched] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
@@ -29,57 +26,31 @@ const LandingPage = () => {
   const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
   const [activeProduct, setActiveProduct] = useState(null);
 
-  const fetchAllProducts = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/api/products`);
-      if (response.ok) {
-        const data = await response.json();
-        const productsArray = Array.isArray(data) ? data : data.products || [];
-        // Show only available products
-        setProducts(productsArray.filter(p => p.isAvailable !== false));
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
-      setHasSearched(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAllProducts();
-  }, []);
-
-  const handleSearch = async (e) => {
-    if (e) e.preventDefault();
-    if (!searchQuery.trim()) {
-      fetchAllProducts();
-      return;
-    }
-
-    setIsSearching(true);
-    setHasSearched(true);
-    try {
-      const response = await fetch(`${API_URL}/api/products/search?q=${searchQuery}`);
-      if (response.ok) {
-        const data = await response.json();
-        const productsArray = Array.isArray(data) ? data : data.products || [];
-        setProducts(productsArray.filter(p => p.isAvailable !== false));
-      } else {
-        setProducts([]);
-      }
-    } catch (error) {
-      console.error('Error searching products:', error);
-      setProducts([]);
-    } finally {
-      setIsSearching(false);
-    }
-  };
+  // React Query for products and search
+  const { 
+    data: products = [], 
+    isLoading, 
+    isFetching,
+    isError, 
+    error,
+    refetch 
+  } = useQuery({
+    queryKey: ['products', searchQuery],
+    queryFn: async () => {
+      const url = searchQuery.trim() 
+        ? `/api/products/search?q=${encodeURIComponent(searchQuery)}`
+        : '/api/products';
+      const response = await apiClient.get(url);
+      const data = response.data;
+      const productsArray = Array.isArray(data) ? data : data.products || [];
+      return productsArray.filter(p => p.isAvailable !== false);
+    },
+    // Don't fetch if it's just a space or something
+    enabled: true,
+  });
 
   const clearSearch = () => {
     setSearchQuery('');
-    fetchAllProducts();
   };
 
   const handleAddToCart = (product, quantity = 1) => {
@@ -125,19 +96,33 @@ const LandingPage = () => {
       <div className="container" style={{ padding: '0 20px 80px' }}>
         <div style={{ marginTop: '20px' }}>
           <h2 style={{ fontSize: '2rem', marginBottom: '32px', textAlign: 'center' }}>
-            {isSearching ? 'نتائج البحث' : 'جميع المنتجات'}
+            {searchQuery ? 'نتائج البحث' : 'جميع المنتجات'}
           </h2>
           
-          {loading ? (
-            <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px 0' }}>
-              جاري تحميل أشهى المأكولات...
+          {isLoading ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="glass-panel animate-pulse" style={{ height: '350px', borderRadius: 'var(--radius-lg)' }}>
+                  <div style={{ height: '200px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }} />
+                  <div style={{ padding: '20px' }}>
+                    <div style={{ height: '20px', background: 'var(--bg-tertiary)', borderRadius: '4px', width: '70%', marginBottom: '12px' }} />
+                    <div style={{ height: '16px', background: 'var(--bg-tertiary)', borderRadius: '4px', width: '40%', marginBottom: '20px' }} />
+                    <div style={{ height: '40px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : isError ? (
+            <div style={{ textAlign: 'center', color: 'var(--danger)', padding: '40px 0' }}>
+              <p>حدث خطأ أثناء تحميل البيانات.</p>
+              <button onClick={() => refetch()} className="btn btn-secondary" style={{ marginTop: '16px' }}>إعادة المحاولة</button>
             </div>
           ) : products.length === 0 ? (
             <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', padding: '40px 0' }}>
-              {isSearching ? 'عذراً، لم نجد أكلات تطابق بحثك' : 'لا يوجد منتجات متاحة حالياً'}
+              {searchQuery ? 'عذراً، لم نجد أكلات تطابق بحثك' : 'لا يوجد منتجات متاحة حالياً'}
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', opacity: isFetching ? 0.7 : 1, transition: 'opacity 0.2s' }}>
               {products.map((product) => (
                 <CategoryProductCard 
                   key={product.id || product._id}
@@ -159,7 +144,7 @@ const LandingPage = () => {
             />
           )}
 
-          {isSearching && (
+          {searchQuery && (
             <div style={{ textAlign: 'center', marginTop: '40px' }}>
               <button onClick={clearSearch} className="btn btn-secondary">العودة للكل</button>
             </div>

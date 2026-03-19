@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { LogIn, ArrowLeft, AlertCircle } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
+import apiClient from '../../api/client';
 
 import { API_URL } from '../../api/config';
 
@@ -82,6 +84,42 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.post('/api/auth/google', {
+        token: credentialResponse.credential
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        const data = response.data;
+        if (data.token) localStorage.setItem('token', data.token);
+        
+        const userObj = data.user || data;
+        login(userObj);
+
+        const role = userObj.role?.toLowerCase() || 'customer';
+        const returnUrl = location.state?.returnUrl;
+
+        if (returnUrl) {
+          navigate(returnUrl);
+        } else if (role === 'admin') {
+          navigate('/mustafa-admin-secret');
+        } else if (role === 'vendor' || role === 'seller') {
+          navigate('/vendor');
+        } else {
+          navigate('/customer');
+        }
+      }
+    } catch (err) {
+      console.error('Google auth error:', err);
+      setError('فشل تسجيل الدخول بواسطة جوجل. حاول مرة أخرى.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="landing-container animate-fade-up" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
       
@@ -143,6 +181,22 @@ const Login = () => {
           >
             {loading ? 'جاري الدخول...' : 'تسجيل الدخول'}
           </button>
+
+          <div style={{ margin: '20px 0', position: 'relative', textAlign: 'center' }}>
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border-color)', zIndex: 0 }} />
+            <span style={{ position: 'relative', background: 'var(--bg-secondary)', padding: '0 12px', color: 'var(--text-secondary)', fontSize: '0.9rem', zIndex: 1 }}>أو</span>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GoogleLogin 
+              onSuccess={handleGoogleSuccess} 
+              onError={() => setError('فشل تسجيل الدخول بواسطة جوجل')}
+              theme="filled_blue"
+              shape="pill"
+              text="signin_with"
+              locale="ar"
+            />
+          </div>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '12px' }}>

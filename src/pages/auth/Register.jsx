@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+import apiClient from '../../api/client';
+import { useAuth } from '../../context/AuthContext';
 
 import { API_URL } from '../../api/config';
 
@@ -242,6 +245,41 @@ const Register = () => {
           >
             {loading ? 'جاري إنشاء الحساب...' : 'تسجيل الحساب'}
           </button>
+
+          <div style={{ margin: '20px 0', position: 'relative', textAlign: 'center' }}>
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border-color)', zIndex: 0 }} />
+            <span style={{ position: 'relative', background: 'var(--bg-secondary)', padding: '0 12px', color: 'var(--text-secondary)', fontSize: '0.9rem', zIndex: 1 }}>أو</span>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GoogleLogin 
+              onSuccess={async (credentialResponse) => {
+                setLoading(true);
+                setMessage(null);
+                try {
+                  const response = await apiClient.post('/api/auth/google', {
+                    token: credentialResponse.credential,
+                    role: formData.role // Pass intended role
+                  });
+                  if (response.status === 200 || response.status === 201) {
+                    const data = response.data;
+                    if (data.token) localStorage.setItem('token', data.token);
+                    setMessage({ type: 'success', text: 'تم تسجيل الدخول بنجاح!' });
+                    setTimeout(() => navigate('/'), 1500);
+                  }
+                } catch (err) {
+                  setMessage({ type: 'error', text: 'فشل التسجيل بواسطة جوجل.' });
+                } finally {
+                  setLoading(false);
+                }
+              }} 
+              onError={() => setMessage({ type: 'error', text: 'فشل التسجيل بواسطة جوجل' })}
+              theme="outline"
+              shape="pill"
+              text="signup_with"
+              locale="ar"
+            />
+          </div>
         </form>
         <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <p>لديك حساب بالفعل؟ <Link to="/login" style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>تسجيل الدخول</Link></p>

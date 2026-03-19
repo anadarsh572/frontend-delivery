@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Store, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
+import apiClient from '../../api/client';
 
 import { API_URL } from '../../api/config';
 
@@ -194,6 +196,44 @@ const VendorRegister = () => {
             >
               {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب التاجر'}
             </button>
+
+            <div style={{ margin: '20px 0', position: 'relative', textAlign: 'center' }}>
+              <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border-color)', zIndex: 0 }} />
+              <span style={{ position: 'relative', background: 'var(--bg-secondary)', padding: '0 12px', color: 'var(--text-secondary)', fontSize: '0.9rem', zIndex: 1 }}>أو</span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <GoogleLogin 
+                onSuccess={async (credentialResponse) => {
+                  setLoading(true);
+                  setError(null);
+                  try {
+                    const response = await apiClient.post('/api/auth/google', {
+                      token: credentialResponse.credential,
+                      role: 'Vendor'
+                    });
+                    if (response.status === 200 || response.status === 201) {
+                      const data = response.data;
+                      if (data.token) localStorage.setItem('token', data.token);
+                      
+                      const userObj = data.user || data;
+                      login(userObj);
+                      navigate('/vendor');
+                    }
+                  } catch (err) {
+                    console.error('Google auth error:', err);
+                    setError('فشل التسجيل بواسطة جوجل.');
+                  } finally {
+                    setLoading(false);
+                  }
+                }} 
+                onError={() => setError('فشل التسجيل بواسطة جوجل')}
+                theme="outline"
+                shape="pill"
+                text="signup_with"
+                locale="ar"
+              />
+            </div>
           </div>
         </form>
 

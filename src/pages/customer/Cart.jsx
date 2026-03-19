@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Trash2, Plus, Minus, CreditCard, Banknote, ArrowRight, X, LogIn, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
 
-import { API_URL } from '../../api/config';
+import apiClient from '../../api/client';
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
@@ -56,15 +56,11 @@ const Cart = () => {
     const endpoint = authMode === 'login' ? `${API_URL}/api/login` : `${API_URL}/api/register`;
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(authFormData),
-      });
+      const response = await apiClient.post(authMode === 'login' ? '/api/login' : '/api/register', authFormData);
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         if (data.token) localStorage.setItem('token', data.token);
         
         const userObj = data.user || data; 
@@ -108,37 +104,26 @@ const Cart = () => {
       const storeId = cartItems.length > 0 ? cartItems[0].storeId : null;
       
       const payload = {
-        user_id: parseInt(user.id || user._id, 10), 
-        store_id: 1, // Hardcoded to 1 as requested for now
-        total_price: grandTotal, // Updated from total
-        payment_method: paymentMethod,
+        store_id: storeId, 
+        total_price: grandTotal,
         delivery_address: address,
         customer_phone: phone,
-        customer_name: customerName,
         items: cartItems.map(item => ({
-          product_id: parseInt(item.productId || item.product._id || item.product.id, 10),
+          id: parseInt(item.productId || item.product.id, 10),
           quantity: parseInt(item.quantity, 10),
           price: Number(item.product.price)
         }))
       };
 
-      const response = await fetch(`${API_URL}/api/orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
+      const response = await apiClient.post('/api/orders', payload);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         // Clear cart and show success dialog
         clearCart();
         setShowModal(false);
         setOrderSuccess(true);
       } else {
-        const data = await response.json();
-        alert(`Failed to place order: ${data.message || 'Backend Error'}`);
+        alert(`Failed to place order: ${response.data.message || 'Backend Error'}`);
       }
     } catch (error) {
       console.error("Order submission error:", error);
@@ -163,7 +148,7 @@ const Cart = () => {
             العودة للرئيسية
           </button>
           <button className="btn btn-primary" onClick={() => navigate('/customer/profile')}>
-            متابعة الطلب
+            طلباتي (My Orders)
           </button>
         </div>
       </div>

@@ -21,10 +21,22 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (product, storeId, quantity = 1) => {
-    // Allow guests to add to cart freely.
-    // The authentication check will be performed at the Checkout (Place Order) step instead.
-
     setCartItems(prev => {
+      // Enforce single-store grouping:
+      // If the cart is not empty and the new item is from a different store,
+      // we clear the cart and start fresh with the new store's item.
+      if (prev.length > 0 && prev[0].storeId !== storeId) {
+        // Optional: You could show a confirmation dialog here, 
+        // but for now we follow the "strictly groups" requirement by resetting.
+        return [{ 
+          id: Date.now().toString(), 
+          productId: product.id, 
+          storeId, 
+          quantity, 
+          product,
+        }];
+      }
+
       const existing = prev.find(item => item.productId === product.id);
       if (existing) {
         return prev.map(item => 
@@ -38,7 +50,7 @@ export const CartProvider = ({ children }) => {
         productId: product.id, 
         storeId, 
         quantity, 
-        product, // store full product for easy display
+        product, 
       }];
     });
   };
