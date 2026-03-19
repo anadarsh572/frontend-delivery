@@ -33,25 +33,22 @@ const Register = () => {
     setMessage(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await apiClient.post('/api/register', formData);
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setMessage({ type: 'success', text: data.message || 'تم إنشاء الحساب بنجاح! جاري توجيهك للرئيسية...' });
-        setTimeout(() => navigate('/'), 2000);
+        // If the API returns a token on register, save it
+        if (data.token) localStorage.setItem('token', data.token);
+        setTimeout(() => navigate('/login'), 2000);
       } else {
+        console.warn('Registration failed:', data);
         setMessage({ type: 'error', text: data.message || 'فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.' });
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      setMessage({ type: 'error', text: 'Network error. Please make sure the backend server is running.' });
+      console.error('Registration error details:', error.response?.data || error.message);
+      const errorMsg = error.response?.data?.message || 'فشل إنشاء الحساب. تأكد من أن جميع البيانات صحيحة.';
+      setMessage({ type: 'error', text: errorMsg });
     } finally {
       setLoading(false);
     }

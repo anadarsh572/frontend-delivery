@@ -34,39 +34,27 @@ const VendorRegister = () => {
     setError(null);
 
     try {
-      // 1. Register the Vendor
-      const response = await fetch(`${API_URL}/api/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await apiClient.post('/api/register', formData);
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // 2. Log them in immediately
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-        }
+      if (response.status === 200 || response.status === 201) {
+        if (data.token) localStorage.setItem('token', data.token);
         
-        // Use the returned user or fall back to form data
         const userObj = data.user || { 
             ...formData, 
             id: data.id || Date.now()
         };
         
         login(userObj);
-        
-        // 3. Redirect to Dashboard
         navigate('/vendor');
       } else {
+        console.warn('Vendor Registration failed:', data);
         setError(data.message || 'فشل إنشاء الحساب. تأكد من صحة البيانات.');
       }
     } catch (error) {
-      console.error('Vendor Registration error:', error);
-      setError('حدث خطأ في الاتصال بالسيرفر. تأكد من تشغيل الباك إند.');
+      console.error('Vendor Registration error details:', error.response?.data || error.message);
+      const errorMsg = error.response?.data?.message || 'حدث خطأ في التسجيل. تأكد من البريد الإلكتروني أو الهاتف.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
