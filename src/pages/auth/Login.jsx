@@ -30,29 +30,18 @@ const Login = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await apiClient.post('/api/login', formData);
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         // Save token to localStorage
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
 
-        // We need the user info, at least the role, to determine where to redirect.
-        // If your API returns the user object inside `data.user`, we'll use that.
-        // Otherwise, we'll see if `data.role` is available on the root object.
         const userObj = data.user || data; 
-        const role = userObj.role?.toLowerCase() || data.role?.toLowerCase() || 'customer'; // Check both levels
+        const role = userObj.role?.toLowerCase() || data.role?.toLowerCase() || 'customer'; 
 
-        // Force inject role into userObj if it was only present on data level
         if (!userObj.role && data.role) {
           userObj.role = data.role;
         }
@@ -74,11 +63,13 @@ const Login = () => {
         }
 
       } else {
-        setError(data.message || 'Invalid email or password.');
+        console.warn('Login failed:', data);
+        setError(data.message || data.error || 'خطأ في الدخول. تأكد من البريد أو الباسورد.');
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Network error. Please make sure the backend server is running.');
+      console.error('Login error details:', err.response?.data || err.message);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || 'فشل الاتصال بالسيرفر. تأكد من تشغيل الباك إند.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
