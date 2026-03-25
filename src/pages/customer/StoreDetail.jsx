@@ -31,7 +31,10 @@ const StoreDetail = () => {
           
           // Filter to only match THIS store
           // We use toString() to ensure safe comparison regardless of data type
-          const storeProducts = productsArray.filter(p => p.storeId?.toString() === storeId?.toString());
+          const storeProducts = productsArray.filter(p => 
+            (p.store_id?.toString() === storeId?.toString()) || 
+            (p.storeId?.toString() === storeId?.toString())
+          );
           
           // If the DB doesn't have any products for this store yet, we can optionally fall back to mocks
           // But as per user request, we want to show DB products.

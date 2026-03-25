@@ -110,13 +110,14 @@ const Cart = () => {
         customer_phone: phone,
         customer_name: customerName,
         items: cartItems.map(item => ({
-          id: parseInt(item.productId || item.product.id, 10),
-          name: item.product.name,
+          id: item.productId || item.product?.id || item.product?._id,
+          name: item.product?.name,
           quantity: parseInt(item.quantity, 10),
-          price: Number(item.product.price)
+          price: Number(item.product?.price)
         }))
       };
 
+      console.log("Submitting Order Payload:", payload);
       const response = await apiClient.post('/api/orders', payload);
 
       if (response.status === 200 || response.status === 201) {

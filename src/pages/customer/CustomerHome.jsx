@@ -115,7 +115,7 @@ const CustomerHome = () => {
                         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '12px', height: '40px', overflow: 'hidden' }}>{product.description}</p>
                         <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem' }}>{product.price} ج.م</span>
-                          <Link to={`/customer/store/${product.storeId || 1}`} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>التفاصيل</Link>
+                          <Link to={`/customer/store/${product.store_id || product.storeId || 1}`} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>التفاصيل</Link>
                         </div>
                       </div>
                     </div>
