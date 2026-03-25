@@ -7,6 +7,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     name: '',
     price: '',
     description: '',
+    category: 'restaurant',
     image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80', // Default image
     isAvailable: true
   });
@@ -58,6 +59,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
             name: '',
             price: '',
             description: '',
+            category: 'restaurant',
             image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80',
             isAvailable: true
           });
@@ -125,6 +127,20 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
                 style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} 
               />
             </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>القسم (الفئة)</label>
+            <select 
+              name="category" 
+              value={formData.category} 
+              onChange={handleInputChange} 
+              style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', cursor: 'pointer' }}
+            >
+              <option value="restaurant">مطعم (Restaurant)</option>
+              <option value="cafe">كافيه (Cafe)</option>
+              <option value="supermarket">سوبر ماركت (Supermarket)</option>
+            </select>
           </div>
 
           <div>

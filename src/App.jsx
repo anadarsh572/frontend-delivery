@@ -195,7 +195,7 @@ function App() {
         <Route path="/vendor/register" element={<VendorRegister />} />
         <Route path="/login" element={<Login />} />
         
-        <Route element={<PrivateRoute allowedRoles={['customer', 'admin']} />}>
+        <Route element={<PrivateRoute allowedRoles={['customer', 'user', 'admin']} />}>
           <Route path="/customer/*" element={<CustomerApp />} />
         </Route>
 

@@ -108,8 +108,10 @@ const Cart = () => {
         total_price: grandTotal,
         delivery_address: address,
         customer_phone: phone,
+        customer_name: customerName,
         items: cartItems.map(item => ({
           id: parseInt(item.productId || item.product.id, 10),
+          name: item.product.name,
           quantity: parseInt(item.quantity, 10),
           price: Number(item.product.price)
         }))
@@ -141,7 +143,7 @@ const Cart = () => {
         </div>
         <h2 style={{ fontSize: '2.5rem', marginBottom: '16px', fontWeight: '800' }}>تم تأكيد طلبك بنجاح!</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '1.2rem', fontWeight: '500' }}>
-          سيتم التوصيل في أسرع وقت! ⚡🏁
+          تم إرسال طلبك بنجاح وفي انتظار قبول المطعم ⚡🏁
         </p>
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
           <button className="btn btn-secondary" onClick={() => navigate('/customer')}>

@@ -16,7 +16,7 @@ const VendorRegister = () => {
     phone: '',
     password: '',
     storeName: '',
-    category: 'restaurant',
+    store_category: 'restaurant',
     role: 'Vendor'
   });
   
@@ -163,8 +163,8 @@ const VendorRegister = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>نوع النشاط (Category)</label>
             <select 
-              name="category"
-              value={formData.category}
+              name="store_category"
+              value={formData.store_category}
               onChange={handleChange}
               required
               style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', appearance: 'none' }}

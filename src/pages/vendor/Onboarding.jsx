@@ -8,7 +8,7 @@ const Onboarding = ({ onSuccess }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     store_name: '',
-    category: 'restaurant'
+    store_category: 'restaurant'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,10 +19,10 @@ const Onboarding = ({ onSuccess }) => {
     { id: 'cafe', label: 'كافيه', icon: <Coffee size={24} />, greeting: "يا مساء الروقان والقهوة المظبوطة! ☕ يلا نفتح الكافيه بتاعك ونظبط مزاج عملائك." }
   ];
 
-  const selectedCategory = categories.find(c => c.id === formData.category);
+  const selectedCategory = categories.find(c => c.id === formData.store_category);
 
   const handleCategorySelect = (categoryId) => {
-    setFormData(prev => ({ ...prev, category: categoryId }));
+    setFormData(prev => ({ ...prev, store_category: categoryId }));
   };
 
   const handleInputChange = (e) => {
@@ -91,8 +91,8 @@ const Onboarding = ({ onSuccess }) => {
                   style={{ 
                     padding: '20px', 
                     borderRadius: 'var(--radius-lg)', 
-                    border: `2px solid ${formData.category === cat.id ? 'var(--info)' : 'var(--border-color)'}`, 
-                    background: formData.category === cat.id ? 'rgba(59, 130, 246, 0.05)' : 'var(--bg-tertiary)',
+                    border: `2px solid ${formData.store_category === cat.id ? 'var(--info)' : 'var(--border-color)'}`, 
+                    background: formData.store_category === cat.id ? 'rgba(59, 130, 246, 0.05)' : 'var(--bg-tertiary)',
                     cursor: 'pointer',
                     textAlign: 'center',
                     transition: 'all 0.3s ease',
@@ -100,11 +100,11 @@ const Onboarding = ({ onSuccess }) => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: '12px',
-                    color: formData.category === cat.id ? 'var(--info)' : 'var(--text-primary)'
+                    color: formData.store_category === cat.id ? 'var(--info)' : 'var(--text-primary)'
                   }}
                 >
-                  <div style={{ opacity: formData.category === cat.id ? 1 : 0.6 }}>{cat.icon}</div>
-                  <span style={{ fontWeight: formData.category === cat.id ? 'bold' : 'normal' }}>{cat.label}</span>
+                  <div style={{ opacity: formData.store_category === cat.id ? 1 : 0.6 }}>{cat.icon}</div>
+                  <span style={{ fontWeight: formData.store_category === cat.id ? 'bold' : 'normal' }}>{cat.label}</span>
                 </div>
               ))}
             </div>

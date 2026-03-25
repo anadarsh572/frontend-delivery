@@ -214,8 +214,6 @@ const Register = () => {
                 <option value="restaurant">مطعم (Restaurant)</option>
                 <option value="cafe">كافيه (Cafe)</option>
                 <option value="supermarket">سوبر ماركت (Supermarket)</option>
-                <option value="pharmacy">صيدلية (Pharmacy)</option>
-                <option value="other">أخرى (Other)</option>
               </select>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px' }}>هذا التصنيف سيساعد العملاء في العثور عليك بسهولة.</p>
             </div>

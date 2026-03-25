@@ -3,9 +3,10 @@ import { ShoppingCart, Plus, Minus, Coffee, Utensils, ShoppingBasket } from 'luc
 
 const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }) => {
   const [qty, setQty] = useState(1);
+  const displayCategory = product.category || category;
 
   // --- Restaurant Layout ---
-  if (category === 'restaurant') {
+  if (displayCategory === 'restaurant') {
     return (
       <div className="glass-panel card-hover" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ height: '200px', width: '100%' }}>
@@ -30,7 +31,7 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
   }
 
   // --- Cafe Layout ---
-  if (category === 'cafe') {
+  if (displayCategory === 'cafe') {
     return (
       <div className="glass-panel card-hover" style={{ padding: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', borderTop: '4px solid #8B4513', height: '100%' }}>
         <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(139, 69, 19, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B4513' }}>
@@ -49,7 +50,7 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
   }
 
   // --- Supermarket Layout ---
-  if (category === 'supermarket') {
+  if (displayCategory === 'supermarket') {
     return (
       <div className="glass-panel card-hover" style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px', height: '100%' }}>
         <div style={{ height: '160px', width: '100%', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>

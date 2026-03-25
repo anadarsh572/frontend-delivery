@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Users, Store, Navigation, Activity, Trash2, Edit, CheckCircle, XCircle } from 'lucide-react';
-import { MOCK_USERS, MOCK_STORES, simulateDelay } from '../../data/mockDb';
-
-import { API_URL } from '../../api/config';
+import { MOCK_USERS } from '../../data/mockDb';
+import apiClient from '../../api/client';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -13,24 +12,19 @@ const AdminDashboard = () => {
   const [editingRoleUser, setEditingRoleUser] = useState(null);
   const [notifyingVendorId, setNotifyingVendorId] = useState(null);
   const [notificationMsg, setNotificationMsg] = useState('برجاء تجديد الاشتراك لاستمرار عرض منتجاتك');
-  const [earnings, setEarnings] = useState(1500); // Mock earnings for now
 
   useEffect(() => {
-    fetchUsers();
+    if (user) fetchUsers();
   }, [user]);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/users`);
-      if (response.ok) {
-        const usersArray = await response.json();
-        setData(prev => ({ ...prev, users: usersArray }));
-      } else {
-        // Fallback to mock data if API fails
-        setData(prev => ({ ...prev, users: MOCK_USERS }));
-      }
+      setLoading(true);
+      const response = await apiClient.get('/api/admin/users');
+      setData(prev => ({ ...prev, users: response.data }));
     } catch (error) {
       console.error("Failed to fetch users:", error);
+      // Optional: keep mock data as fallback or show error
       setData(prev => ({ ...prev, users: MOCK_USERS }));
     } finally {
       setLoading(false);
@@ -39,75 +33,49 @@ const AdminDashboard = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      const response = await fetch(`${API_URL}/api/users/${userId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ role: newRole })
-      });
-      if (response.ok) {
-        // Optimistically update UI
+      const response = await apiClient.put(`/api/admin/users/${userId}`, { role: newRole });
+      if (response.status === 200) {
         setData(prev => ({
           ...prev,
-          users: prev.users.map(u => u._id === userId || u.id === userId ? { ...u, role: newRole } : u)
+          users: prev.users.map(u => u.id === userId ? { ...u, role: newRole } : u)
         }));
-      } else {
-        console.error("Failed to update role");
       }
     } catch (error) {
-      console.error("Network error updating role", error);
+      console.error("Error updating role", error);
     } finally {
       setEditingRoleUser(null);
     }
   };
 
-  const handleStatusToggle = async (user) => {
-    const userId = user._id || user.id;
-    const newStatus = user.status === 'blocked' ? 'active' : 'blocked';
+  const handleStatusToggle = async (userObj) => {
+    const userId = userObj.id;
+    const newStatus = !userObj.is_active;
     
     try {
-      const response = await fetch(`${API_URL}/api/users/${userId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-      if (response.ok) {
+      const response = await apiClient.put(`/api/admin/users/${userId}`, { is_active: newStatus });
+      if (response.status === 200) {
         setData(prev => ({
           ...prev,
-          users: prev.users.map(u => u._id === userId || u.id === userId ? { ...u, status: newStatus } : u)
+          users: prev.users.map(u => u.id === userId ? { ...u, is_active: newStatus } : u)
         }));
-      } else {
-        console.error("Failed to update status");
       }
     } catch (error) {
-      console.error("Network error updating status", error);
+      console.error("Error updating status", error);
     }
   };
 
   const handleDelete = async (userId) => {
-    if (window.confirm("هل أنت متأكد يا درش؟")) {
+    if (window.confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")) {
       try {
-        const response = await fetch(`${API_URL}/api/users/${userId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        if (response.ok) {
+        const response = await apiClient.delete(`/api/admin/users/${userId}`);
+        if (response.status === 200) {
           setData(prev => ({
             ...prev,
-            users: prev.users.filter(u => u._id !== userId && u.id !== userId)
+            users: prev.users.filter(u => u.id !== userId)
           }));
-        } else {
-          console.error("Failed to delete user");
         }
       } catch (error) {
-        console.error("Network error deleting user", error);
+        console.error("Error deleting user", error);
       }
     }
   };
@@ -210,10 +178,10 @@ const AdminDashboard = () => {
                   <td style={{ padding: '16px 24px' }}>
                     <button 
                       onClick={() => handleStatusToggle(u)}
-                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', color: isBlocked ? 'var(--danger)' : 'var(--success)', fontWeight: 'bold', fontSize: '0.9rem' }}
+                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', color: u.is_active ? 'var(--success)' : 'var(--danger)', fontWeight: 'bold', fontSize: '0.9rem' }}
                     >
-                      {isBlocked ? <XCircle size={18} /> : <CheckCircle size={18} />}
-                      {isBlocked ? 'محظور' : 'نشط'}
+                      {u.is_active ? <CheckCircle size={18} /> : <XCircle size={18} />}
+                      {u.is_active ? 'نشط' : 'معطل'}
                     </button>
                   </td>
                   <td style={{ padding: '16px 24px' }}>

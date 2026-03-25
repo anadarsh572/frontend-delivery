@@ -1,5 +1,11 @@
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useCart } from '../../context/CartContext';
 import apiClient from '../../api/client';
+import CategoryProductCard from '../../components/products/CategoryProductCard';
+import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
 const CategoryPage = () => {
     const { category } = useParams();
@@ -19,9 +25,17 @@ const CategoryPage = () => {
     } = useQuery({
         queryKey: ['products', 'category', category],
         queryFn: async () => {
-            const response = await apiClient.get(`/api/products/category/${category}`);
-            const data = response.data;
-            return Array.isArray(data) ? data : data.products || [];
+            try {
+                const url = `/api/products?category=${category}`;
+                const response = await apiClient.get(url);
+                const data = response.data;
+                return Array.isArray(data) ? data : data.products || [];
+            } catch (error) {
+                if (error.response && error.response.status === 404) {
+                    return [];
+                }
+                throw error;
+            }
         },
     });
 
@@ -84,7 +98,7 @@ const CategoryPage = () => {
                 </div>
             ) : products.length === 0 ? (
                 <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', padding: '100px 0' }}>
-                    عذراً، لا توجد منتجات متاحة في هذا القسم حالياً.
+                    {category === 'restaurant' ? 'لا توجد مطاعم متاحة حالياً' : 'عذراً، لا توجد منتجات متاحة في هذا القسم حالياً.'}
                 </div>
             ) : (
                 <div style={{ 
@@ -92,11 +106,11 @@ const CategoryPage = () => {
                     gridTemplateColumns: category === 'supermarket' ? 'repeat(auto-fill, minmax(200px, 1fr))' : 'repeat(auto-fill, minmax(280px, 1fr))', 
                     gap: category === 'supermarket' ? '16px' : '24px' 
                 }}>
-                    {products.map((product) => (
+                    {products.filter(p => p.category === category).map((product) => (
                         <CategoryProductCard 
                             key={product.id || product._id}
                             product={product}
-                            category={category}
+                            category={product.category || category}
                             onAddToCart={handleQuickAdd}
                             onOpenCafeModal={handleOpenCafeModal}
                         />
