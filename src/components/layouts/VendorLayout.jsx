@@ -1,6 +1,6 @@
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Store, Package, Settings, LogOut, Wallet, Menu, X } from 'lucide-react';
+import { Store, Package, Settings, LogOut, Wallet, Menu, X, LayoutDashboard, ClipboardList } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../api/config';
 
@@ -107,9 +107,15 @@ const VendorLayout = ({ children }) => {
             <nav style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
               {user ? (
                 <>
-                  <Link to="/vendor" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'space-between', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                  <Link to="/vendor/dashboard" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                    <LayoutDashboard size={20} /> نظرة عامة (Dashboard)
+                  </Link>
+                  <Link to="/vendor/products" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                    <Package size={20} /> منتجاتي (My Products)
+                  </Link>
+                  <Link to="/vendor/orders" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'space-between', border: 'none', background: 'transparent', padding: '12px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <Store size={20} /> إدارة الطلبات
+                      <ClipboardList size={20} /> الطلبات (Orders)
                     </div>
                     {pendingCount > 0 && (
                       <span style={{ background: 'var(--danger)', color: 'white', borderRadius: 'var(--radius-full)', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold' }}>
@@ -117,11 +123,8 @@ const VendorLayout = ({ children }) => {
                       </span>
                     )}
                   </Link>
-                  <Link to="/vendor/products" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
-                    <Package size={20} /> المنتجات
-                  </Link>
-                  <Link to="/vendor/wallet" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
-                    <Wallet size={20} /> محفظة الأرباح
+                  <Link to="/vendor/settings" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                    <Settings size={20} /> إعدادات المتجر (Store Settings)
                   </Link>
                 </>
               ) : (

@@ -20,7 +20,18 @@ import SplashScreen from './components/common/SplashScreen';
 const LandingPage = () => {
   const { query: searchQuery, setQuery: setSearchQuery } = useSearch();
   const navigate = useNavigate();
+  const { user } = useAuth(); // Retrieve user for redirection
   const { addToCart } = useCart();
+
+  // Redirect Vendors & Admins away from Customer Landing Page
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && user) {
+      const role = user.role?.toLowerCase();
+      if (role === 'admin') navigate('/mustafa-admin-secret');
+      else if (role === 'vendor' || role === 'seller') navigate('/vendor/dashboard');
+    }
+  }, [user, navigate]);
 
   // Modal state for Cafe in search
   const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
@@ -173,7 +184,18 @@ const PrivateRoute = ({ allowedRoles }) => {
   
   if (!user) return <Navigate to="/login" replace />;
   
-  if (allowedRoles && !allowedRoles.includes(user.role?.toLowerCase() || 'customer')) {
+  const userRole = user.role?.toLowerCase();
+  const normalizedAllowed = allowedRoles.map(r => r.toLowerCase());
+  
+  // Dynamic Role Normalization (seller == vendor)
+  const isAuthorized = normalizedAllowed.some(role => {
+    if (role === 'vendor' || role === 'seller') {
+      return userRole === 'vendor' || userRole === 'seller';
+    }
+    return userRole === role;
+  });
+
+  if (!isAuthorized) {
     return <Navigate to="/" replace />;
   }
 

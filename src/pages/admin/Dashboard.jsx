@@ -64,14 +64,14 @@ const AdminDashboard = () => {
     }));
 
     try {
-      const response = await apiClient.put(`/api/admin/users/${userId}`, { role: newRole });
+      const response = await apiClient.patch(`/api/admin/users/${userId}/role`, { role: newRole });
       if (response.status !== 200 && response.status !== 201) {
         throw new Error('Failed to update');
       }
     } catch (error) {
       console.error("Error updating role", error);
       alert('فشل في تحديث الدور');
-      setData({ users: previousUsers }); // Revert
+      setData(prev => ({ ...prev, users: previousUsers })); // Revert
     }
   };
 
@@ -103,14 +103,15 @@ const AdminDashboard = () => {
     }));
     
     try {
-      // Adjusted based on typical status toggles; might need standard block/unblock endpoint
-      const response = await apiClient.put(`/api/admin/users/${userId}`, { is_active: newStatus });
+      // Corrected to use PATCH and /status endpoint
+      const response = await apiClient.patch(`/api/admin/users/${userId}/status`, { is_active: newStatus });
       if (response.status !== 200 && response.status !== 201) {
          throw new Error('Failed');
       }
     } catch (error) {
       console.error("Error updating status", error);
-      setData({ users: previousUsers }); // Revert
+      setData(prev => ({ ...prev, users: previousUsers })); // Revert
+      alert('فشل في تحديث حالة المستخدم');
     }
   };
 

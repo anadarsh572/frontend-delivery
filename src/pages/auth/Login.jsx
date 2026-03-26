@@ -57,9 +57,13 @@ const Login = () => {
         } else if (role === 'admin') {
           navigate('/mustafa-admin-secret');
         } else if (role === 'vendor' || role === 'seller') {
-          navigate('/vendor');
+          if (userObj.has_store === false || userObj.has_store === 0) {
+            navigate('/vendor/onboarding');
+          } else {
+            navigate('/vendor/dashboard');
+          }
         } else {
-          navigate('/customer');
+          navigate('/customer/home');
         }
 
       } else {
@@ -98,9 +102,13 @@ const Login = () => {
         } else if (role === 'admin') {
           navigate('/mustafa-admin-secret');
         } else if (role === 'vendor' || role === 'seller') {
-          navigate('/vendor');
+          if (userObj.has_store === false || userObj.has_store === 0) {
+            navigate('/vendor/onboarding');
+          } else {
+            navigate('/vendor/dashboard');
+          }
         } else {
-          navigate('/customer');
+          navigate('/customer/home');
         }
       }
     } catch (err) {

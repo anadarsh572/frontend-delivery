@@ -130,7 +130,9 @@ const Cart = () => {
       }
     } catch (error) {
       console.error("Order submission error:", error);
-      alert("Network error. Please make sure the backend server is running.");
+      const serverMsg = error.response?.data?.error || "Network error. Please make sure the backend server is running.";
+      const serverDetails = error.response?.data?.details || "";
+      alert(`حصلت مشكلة: ${serverMsg} \n ${serverDetails}`);
     } finally {
       setIsPlacingOrder(false);
     }

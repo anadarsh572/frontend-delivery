@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { API_URL } from '../../api/config';
 import AddProductModal from '../../components/modals/AddProductModal';
+import apiClient from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
 const VendorProducts = () => {
@@ -15,11 +16,9 @@ const VendorProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products`);
-      if (response.ok) {
-        const data = await response.json();
-        const productsArray = Array.isArray(data) ? data : data.products || [];
-        setProducts(productsArray);
+      const response = await apiClient.get('/api/vendor/my-products');
+      if (response.data) {
+        setProducts(response.data);
       }
     } catch (error) {
       console.error('Error fetching products:', error);

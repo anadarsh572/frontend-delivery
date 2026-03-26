@@ -8,7 +8,10 @@ const VendorGuard = () => {
     return <div style={{ textAlign: 'center', padding: '100px 0' }}>Verifying Access...</div>;
   }
 
-  if (!user || user.role?.toLowerCase() !== 'vendor') {
+  const userRole = user.role?.toLowerCase();
+  const isVendor = userRole === 'vendor' || userRole === 'seller';
+
+  if (!isVendor) {
     return <Navigate to="/" replace />;
   }
 

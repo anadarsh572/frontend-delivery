@@ -2,38 +2,52 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Check, Clock, Package, X, PlusCircle, Store, AlertTriangle, CheckCircle, Copy, MapPin, Phone, RefreshCw } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
-import { API_URL } from '../../api/config';
+import apiClient from '../../api/client';
 import AddProductModal from '../../components/modals/AddProductModal';
 
 const VendorDashboard = () => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
+  const [stats, setStats] = useState({ total_orders: 0, total_revenue: 0, pending_orders: 0 });
   const [loading, setLoading] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const fetchStats = async () => {
+    try {
+      const response = await apiClient.get('/api/vendor/stats');
+      if (response.data) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching vendor stats:', error);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
+  const fetchStoreOrders = async () => {
+    if (!user) return;
+    try {
+      const response = await apiClient.get('/api/vendor/orders');
+      if (response.data) {
+        setOrders(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching store orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStoreOrders = async () => {
-      if (!user) return;
-      try {
-        const storeId = user.storeId || user.id || user._id;
-        const response = await fetch(`${API_URL}/api/orders/store/${storeId}`);
-        if (response.ok) {
-          const data = await response.json();
-          const ordersArray = Array.isArray(data) ? data : data.orders || [];
-          setOrders(ordersArray);
-        }
-      } catch (error) {
-        console.error('Error fetching store orders:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    fetchStats();
     fetchStoreOrders();
-    const interval = setInterval(fetchStoreOrders, 5000); // Poll every 5 seconds
+    const interval = setInterval(() => {
+        fetchStats();
+        fetchStoreOrders();
+    }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval);
   }, [user]);
@@ -42,23 +56,14 @@ const VendorDashboard = () => {
 
   const updateOrderStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`${API_URL}/api/orders/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.ok) {
+      const response = await apiClient.patch(`/api/orders/${id}/status`, { status: newStatus });
+      if (response.status === 200 || response.status === 201) {
         setOrders(prev => prev.map(o => o.id === id || o._id === id ? { ...o, status: newStatus } : o));
-      } else {
-        console.error('Failed to update order status');
-        alert('Failed to update status.');
+        fetchStats(); // Update stats after action
       }
     } catch (error) {
       console.error('Error updating order status:', error);
-      alert('Error updating status.');
+      alert('فشل في تحديث حالة الطلب.');
     }
   };
 
@@ -67,13 +72,12 @@ const VendorDashboard = () => {
     console.log('Product added successfully from Dashboard');
   };
 
-
-
   const getActionButtons = (order) => {
-    switch (order.status) {
-      case 'Pending':
+    const status = order.status?.toLowerCase();
+    switch (status) {
+      case 'pending':
         return (
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
             <button className="btn btn-primary" onClick={() => updateOrderStatus(order._id || order.id, 'Preparing')} style={{ padding: '8px 16px', fontSize: '1rem', background: 'var(--success)', border: 'none', flex: 1, justifyContent: 'center' }}>
               <Check size={18} /> قبول الطلب
             </button>
@@ -82,24 +86,43 @@ const VendorDashboard = () => {
             </button>
           </div>
         );
-      case 'Preparing':
-      case 'Accepted':
+      case 'preparing':
+      case 'accepted':
         return (
-          <button className="btn btn-primary" onClick={() => updateOrderStatus(order._id || order.id, 'Delivered')} style={{ background: 'var(--success)', border: 'none', padding: '8px 16px', fontSize: '0.9rem' }}>
-            <Check size={16} /> إكمال الطلب (Mark Completed)
+          <button className="btn btn-primary" onClick={() => updateOrderStatus(order._id || order.id, 'Delivered')} style={{ background: 'var(--info)', border: 'none', padding: '10px 20px', fontSize: '1rem', width: '100%' }}>
+            <Package size={18} /> تم التسليم للعميل
           </button>
         );
-      case 'Delivered':
-        return <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>تم الطلب بنجاح ✅</span>;
+      case 'delivered':
+        return <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', padding: '8px 16px', borderRadius: 'var(--radius-md)', fontWeight: 'bold', textAlign: 'center', width: '100%' }}>تم الطلب بنجاح ✅</div>;
       default:
         return <span style={{ color: 'var(--text-secondary)' }}>{order.status}</span>;
     }
   };
 
-  const pendingOrdersCount = orders.filter(o => o.status === 'Pending').length;
+  const pendingOrdersCount = orders.filter(o => o.status?.toLowerCase() === 'pending').length;
 
   return (
-    <div className="animate-fade-up">
+    <div className="animate-fade-up" dir="rtl">
+      {/* STATS OVERVIEW */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+        <div className="glass-panel" style={{ padding: '24px', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.1 }}><Package size={100} /></div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '8px' }}>إجمالي الطلبات</p>
+            <h3 style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--accent-primary)' }}>{stats.total_orders}</h3>
+        </div>
+        <div className="glass-panel" style={{ padding: '24px', position: 'relative', overflow: 'hidden', borderRight: '4px solid var(--warning)' }}>
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.1 }}><Clock size={100} color="var(--warning)" /></div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '8px' }}>طلبات قيد الانتظار</p>
+            <h3 style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--warning)' }}>{stats.pending_orders}</h3>
+        </div>
+        <div className="glass-panel" style={{ padding: '24px', position: 'relative', overflow: 'hidden', borderRight: '4px solid var(--success)' }}>
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.1 }}><Store size={100} color="var(--success)" /></div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '8px' }}>إجمالي الإيرادات</p>
+            <h3 style={{ fontSize: '2.5rem', fontWeight: '900', color: 'var(--success)' }}>{Number(stats.total_revenue).toLocaleString()} <span style={{ fontSize: '1rem' }}>ج.م</span></h3>
+        </div>
+      </div>
+
       {pendingOrdersCount > 0 && (
         <div style={{ animation: 'pulse 2s infinite', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid var(--warning)', borderRadius: 'var(--radius-lg)', padding: '16px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ background: 'var(--warning)', color: 'white', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
