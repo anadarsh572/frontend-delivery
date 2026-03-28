@@ -143,10 +143,10 @@ const Orders = () => {
                         <User size={16} /> {order.customer_name || 'عميل مجهول'}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                        <MapPin size={16} /> {order.address || 'العنوان غير محدد'}
+                        <MapPin size={16} /> {order.customer_address || order.address || 'العنوان غير محدد'}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                        <Phone size={16} /> {order.phone || 'بدون رقم هاتف'}
+                        <Phone size={16} /> {order.customer_phone || order.phone || 'بدون رقم هاتف'}
                       </div>
                     </div>
                   </div>

@@ -28,7 +28,7 @@ const Cart = () => {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
-  const deliveryFee = 35; // Fixed for now
+  const deliveryFee = 15; // Aligned with backend default
   const grandTotal = cartTotal + deliveryFee;
 
   const triggerCheckout = () => {
@@ -104,17 +104,19 @@ const Cart = () => {
       
       const payload = {
         store_id: storeId, 
-        total_price: grandTotal,
-        payment_method: 'cash',
-        delivery_address: address,
-        customer_phone: phone,
-        customer_name: customerName,
         items: cartItems.map(item => ({
           id: item.productId || item.product?.id || item.product?._id,
           name: item.product?.name,
           quantity: parseInt(item.quantity, 10),
           price: Number(item.product?.price)
-        }))
+        })),
+        items_price: cartTotal,
+        delivery_fee: deliveryFee,
+        total_price: grandTotal,
+        customer_name: customerName,
+        customer_phone: phone,
+        customer_address: address,
+        payment_method: 'cash'
       };
 
       console.log("Submitting Order Payload:", payload);
