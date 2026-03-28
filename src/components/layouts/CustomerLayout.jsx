@@ -38,7 +38,6 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div className="hide-mobile" style={{ display: 'flex', gap: '20px', fontWeight: 'bold', marginLeft: '20px' }}>
                 <Link to="/" style={{ color: 'var(--text-primary)' }}>الرئيسية</Link>
-                <Link to="/customer" style={{ color: 'var(--text-primary)' }}>المطاعم</Link>
               </div>
 
               <Link to="/cart" className="card-hover" style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
@@ -113,9 +112,6 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
             تسوق حسب القسم
           </div>
 
-          <Link to="/category/restaurant" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)' }} className="card-hover">
-            <Utensils size={20} color="var(--accent-primary)" /> مطاعم
-          </Link>
           <Link to="/category/cafe" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)' }} className="card-hover">
             <Coffee size={20} color="var(--info)" /> كافيهات
           </Link>

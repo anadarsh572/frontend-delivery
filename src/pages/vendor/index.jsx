@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import VendorLayout from '../../components/layouts/VendorLayout';
 import VendorDashboard from './Dashboard';
 import VendorProducts from './Products';
+import VendorOrders from './Orders';
 import VendorWallet from './Wallet';
 import VendorOnboarding from './Onboarding';
 import { useAuth } from '../../context/AuthContext';
@@ -20,7 +21,7 @@ const VendorApp = () => {
         <Route path="/dashboard" element={<VendorDashboard />} />
         <Route path="/products" element={<VendorProducts />} />
         <Route path="/wallet" element={<VendorWallet />} />
-        <Route path="/orders" element={<div style={{ padding: '40px', textAlign: 'center' }}><h2>إدارة الطلبات (Orders)</h2></div>} />
+        <Route path="/orders" element={<VendorOrders />} />
         <Route path="/settings" element={<div style={{ padding: '40px', textAlign: 'center' }}><h2>إعدادات المتجر (Store Settings)</h2></div>} />
         <Route path="/onboarding" element={<VendorOnboarding />} />
         <Route path="/" element={<Navigate to="/vendor/dashboard" replace />} />

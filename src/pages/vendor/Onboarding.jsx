@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Store, Utensils, Coffee, ShoppingBasket, ArrowLeft, CheckCircle } from 'lucide-react';
 import apiClient from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
 const Onboarding = ({ onSuccess }) => {
   const { user, login } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     store_name: '',
@@ -41,13 +43,17 @@ const Onboarding = ({ onSuccess }) => {
       const response = await apiClient.post('/api/vendor/create-store', formData);
       
       if (response.status === 200 || response.status === 201) {
+        const storeData = response.data.store || response.data;
         const updatedUser = { 
           ...user, 
           has_store: true, 
-          storeId: response.data.storeId || response.data.id || 1 
+          storeId: storeData.id || storeData.storeId || 1,
+          store_id: storeData.id || storeData.storeId || 1 
         };
         login(updatedUser);
         if (onSuccess) onSuccess();
+        // Auto-redirect to dashboard
+        navigate('/vendor/dashboard');
       } else {
         setError(response.data.message || 'فشل في إنشاء المتجر. يرجى المحاولة مرة أخرى.');
       }

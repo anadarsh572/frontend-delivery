@@ -9,7 +9,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     description: '',
     category: 'restaurant',
     image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80', // Default image
-    isAvailable: true
+    is_available: true
   });
   
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', text: '' }
@@ -61,7 +61,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
             description: '',
             category: 'restaurant',
             image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80',
-            isAvailable: true
+            is_available: true
           });
           setStatus(null);
         }, 1500);
@@ -171,13 +171,13 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <input 
               type="checkbox" 
-              id="isAvailable" 
-              name="isAvailable" 
-              checked={formData.isAvailable} 
+              id="is_available" 
+              name="is_available" 
+              checked={formData.is_available} 
               onChange={handleInputChange} 
               style={{ width: '20px', height: '20px', cursor: 'pointer' }} 
             />
-            <label htmlFor="isAvailable" style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}>المنتج متوفر حالياً</label>
+            <label htmlFor="is_available" style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}>المنتج متوفر حالياً</label>
           </div>
 
           <button 

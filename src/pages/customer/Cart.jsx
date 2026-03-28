@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { Trash2, Plus, Minus, CreditCard, Banknote, ArrowRight, X, LogIn, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Trash2, Plus, Minus, Banknote, ArrowRight, X, LogIn, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
 
 import apiClient from '../../api/client';
@@ -12,7 +12,6 @@ const Cart = () => {
   const { user, login } = useAuth();
   const navigate = useNavigate();
   
-  const [paymentMethod, setPaymentMethod] = useState('Cash');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   
@@ -106,6 +105,7 @@ const Cart = () => {
       const payload = {
         store_id: storeId, 
         total_price: grandTotal,
+        payment_method: 'cash',
         delivery_address: address,
         customer_phone: phone,
         customer_name: customerName,
@@ -245,7 +245,13 @@ const Cart = () => {
               <X size={24} />
             </button>
             <h2 style={{ fontSize: '1.8rem', marginBottom: '8px', color: 'var(--accent-primary)', textAlign: 'center' }}>تأكيد الطلب</h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', textAlign: 'center' }}>الإجمالي: <span style={{ fontWeight: 'bold' }}>{grandTotal} جنيه</span></p>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', marginBottom: '24px' }}>
+              <p style={{ color: 'var(--text-secondary)', margin: 0 }}>الإجمالي: <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{grandTotal} جنيه</span></p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: 'var(--radius-full)', color: 'var(--success)', fontSize: '0.9rem', fontWeight: 'bold' }}>
+                <Banknote size={16} />
+                <span>كاش عند الاستلام</span>
+              </div>
+            </div>
 
             <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', marginRight: '8px' }}>اسم العميل <span style={{ color: 'var(--danger)' }}>*</span></label>
@@ -412,19 +418,12 @@ const Cart = () => {
             <span className="gradient-text">{grandTotal} جنيه</span>
           </div>
 
-          <h4 style={{ marginBottom: '16px' }}>طريقة الدفع</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: `1px solid ${paymentMethod === 'Cash' ? 'var(--accent-primary)' : 'var(--border-color)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'var(--transition)' }}>
-              <input type="radio" name="payment" checked={paymentMethod === 'Cash'} onChange={() => setPaymentMethod('Cash')} style={{ display: 'none' }} />
-              <Banknote size={24} color={paymentMethod === 'Cash' ? 'var(--accent-primary)' : 'var(--text-secondary)'} />
-              <span style={{ fontWeight: paymentMethod === 'Cash' ? 'bold' : 'normal' }}>الدفع عند الاستلام</span>
-            </label>
-            
-            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: `1px solid ${paymentMethod === 'Online' ? 'var(--accent-primary)' : 'var(--border-color)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'var(--transition)' }}>
-              <input type="radio" name="payment" checked={paymentMethod === 'Online'} onChange={() => setPaymentMethod('Online')} style={{ display: 'none' }} />
-              <CreditCard size={24} color={paymentMethod === 'Online' ? 'var(--accent-primary)' : 'var(--text-secondary)'} />
-              <span style={{ fontWeight: paymentMethod === 'Online' ? 'bold' : 'normal' }}>دفع أونلاين</span>
-            </label>
+          <div style={{ marginBottom: '24px', padding: '16px', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--success)', fontWeight: 'bold', marginBottom: '4px' }}>
+              <Banknote size={20} />
+              <span>الدفع كاش عند الاستلام</span>
+            </div>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>سيتم دفع المبلغ عند استلام الطلب من المندوب</p>
           </div>
 
           <button 

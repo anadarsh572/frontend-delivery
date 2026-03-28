@@ -16,7 +16,7 @@ const VendorProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await apiClient.get('/api/vendor/my-products');
+      const response = await apiClient.get('/api/vendor/products');
       if (response.data) {
         setProducts(response.data);
       }
@@ -33,7 +33,7 @@ const VendorProducts = () => {
 
   const toggleAvailability = (id) => {
     // In a full implementation, this should also send a PUT/PATCH to the API
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, isAvailable: !p.isAvailable } : p));
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, is_available: !p.is_available } : p));
   };
 
   return (
@@ -96,15 +96,15 @@ const VendorProducts = () => {
                         gap: '8px', 
                         padding: '6px 12px', 
                         borderRadius: 'var(--radius-full)', 
-                        background: product.isAvailable !== false ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', 
-                        color: product.isAvailable !== false ? 'var(--success)' : 'var(--danger)',
+                        background: product.is_available !== false ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', 
+                        color: product.is_available !== false ? 'var(--success)' : 'var(--danger)',
                         fontSize: '0.85rem',
                         fontWeight: 'bold',
                         cursor: 'pointer'
                       }}
                     >
                       <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'currentColor' }} />
-                      {product.isAvailable !== false ? 'متوفر' : 'غير متوفر'}
+                      {product.is_available !== false ? 'متوفر' : 'غير متوفر'}
                     </div>
                   </td>
                   <td style={{ padding: '16px 24px', textAlign: 'right', color: 'var(--text-secondary)' }}>
