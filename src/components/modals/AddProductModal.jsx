@@ -113,37 +113,18 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   };
 
   return (
-    <div style={{ 
-      position: 'fixed', 
-      inset: 0, 
-      background: 'rgba(0,0,0,0.85)', 
-      backdropFilter: 'blur(10px)', 
-      display: 'flex', 
-      alignItems: 'flex-start', // Allows scrolling from top if content is long
-      justifyContent: 'center', 
-      zIndex: 2000, 
-      padding: '40px 20px',
-      overflowY: 'auto' // Modal scroll handled by overlay
-    }}>
-      <div className="glass-panel animate-fade-up" style={{ 
-        width: '100%', 
-        maxWidth: '600px', 
-        padding: 'clamp(20px, 5vw, 40px)', 
-        position: 'relative', 
-        margin: 'auto', // Centers vertically if content is short
-        border: '1px solid var(--accent-primary)', 
-        boxShadow: '0 0 40px rgba(255, 90, 31, 0.2)' 
-      }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', zIndex: 10 }}>
-          <X size={24} />
+    <div className="modal-overlay">
+      <div className="glass-panel modal-content" style={{ padding: 'clamp(24px, 5vw, 40px)', maxHeight: '90vh' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '50%', color: 'var(--text-secondary)', zIndex: 10 }}>
+          <X size={20} />
         </button>
 
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ width: '64px', height: '64px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--accent-primary)' }}>
+          <div style={{ width: '64px', height: '64px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--accent-primary)', boxShadow: '0 0 20px rgba(255, 90, 31, 0.2)' }}>
             <PlusCircle size={32} />
           </div>
-          <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>إضافة منتج جديد</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>املأ البيانات لإضافة صنف جديد للمنيو الخاص بك.</p>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '8px', color: 'var(--text-primary)' }}>إضافة منتج جديد</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>املأ البيانات لإضافة صنف جديد للمنيو الخاص بك.</p>
         </div>
 
         {status && (

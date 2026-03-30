@@ -40,8 +40,8 @@ const VendorLayout = ({ children }) => {
 
   return (
     <div className="admin-app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }} dir="rtl">
-      {/* Mobile Header - Visible only on mobile */}
-      <header className="glass-panel mobile-only-flex" style={{ 
+      {/* Mobile Header */}
+      <header className="glass-panel desktop-hidden" style={{ 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between', 
@@ -52,9 +52,7 @@ const VendorLayout = ({ children }) => {
         right: 0, 
         zIndex: 1000,
         borderRadius: 0,
-        borderLeft: 'none',
-        borderRight: 'none',
-        borderTop: 'none',
+        borderBottom: '1px solid var(--border-color)',
         background: 'var(--bg-secondary)',
         height: '70px'
       }}>
@@ -69,51 +67,45 @@ const VendorLayout = ({ children }) => {
         </button>
       </header>
 
-      <div style={{ display: 'flex', flex: 1, paddingTop: '0' }} className="flex-responsive">
+      <div style={{ display: 'flex', flex: 1 }}>
         {/* Sidebar / Drawer */}
         <>
-          {/* Overlay for mobile drawer */}
           {isMenuOpen && (
             <div 
               onClick={() => setIsMenuOpen(false)}
-              style={{ 
-                position: 'fixed', 
-                inset: 0, 
-                background: 'rgba(0,0,0,0.6)', 
-                backdropFilter: 'blur(4px)', 
-                zIndex: 1400 
-              }} 
-              className="mobile-only-block"
+              className="desktop-hidden"
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1400 }} 
             />
           )}
 
           <aside className={`glass-panel vendor-sidebar ${isMenuOpen ? 'open' : ''}`} style={{ 
-            minWidth: '280px',
+            width: '280px',
             borderRadius: 0, 
             borderTop: 'none', 
             borderRight: 'none', 
             borderBottom: 'none', 
+            borderLeft: '1px solid var(--border-color)',
             display: 'flex', 
             flexDirection: 'column',
             zIndex: 1500,
             transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}>
-            <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }} className="desktop-only-block">
+            <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }} className="mobile-hidden">
               <Link to="/vendor" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.8rem', fontWeight: '800' }}>
                 <span className="gradient-text">لوحة</span>التاجر ⚡
               </Link>
             </div>
 
-            <nav style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
+            <nav style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {user ? (
                 <>
-                  <Link to="/vendor/dashboard" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                  <Link to="/vendor/dashboard" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
                     <LayoutDashboard size={20} /> نظرة عامة (Dashboard)
                   </Link>
-                  <Link to="/vendor/products" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                  <Link to="/vendor/products" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
                     <Package size={20} /> منتجاتي (My Products)
                   </Link>
-                  <Link to="/vendor/orders" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'space-between', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                  <Link to="/vendor/orders" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'space-between', border: 'none', background: 'transparent' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <ClipboardList size={20} /> الطلبات (Orders)
                     </div>
@@ -123,7 +115,7 @@ const VendorLayout = ({ children }) => {
                       </span>
                     )}
                   </Link>
-                  <Link to="/vendor/settings" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', padding: '12px 16px' }}>
+                  <Link to="/vendor/settings" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
                     <Settings size={20} /> إعدادات المتجر (Store Settings)
                   </Link>
                 </>
@@ -142,7 +134,7 @@ const VendorLayout = ({ children }) => {
                   </div>
                   <div style={{ flex: 1, overflow: 'hidden' }}>
                     <p style={{ fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>حساب تاجر</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>حساب تاجر</p>
                   </div>
                 </div>
                 <button onClick={handleLogout} className="btn" style={{ width: '100%', color: 'var(--danger)', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)' }}>
@@ -154,17 +146,14 @@ const VendorLayout = ({ children }) => {
         </>
 
         {/* Main Content */}
-        <main style={{ flex: 1, padding: 'clamp(16px, 5vw, 40px)', overflowX: 'hidden', minHeight: '100vh' }}>
-          {/* Spacer for mobile fixed header */}
-          <div className="mobile-only-block" style={{ height: '70px' }} />
+        <main style={{ flex: 1, padding: 'clamp(16px, 5vw, 40px)', background: 'var(--bg-primary)', minHeight: '100vh', overflowX: 'hidden' }}>
+          <div className="desktop-hidden" style={{ height: '70px' }} />
           {children}
         </main>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 767px) {
-          .desktop-only-block { display: none !important; }
-          .admin-app { padding-top: 0; }
           .vendor-sidebar {
             position: fixed;
             top: 0;
@@ -176,12 +165,8 @@ const VendorLayout = ({ children }) => {
           .vendor-sidebar.open {
             transform: translateX(0);
           }
-          .mobile-only-flex { display: flex !important; }
-          .mobile-only-block { display: block !important; }
         }
         @media (min-width: 768px) {
-          .mobile-only-flex { display: none !important; }
-          .mobile-only-block { display: none !important; }
           .vendor-sidebar { transform: none !important; }
         }
       `}} />

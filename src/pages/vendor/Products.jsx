@@ -64,14 +64,14 @@ const VendorProducts = () => {
           <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>تأكد من تشغيل السيرفر أو قم بإضافة منتجات جديدة باستخدام الزر أعلاه.</p>
         </div>
       ) : (
-        <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="glass-panel table-responsive" style={{ border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', minWidth: '700px' }}>
             <thead style={{ background: 'var(--bg-tertiary)', borderBottom: '1px solid var(--border-color)' }}>
               <tr>
                 <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>المنتج</th>
                 <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>السعر</th>
                 <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>الحالة</th>
-                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold', textAlign: 'left' }}>رقم المتجر</th>
+                <th style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>رقم المتجر</th>
               </tr>
             </thead>
             <tbody>
@@ -79,10 +79,10 @@ const VendorProducts = () => {
                 <tr key={product.id || product._id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'var(--transition)' }}>
                   <td style={{ padding: '16px 24px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <img src={product.image} alt={product.name} style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-sm)', objectFit: 'cover' }} />
+                      <img src={product.image_url || product.image} alt={product.name} style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-sm)', objectFit: 'cover' }} />
                       <div>
                         <p style={{ fontWeight: 'bold' }}>{product.name}</p>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>ID: {product.id || product._id}</p>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>ID: {product.id || product._id}</p>
                       </div>
                     </div>
                   </td>
@@ -107,8 +107,8 @@ const VendorProducts = () => {
                       {product.is_available !== false ? 'متوفر' : 'غير متوفر'}
                     </div>
                   </td>
-                  <td style={{ padding: '16px 24px', textAlign: 'right', color: 'var(--text-secondary)' }}>
-                    {product.storeId}
+                  <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>
+                    {product.store_id || product.storeId}
                   </td>
                 </tr>
               ))}
