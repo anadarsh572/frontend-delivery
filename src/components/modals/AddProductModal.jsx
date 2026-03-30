@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, PlusCircle, AlertCircle, CheckCircle2, Camera, Trash2 } from 'lucide-react';
-import { API_URL } from '../../api/config';
+import { X, PlusCircle, AlertCircle, CheckCircle2, Camera, Trash2, Loader2 } from 'lucide-react';
+import apiClient from '../../api/client';
 
 const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   });
   
   const [imagePreview, setImagePreview] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isCompressing, setIsCompressing] = useState(false);
   const [status, setStatus] = useState(null); 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,7 +28,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     }));
   };
 
-  const compressImage = (base64Str, maxWidth = 800, maxHeight = 800, quality = 0.7) => {
+  const compressImage = (base64Str, maxWidth = 600, maxHeight = 600, quality = 0.6) => {
     return new Promise((resolve) => {
       const img = new Image();
       img.src = base64Str;
@@ -61,16 +61,30 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      // We still check size but we will compress anyway
-      setIsUploading(true);
+      if (file.size > 10 * 1024 * 1024) {
+        setStatus({ type: 'error', text: 'حجم الصورة كبير جداً، يرجى اختيار صورة أصغر من 10 ميجا.' });
+        return;
+      }
+      
+      setIsCompressing(true);
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const base64String = reader.result;
-        // Compress the image before storing it
-        const compressedBase64 = await compressImage(base64String);
-        setImagePreview(compressedBase64);
-        setFormData(prev => ({ ...prev, image_url: compressedBase64 }));
-        setIsUploading(false);
+        try {
+          const base64String = reader.result;
+          // Compress the image before storing it
+          const compressedBase64 = await compressImage(base64String);
+          setImagePreview(compressedBase64);
+          setFormData(prev => ({ ...prev, image_url: compressedBase64 }));
+        } catch (err) {
+          console.error('Compression error:', err);
+          setStatus({ type: 'error', text: 'فشل في معالجة الصورة. حاول مرة أخرى.' });
+        } finally {
+          setIsCompressing(false);
+        }
+      };
+      reader.onerror = () => {
+        setIsCompressing(false);
+        setStatus({ type: 'error', text: 'خطأ في قراءة الصورة.' });
       };
       reader.readAsDataURL(file);
     }
@@ -90,21 +104,11 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
       const payload = { 
         ...formData, 
         price: Number(formData.price)
-        // store_id is handled by backend from the auth token in /api/vendor/products
       };
 
-      const response = await fetch(`${API_URL}/api/vendor/products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await apiClient.post('/api/vendor/products', payload);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setStatus({ type: 'success', text: 'تم إضافة المنتج بنجاح!' });
         setTimeout(() => {
           onSuccess();
@@ -114,11 +118,12 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           setStatus(null);
         }, 1500);
       } else {
-        setStatus({ type: 'error', text: data.message || 'خطأ في إضافة المنتج.' });
+        setStatus({ type: 'error', text: response.data?.message || 'خطأ في إضافة المنتج.' });
       }
     } catch (error) {
-      console.error('Submit Error:', error);
-      setStatus({ type: 'error', text: 'خطأ في الاتصال. يرجى التأكد من تشغيل السيرفر.' });
+      console.error('Submit Error:', error.response?.data || error.message);
+      const errorMsg = error.response?.data?.message || 'خطأ في الاتصال. يرجى التأكد من أن حجم الصورة مناسب والمحاولة مرة أخرى.';
+      setStatus({ type: 'error', text: errorMsg });
     } finally {
       setIsSubmitting(false);
     }
@@ -304,7 +309,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           <button 
             type="submit" 
             className="btn btn-primary" 
-            disabled={isSubmitting || !formData.image_url} 
+            disabled={isSubmitting || isCompressing || !formData.image_url} 
             style={{ 
               width: '100%', 
               padding: '18px', 
@@ -319,7 +324,11 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
               border: formData.image_url ? 'none' : '1px solid var(--border-color)'
             }}
           >
-            {isSubmitting ? 'جاري الحفظ...' : formData.image_url ? 'إضافة المنتج للمنيو ✨' : 'يرجى تصوير/اختيار صورة للمنتج'}
+            {isSubmitting ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Loader2 size={24} className="spinning" /> جاري حفظ المنتج...
+              </span>
+            ) : formData.image_url ? 'إضافة المنتج للمنيو ✨' : 'يرجى تصوير/اختيار صورة للمنتج'}
           </button>
         </form>
       </div>

@@ -226,7 +226,7 @@ const Cart = () => {
               </div>
 
               <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px', marginTop: '8px', justifyContent: 'center' }} disabled={authLoading}>
-                {authLoading ? 'جاري التنفيذ...' : (authMode === 'login' ? 'تسجيل الدخول' : 'إنشاء الحساب')}
+                {authLoading ? (authMode === 'login' ? 'جاري تسجيل الدخول...' : 'جاري إنشاء الحساب...') : (authMode === 'login' ? 'تسجيل الدخول' : 'إنشاء الحساب')}
               </button>
             </form>
 

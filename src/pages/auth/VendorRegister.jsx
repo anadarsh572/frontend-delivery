@@ -33,8 +33,17 @@ const VendorRegister = () => {
     setLoading(true);
     setError(null);
 
+    // Safety timeout to reset loading state if the request hangs
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('استغرق الطلب وقتاً طويلاً. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.');
+      }
+    }, 25000);
+
     try {
       const response = await apiClient.post('/api/register', formData);
+      clearTimeout(timeoutId);
       const data = response.data;
 
       if (response.status === 200 || response.status === 201) {
@@ -48,12 +57,12 @@ const VendorRegister = () => {
         login(userObj);
         navigate('/vendor');
       } else {
-        console.warn('Vendor Registration failed:', data);
         setError(data.message || 'فشل إنشاء الحساب. تأكد من صحة البيانات.');
       }
     } catch (error) {
+      clearTimeout(timeoutId);
       console.error('Vendor Registration error details:', error.response?.data || error.message);
-      const errorMsg = error.response?.data?.message || 'حدث خطأ في التسجيل. تأكد من البريد الإلكتروني أو الهاتف.';
+      const errorMsg = error.response?.data?.message || 'حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.';
       setError(errorMsg);
     } finally {
       setLoading(false);

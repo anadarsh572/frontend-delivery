@@ -32,22 +32,30 @@ const Register = () => {
     setLoading(true);
     setMessage(null);
 
+    // Safety timeout to reset loading state if the request hangs
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setMessage({ type: 'error', text: 'استغرق الطلب وقتاً طويلاً. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.' });
+      }
+    }, 25000); // 25 seconds for registration (includes potential email/heavy ops)
+
     try {
       const response = await apiClient.post('/api/register', formData);
+      clearTimeout(timeoutId);
       const data = response.data;
 
       if (response.status === 200 || response.status === 201) {
-        setMessage({ type: 'success', text: data.message || 'تم إنشاء الحساب بنجاح! جاري توجيهك للرئيسية...' });
-        // If the API returns a token on register, save it
+        setMessage({ type: 'success', text: data.message || 'تم إنشاء الحساب بنجاح! جاري توجيهك لصفحة الدخول...' });
         if (data.token) localStorage.setItem('token', data.token);
         setTimeout(() => navigate('/login'), 2000);
       } else {
-        console.warn('Registration failed:', data);
         setMessage({ type: 'error', text: data.message || 'فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.' });
       }
     } catch (error) {
+      clearTimeout(timeoutId);
       console.error('Registration error details:', error.response?.data || error.message);
-      const errorMsg = error.response?.data?.message || 'فشل إنشاء الحساب. تأكد من أن جميع البيانات صحيحة.';
+      const errorMsg = error.response?.data?.message || 'فشل الاتصال بالسيرفر. يرجى التأكد من صحة البيانات.';
       setMessage({ type: 'error', text: errorMsg });
     } finally {
       setLoading(false);

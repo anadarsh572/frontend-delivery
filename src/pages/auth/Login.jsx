@@ -29,12 +29,20 @@ const Login = () => {
     setLoading(true);
     setError(null);
 
+    // Safety timeout to reset loading state if the request hangs
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('استغرق الطلب وقتاً طويلاً. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.');
+      }
+    }, 20000); // 20 seconds safety timeout
+
     try {
       const response = await apiClient.post('/api/login', formData);
+      clearTimeout(timeoutId);
       const data = response.data;
 
       if (response.status === 200 || response.status === 201) {
-        // Save token to localStorage
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
@@ -46,11 +54,12 @@ const Login = () => {
           userObj.role = data.role;
         }
 
-        // Save user to AuthContext and localStorage
         login(userObj);
 
         // Redirect based on Return URL or Role
         const returnUrl = location.state?.returnUrl;
+        
+        console.log('Login successful, navigating to:', returnUrl || role);
 
         if (returnUrl) {
           navigate(returnUrl);
@@ -67,12 +76,12 @@ const Login = () => {
         }
 
       } else {
-        console.warn('Login failed:', data);
         setError(data.message || data.error || 'خطأ في الدخول. تأكد من البريد أو الباسورد.');
       }
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error('Login error details:', err.response?.data || err.message);
-      const errorMsg = err.response?.data?.error || err.response?.data?.message || 'فشل الاتصال بالسيرفر. تأكد من تشغيل الباك إند.';
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || 'فشل الاتصال بالسيرفر. يرجى المحاولة مرة أخرى.';
       setError(errorMsg);
     } finally {
       setLoading(false);

@@ -27,10 +27,14 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // Clear local storage and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('ecom_user');
-      window.location.href = '/login';
+      const url = error.config.url || '';
+      // Only redirect if NOT attempting to login or register
+      if (!url.includes('login') && !url.includes('register')) {
+        // Clear local storage and redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('ecom_user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
