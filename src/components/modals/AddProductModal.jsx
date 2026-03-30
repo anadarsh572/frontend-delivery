@@ -113,9 +113,28 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '15px' }}>
-      <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '600px', padding: 'clamp(20px, 5vw, 40px)', position: 'relative', maxHeight: '95vh', overflowY: 'auto', border: '1px solid var(--accent-primary)', boxShadow: '0 0 40px rgba(255, 90, 31, 0.2)' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+    <div style={{ 
+      position: 'fixed', 
+      inset: 0, 
+      background: 'rgba(0,0,0,0.85)', 
+      backdropFilter: 'blur(10px)', 
+      display: 'flex', 
+      alignItems: 'flex-start', // Allows scrolling from top if content is long
+      justifyContent: 'center', 
+      zIndex: 2000, 
+      padding: '40px 20px',
+      overflowY: 'auto' // Modal scroll handled by overlay
+    }}>
+      <div className="glass-panel animate-fade-up" style={{ 
+        width: '100%', 
+        maxWidth: '600px', 
+        padding: 'clamp(20px, 5vw, 40px)', 
+        position: 'relative', 
+        margin: 'auto', // Centers vertically if content is short
+        border: '1px solid var(--accent-primary)', 
+        boxShadow: '0 0 40px rgba(255, 90, 31, 0.2)' 
+      }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', zIndex: 10 }}>
           <X size={24} />
         </button>
 
