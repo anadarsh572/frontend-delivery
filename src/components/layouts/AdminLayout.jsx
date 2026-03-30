@@ -79,17 +79,7 @@ const AdminLayout = ({ children }) => {
                   <Link to="/mustafa-admin-secret" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
                     <Users size={20} /> المستخدمين والكيانات
                   </Link>
-                  <Link to="/mustafa-admin-secret/settlements" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
-                    <DollarSign size={20} /> التسويات المالية
-                  </Link>
 
-                  <div style={{ margin: '24px 0 8px', padding: '0 12px', color: 'var(--warning)', fontSize: '0.8rem', fontWeight: 'bold' }}>تبديل الأدوار (سريع)</div>
-                  <Link to="/" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', color: 'var(--info)' }}>
-                    <ShieldCheck size={20} /> التسوق كعميل
-                  </Link>
-                  <Link to="/vendor" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent', color: 'var(--success)' }}>
-                    <ShieldCheck size={20} /> لوحة تحكم التاجر
-                  </Link>
                 </>
               ) : (
                 <div style={{ padding: '20px', textAlign: 'center' }}>

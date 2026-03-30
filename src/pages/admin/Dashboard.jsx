@@ -11,6 +11,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [activeTab, setActiveTab] = useState('users'); // 'users', 'vendors', 'orders'
+  const [orderFilter, setOrderFilter] = useState('all'); // 'all', 'completed', 'pending', 'uncompleted'
   
   const [adminEmailSearch, setAdminEmailSearch] = useState('');
 
@@ -207,23 +208,49 @@ const AdminDashboard = () => {
 
   const renderOrders = () => {
     if (loadingOrders) return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>جاري تحميل الطلبات...</div>;
-    if (orders.length === 0) return (
+    
+    // Filter logic
+    const filteredOrders = orders.filter(order => {
+      if (orderFilter === 'all') return true;
+      const status = order.status?.toLowerCase() || '';
+      if (orderFilter === 'completed') {
+        return status === 'delivered' || status === 'completed' || status === 'تم التوصيل' || status === 'مكتمل';
+      }
+      if (orderFilter === 'pending') {
+        return status === 'pending' || status === 'processing' || status === 'جاري التنفيذ' || status === 'قيد الانتظار';
+      }
+      if (orderFilter === 'uncompleted') {
+        return status === 'cancelled' || status === 'rejected' || status === 'failed' || status === 'ملغي' || status === 'مرفوض';
+      }
+      return true;
+    });
+
+    if (filteredOrders.length === 0) return (
       <div className="glass-panel" style={{ textAlign: 'center', padding: '60px 20px' }}>
         <Package size={48} color="var(--text-secondary)" style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-        <h4 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>لا توجد طلبات جارية في المنصة</h4>
+        <h4 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>
+          {orderFilter === 'all' ? 'لا توجد طلبات جارية في المنصة' : `لا توجد طلبات ${orderFilter === 'completed' ? 'مكتملة' : orderFilter === 'pending' ? 'معلقة' : 'غير مكتملة'} حالياً`}
+        </h4>
       </div>
     );
 
     return (
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-        {orders.map(order => (
+        {filteredOrders.map(order => (
           <div key={order.id || order._id} className="glass-panel" style={{ padding: '24px', borderTop: `4px solid var(--accent-primary)` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div>
                 <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>طلب #{order.id || (order._id && order._id.slice(-6))}</h4>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{order.date || new Date().toLocaleString()}</span>
               </div>
-              <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', background: 'var(--bg-tertiary)', fontSize: '0.85rem', fontWeight: 'bold' }}>
+              <span style={{ 
+                padding: '4px 12px', 
+                borderRadius: 'var(--radius-full)', 
+                background: order.status?.toLowerCase().includes('delivered') || order.status?.toLowerCase().includes('completed') ? 'rgba(16, 185, 129, 0.1)' : 'var(--bg-tertiary)', 
+                color: order.status?.toLowerCase().includes('delivered') || order.status?.toLowerCase().includes('completed') ? 'var(--success)' : 'var(--text-primary)',
+                fontSize: '0.85rem', 
+                fontWeight: 'bold' 
+              }}>
                 {order.status}
               </span>
             </div>
@@ -316,6 +343,36 @@ const AdminDashboard = () => {
         >
           <Activity size={18} style={{ marginRight: '8px' }} /> الطلبات العامة بالموقع
         </button>
+
+        {activeTab === 'orders' && (
+          <div className="glass-panel" style={{ display: 'flex', gap: '8px', padding: '6px 12px', borderRadius: 'var(--radius-full)', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--border-color)', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '8px' }}>تصفية:</span>
+            <button 
+              onClick={() => setOrderFilter('all')}
+              style={{ padding: '4px 12px', fontSize: '0.85rem', borderRadius: 'var(--radius-md)', background: orderFilter === 'all' ? 'var(--accent-primary)' : 'transparent', color: orderFilter === 'all' ? '#fff' : 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
+            >
+              الكل
+            </button>
+            <button 
+              onClick={() => setOrderFilter('completed')}
+              style={{ padding: '4px 12px', fontSize: '0.85rem', borderRadius: 'var(--radius-md)', background: orderFilter === 'completed' ? 'var(--success)' : 'transparent', color: orderFilter === 'completed' ? '#fff' : 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
+            >
+              المكتملة
+            </button>
+            <button 
+              onClick={() => setOrderFilter('pending')}
+              style={{ padding: '4px 12px', fontSize: '0.85rem', borderRadius: 'var(--radius-md)', background: orderFilter === 'pending' ? 'var(--info)' : 'transparent', color: orderFilter === 'pending' ? '#fff' : 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
+            >
+              المعلقة
+            </button>
+            <button 
+              onClick={() => setOrderFilter('uncompleted')}
+              style={{ padding: '4px 12px', fontSize: '0.85rem', borderRadius: 'var(--radius-md)', background: orderFilter === 'uncompleted' ? 'var(--danger)' : 'transparent', color: orderFilter === 'uncompleted' ? '#fff' : 'var(--text-secondary)', border: 'none', cursor: 'pointer' }}
+            >
+              غير المكتملة
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Tab Content */}

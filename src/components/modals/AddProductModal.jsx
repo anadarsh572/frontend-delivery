@@ -28,19 +28,48 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     }));
   };
 
-  const handleFileChange = (e) => {
+  const compressImage = (base64Str, maxWidth = 800, maxHeight = 800, quality = 0.7) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+    });
+  };
+
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setStatus({ type: 'error', text: 'حجم الصورة كبير جداً! الحد الأقصى 5 ميجابايت.' });
-        return;
-      }
+      // We still check size but we will compress anyway
       setIsUploading(true);
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const base64String = reader.result;
-        setImagePreview(base64String);
-        setFormData(prev => ({ ...prev, image_url: base64String }));
+        // Compress the image before storing it
+        const compressedBase64 = await compressImage(base64String);
+        setImagePreview(compressedBase64);
+        setFormData(prev => ({ ...prev, image_url: compressedBase64 }));
         setIsUploading(false);
       };
       reader.readAsDataURL(file);
@@ -60,11 +89,11 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     try {
       const payload = { 
         ...formData, 
-        price: Number(formData.price),
-        store_id: storeId || 1
+        price: Number(formData.price)
+        // store_id is handled by backend from the auth token in /api/vendor/products
       };
 
-      const response = await fetch(`${API_URL}/api/products`, {
+      const response = await fetch(`${API_URL}/api/vendor/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
