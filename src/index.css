@@ -308,8 +308,8 @@ img {
 
 @media (max-width: 768px) {
   .product-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
     padding: 10px 0;
   }
   
@@ -318,19 +318,25 @@ img {
   }
   
   .mobile-text-lg {
-    font-size: 0.95rem !important;
+    font-size: 1.1rem !important;
     line-height: 1.2 !important;
   }
   
   .mobile-text-sm {
-    font-size: 0.75rem !important;
+    font-size: 0.85rem !important;
   }
   
   .mobile-text-xs {
-    font-size: 0.65rem !important;
+    font-size: 0.75rem !important;
   }
 
   .mobile-padding-sm {
-    padding: 8px !important;
+    padding: 10px !important;
   }
+}
+
+.product-card-square {
+  aspect-ratio: 1 / 1;
+  display: flex !important;
+  flex-direction: column !important;
 }
