@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, PlusCircle, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { X, PlusCircle, AlertCircle, CheckCircle2, Camera, Image as ImageIcon, Trash2, Upload } from 'lucide-react';
 import { API_URL } from '../../api/config';
 
 const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
@@ -8,9 +8,12 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     price: '',
     description: '',
     category: 'restaurant',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80', // Default image
+    image_url: '', // This will hold the Base64 string
     is_available: true
   });
+  
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
   
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', text: '' }
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,6 +26,38 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB Limit
+        setStatus({ type: 'error', text: 'حجم الصورة كبير جداً! الحد الأقصى 5 ميجابايت.' });
+        return;
+      }
+
+      setIsUploading(true);
+      const reader = new FileReader();
+      
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setImagePreview(base64String);
+        setFormData(prev => ({ ...prev, image_url: base64String }));
+        setIsUploading(false);
+      };
+
+      reader.onerror = () => {
+        setStatus({ type: 'error', text: 'فشل في قراءة ملف الصورة.' });
+        setIsUploading(false);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setFormData(prev => ({ ...prev, image_url: '' }));
   };
 
   const handleSubmit = async (e) => {
@@ -60,9 +95,10 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
             price: '',
             description: '',
             category: 'restaurant',
-            image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80',
+            image_url: '',
             is_available: true
           });
+          setImagePreview(null);
           setStatus(null);
         }, 1500);
       } else {
@@ -157,15 +193,92 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>رابط صورة المنتج</label>
-            <input 
-              type="url" 
-              name="image" 
-              value={formData.image} 
-              onChange={handleInputChange} 
-              placeholder="https://..." 
-              style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} 
-            />
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>صورة المنتج</label>
+            
+            <div style={{ position: 'relative' }}>
+              {!imagePreview ? (
+                <div 
+                  className="upload-area"
+                  style={{ 
+                    width: '100%', 
+                    height: '160px', 
+                    borderRadius: 'var(--radius-lg)', 
+                    border: '2px dashed var(--border-color)', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '12px',
+                    cursor: 'pointer',
+                    transition: 'var(--transition)',
+                    background: 'var(--bg-tertiary)',
+                    overflow: 'hidden'
+                  }}
+                  onClick={() => document.getElementById('image-upload').click()}
+                >
+                  <div style={{ padding: '12px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: '50%', color: 'var(--accent-primary)' }}>
+                    <Camera size={28} />
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>اضغط هنا للتصوير أو اختيار صورة</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>PNG, JPG حتى 5MB</p>
+                  </div>
+                  <input 
+                    id="image-upload"
+                    type="file" 
+                    accept="image/*" 
+                    capture="environment"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }} 
+                  />
+                </div>
+              ) : (
+                <div style={{ position: 'relative', width: '100%', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    style={{ width: '100%', height: '200px', objectFit: 'cover' }} 
+                  />
+                  <div 
+                    style={{ 
+                      position: 'absolute', 
+                      bottom: 0, 
+                      left: 0, 
+                      right: 0, 
+                      background: 'rgba(0,0,0,0.6)', 
+                      backdropFilter: 'blur(5px)',
+                      padding: '8px 16px', 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center' 
+                    }}
+                  >
+                    <span style={{ fontSize: '0.8rem', color: 'white', fontWeight: 'bold' }}>تم اختيار الصورة ✓</span>
+                    <button 
+                      type="button"
+                      onClick={removeImage}
+                      style={{ 
+                        background: 'rgba(239, 68, 68, 0.2)', 
+                        border: '1px solid var(--danger)', 
+                        color: 'var(--danger)', 
+                        padding: '6px 12px', 
+                        borderRadius: 'var(--radius-md)', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '6px',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Trash2 size={14} /> تغيير الصورة
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Hidden fallback if they still want URL, but simplified */}
+            <input type="hidden" name="image_url" value={formData.image_url} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
