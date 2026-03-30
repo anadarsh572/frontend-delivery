@@ -4,7 +4,8 @@ import { useCart } from '../../context/CartContext';
 import { MOCK_STORES, MOCK_PRODUCTS, simulateDelay } from '../../data/mockDb';
 import { Star, Clock, MapPin, Plus, ArrowLeft } from 'lucide-react';
 
-import { API_URL } from '../../api/config';
+import CategoryProductCard from '../../components/products/CategoryProductCard';
+import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
 const StoreDetail = () => {
   const { storeId } = useParams();
@@ -14,6 +15,10 @@ const StoreDetail = () => {
   const [store, setStore] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Modal state for Cafe
+  const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
+  const [activeProduct, setActiveProduct] = useState(null);
 
   useEffect(() => {
     const fetchStoreDetails = async () => {
@@ -30,14 +35,11 @@ const StoreDetail = () => {
           const productsArray = data.data || data.products || (Array.isArray(data) ? data : []);
           
           // Filter to only match THIS store
-          // We use toString() to ensure safe comparison regardless of data type
           const storeProducts = productsArray.filter(p => 
             (p.store_id?.toString() === storeId?.toString()) || 
             (p.storeId?.toString() === storeId?.toString())
           );
           
-          // If the DB doesn't have any products for this store yet, we can optionally fall back to mocks
-          // But as per user request, we want to show DB products.
           setProducts(storeProducts.length > 0 ? storeProducts : []);
         } else {
           // Fallback if API fails
@@ -45,7 +47,6 @@ const StoreDetail = () => {
         }
       } catch (error) {
         console.error("API Error:", error);
-        // Fallback if network fails
         setProducts(MOCK_PRODUCTS.filter(p => p.storeId === storeId));
       } finally {
         setLoading(false);
@@ -53,6 +54,20 @@ const StoreDetail = () => {
     };
     fetchStoreDetails();
   }, [storeId]);
+
+  const handleQuickAdd = (product, quantity = 1) => {
+    addToCart(product, store?.id || storeId, quantity);
+  };
+
+  const handleOpenCafeModal = (product) => {
+    setActiveProduct(product);
+    setIsCafeModalOpen(true);
+  };
+
+  const handleConfirmCafeAdd = (customizedProduct) => {
+    addToCart(customizedProduct, customizedProduct.store_id || storeId, 1);
+    setIsCafeModalOpen(false);
+  };
 
   if (loading) return <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-secondary)' }}>جاري تحميل المنيو...</div>;
   if (!store) return <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--danger)' }}>عذراً، المتجر غير موجود.</div>;
@@ -99,37 +114,29 @@ const StoreDetail = () => {
       <h2 style={{ marginBottom: '24px', fontSize: '2rem' }}>المنيو</h2>
       
       {/* Products Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
+      <div className="product-grid">
         {products.map(product => (
-          <div key={product.id} className="glass-panel card-hover" style={{ padding: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              style={{ width: '100px', height: '100px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }}
-            />
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '4px' }}>{product.name}</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                {product.description}
-              </p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--accent-primary)' }}>{product.price} جنيه</span>
-                <button 
-                  className="btn btn-primary" 
-                  style={{ padding: '8px 16px', borderRadius: 'var(--radius-full)' }}
-                  onClick={() => addToCart(product, store.id, 1)}
-                  disabled={!product.isAvailable}
-                >
-                  <Plus size={18} /> أضف
-                </button>
-              </div>
-            </div>
-          </div>
+          <CategoryProductCard 
+            key={product.id || product._id}
+            product={{...product, store_name: store.name}} 
+            category={store.id.includes('cafe') ? 'cafe' : (store.id.includes('supermarket') ? 'supermarket' : 'restaurant')}
+            onAddToCart={handleQuickAdd}
+            onOpenCafeModal={handleOpenCafeModal}
+          />
         ))}
         {products.length === 0 && (
-          <p style={{ color: 'var(--text-secondary)' }}>لا توجد منتجات متاحة في هذا المتجر حالياً.</p>
+          <p style={{ color: 'var(--text-secondary)', padding: '40px 0' }}>لا توجد منتجات متاحة في هذا المتجر حالياً.</p>
         )}
       </div>
+
+      {activeProduct && (
+        <CafeCustomizationModal 
+          isOpen={isCafeModalOpen}
+          onClose={() => setIsCafeModalOpen(false)}
+          product={activeProduct}
+          onConfirm={handleConfirmCafeAdd}
+        />
+      )}
     </div>
   );
 };
