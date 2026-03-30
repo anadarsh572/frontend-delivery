@@ -40,7 +40,8 @@ const CategoryPage = () => {
     });
 
     const handleQuickAdd = (product, quantity = 1) => {
-        addToCart(product, product.store_id || product.storeId || 1, quantity);
+        const storeId = product.store_id || product.storeId || 1;
+        addToCart(product, storeId, quantity);
         navigate('/cart');
     };
 
@@ -101,11 +102,7 @@ const CategoryPage = () => {
                     {category === 'restaurant' ? 'لا توجد مطاعم متاحة حالياً' : 'عذراً، لا توجد منتجات متاحة في هذا القسم حالياً.'}
                 </div>
             ) : (
-                <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: category === 'supermarket' ? 'repeat(auto-fill, minmax(200px, 1fr))' : 'repeat(auto-fill, minmax(280px, 1fr))', 
-                    gap: category === 'supermarket' ? '16px' : '24px' 
-                }}>
+                <div className="product-grid">
                     {products.filter(p => p.category === category).map((product) => (
                         <CategoryProductCard 
                             key={product.id || product._id}

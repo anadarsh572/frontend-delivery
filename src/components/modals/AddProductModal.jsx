@@ -275,10 +275,22 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
           <button 
             type="submit" 
             className="btn btn-primary" 
-            disabled={isSubmitting} 
-            style={{ width: '100%', padding: '18px', fontSize: '1.2rem', marginTop: '12px', justifyContent: 'center', boxShadow: '0 0 20px var(--accent-glow)' }}
+            disabled={isSubmitting || !formData.image_url} 
+            style={{ 
+              width: '100%', 
+              padding: '18px', 
+              fontSize: '1.2rem', 
+              marginTop: '12px', 
+              justifyContent: 'center', 
+              boxShadow: formData.image_url ? '0 0 20px var(--accent-glow)' : 'none',
+              opacity: formData.image_url ? 1 : 0.5,
+              cursor: formData.image_url ? 'pointer' : 'not-allowed',
+              background: formData.image_url ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+              color: formData.image_url ? 'white' : 'var(--text-tertiary)',
+              border: formData.image_url ? 'none' : '1px solid var(--border-color)'
+            }}
           >
-            {isSubmitting ? 'جاري الحفظ...' : 'إضافة المنتج للمنيو ✨'}
+            {isSubmitting ? 'جاري الحفظ...' : formData.image_url ? 'إضافة المنتج للمنيو ✨' : 'يرجى تصوير/اختيار صورة للمنتج'}
           </button>
         </form>
       </div>

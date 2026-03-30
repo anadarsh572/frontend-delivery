@@ -297,3 +297,40 @@ img {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
 }
+
+/* Product Grid System */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    padding: 10px 0;
+  }
+  
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  .mobile-text-lg {
+    font-size: 0.95rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.75rem !important;
+  }
+  
+  .mobile-text-xs {
+    font-size: 0.65rem !important;
+  }
+
+  .mobile-padding-sm {
+    padding: 8px !important;
+  }
+}

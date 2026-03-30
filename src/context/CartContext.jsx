@@ -20,34 +20,38 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('ecom_cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product, storeId, quantity = 1) => {
+  const addToCart = (product, storeId, quantityInput = 1) => {
+    const quantity = Number(quantityInput);
+    const productId = product.id || product._id;
+    
+    if (!productId) {
+      console.error("Product has no ID:", product);
+      return;
+    }
+
     setCartItems(prev => {
       // Enforce single-store grouping:
-      // If the cart is not empty and the new item is from a different store,
-      // we clear the cart and start fresh with the new store's item.
       if (prev.length > 0 && prev[0].storeId !== storeId) {
-        // Optional: You could show a confirmation dialog here, 
-        // but for now we follow the "strictly groups" requirement by resetting.
         return [{ 
           id: Date.now().toString(), 
-          productId: product.id, 
+          productId: productId, 
           storeId, 
           quantity, 
           product,
         }];
       }
 
-      const existing = prev.find(item => item.productId === product.id);
+      const existing = prev.find(item => item.productId === productId);
       if (existing) {
         return prev.map(item => 
-          item.productId === product.id 
-            ? { ...item, quantity: item.quantity + quantity }
+          item.productId === productId 
+            ? { ...item, quantity: Number(item.quantity) + quantity }
             : item
         );
       }
       return [...prev, { 
         id: Date.now().toString(), 
-        productId: product.id, 
+        productId: productId, 
         storeId, 
         quantity, 
         product, 

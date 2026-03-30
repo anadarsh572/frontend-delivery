@@ -65,9 +65,8 @@ const LandingPage = () => {
   };
 
   const handleAddToCart = (product, quantity = 1) => {
-    // Add product to CartContext safely (works for guests)
-    addToCart(product, product.store_id || product.storeId || 1, quantity);
-    // Send user directly to cart to review or checkout
+    const storeId = product.store_id || product.storeId || 1;
+    addToCart(product, storeId, quantity);
     navigate('/cart');
   };
 
@@ -133,7 +132,7 @@ const LandingPage = () => {
               {searchQuery ? 'عذراً، لم نجد أكلات تطابق بحثك' : 'لا يوجد منتجات متاحة حالياً'}
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px', opacity: isFetching ? 0.7 : 1, transition: 'opacity 0.2s' }}>
+            <div className="product-grid" style={{ opacity: isFetching ? 0.7 : 1, transition: 'opacity 0.2s' }}>
               {products.map((product) => (
                 <CategoryProductCard 
                   key={product.id || product._id}
