@@ -11,8 +11,12 @@ export const AuthProvider = ({ children }) => {
   // Mock initial load
   useEffect(() => {
     const savedUser = localStorage.getItem('ecom_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    if (savedUser && savedUser !== 'null' && savedUser !== 'undefined') {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (err) {
+        console.warn("Could not parse saved user:", err);
+      }
     }
     setLoading(false);
   }, []);

@@ -1,4 +1,9 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { RefreshCw, Star, MapPin, Clock } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useSearch } from '../../context/SearchContext';
+import { simulateDelay, MOCK_STORES } from '../../data/mockDb';
 import CategoryProductCard from '../../components/products/CategoryProductCard';
 import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
