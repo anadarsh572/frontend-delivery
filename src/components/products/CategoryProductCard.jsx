@@ -42,31 +42,39 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
   if (displayCategory === 'restaurant') {
     return (
       <CardWrapper>
-        <div style={{ height: '65%', width: '100%', position: 'relative' }}>
+        <div style={{ height: '42%', width: '100%', position: 'relative' }}>
           <img 
             src={product.image_url || product.image || '/placeholder-food.png'} 
             alt={product.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
           />
         </div>
-        <div className="mobile-padding-sm" style={{ padding: '12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', justifyContent: 'center', background: 'var(--bg-secondary)' }}>
-          <h3 className="mobile-text-lg" style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: 'var(--text-primary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: '1.2' }}>
+        <div className="mobile-padding-sm" style={{ padding: '8px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', background: 'var(--bg-secondary)' }}>
+          <h3 className="mobile-text-lg" style={{ fontSize: '1.05rem', fontWeight: '900', margin: 0, color: 'var(--text-primary)', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             {product.name}
           </h3>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-            <span className="mobile-text-sm" style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--accent-primary)' }}>
-              {product.price} <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>ج.م</span>
-            </span>
+          <p className="mobile-text-xs" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '0 0 2px', opacity: 0.8 }}>🏪 {product.store_name}</p>
+          <div style={{ fontWeight: '900', color: 'var(--accent-primary)', fontSize: '1rem', marginBottom: '4px' }}>
+            {product.price} <span style={{ fontSize: '0.7rem' }}>ج.م</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'auto' }}>
             <button 
               onClick={handleAdd} 
-              className="mobile-hide" 
-              style={{ background: 'var(--bg-tertiary)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}
+              className="btn btn-secondary" 
+              style={{ width: '100%', padding: '6px', fontSize: '0.8rem', borderRadius: '4px', justifyContent: 'center', gap: '4px' }}
             >
-              <ShoppingCart size={16} />
+              {adding ? <Check size={14} /> : <ShoppingCart size={14} />}
+              <span>أضف</span>
+            </button>
+            <button 
+              onClick={handleBuyNow} 
+              className="btn btn-primary" 
+              style={{ width: '100%', padding: '6px', fontSize: '0.8rem', borderRadius: '4px', justifyContent: 'center', background: 'var(--accent-primary)', border: 'none' }}
+            >
+              <span>اطلب الآن</span>
             </button>
           </div>
-          <p className="mobile-text-xs" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, opacity: 0.8 }}>🏪 {product.store_name}</p>
-          <p className="mobile-hide" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', flex: 1, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.description}</p>
         </div>
       </CardWrapper>
     );
@@ -75,22 +83,28 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
   // --- Cafe Layout ---
   if (displayCategory === 'cafe') {
     return (
-      <CardWrapper className="mobile-padding-sm" style={{ padding: '12px', textAlign: 'center', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="mobile-hide" style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(139, 69, 19, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B4513', marginBottom: '8px' }}>
-          <Coffee size={35} />
+      <CardWrapper className="mobile-padding-sm" style={{ padding: '12px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px' }}>
+          <h3 className="mobile-text-lg" style={{ fontSize: '1.05rem', fontWeight: '900', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</h3>
+          <p className="mobile-text-xs" style={{ fontSize: '0.75rem', color: '#8B4513', opacity: 0.8, margin: 0 }}>🥤 {product.store_name}</p>
+          <p className="mobile-text-sm" style={{ fontWeight: '900', color: '#8B4513', margin: '2px 0' }}>{product.price} ج.م</p>
         </div>
-        <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
-          <h3 className="mobile-text-lg" style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</h3>
-          <p className="mobile-text-sm" style={{ fontSize: '1.1rem', fontWeight: '900', color: '#8B4513', margin: 0 }}>{product.price} ج.م</p>
-          <p className="mobile-text-xs" style={{ fontSize: '0.8rem', color: '#8B4513', opacity: 0.8, borderTop: '1px solid rgba(139,69,19,0.1)', paddingTop: '4px' }}>🥤 {product.store_name}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', marginTop: 'auto' }}>
+            <button 
+                onClick={(e) => { e.stopPropagation(); onOpenCafeModal(product); }} 
+                className="btn btn-secondary" 
+                style={{ width: '100%', justifyContent: 'center', padding: '6px', fontSize: '0.8rem', borderRadius: '4px', borderColor: '#8B4513', color: '#8B4513' }}
+            >
+              تخصيص
+            </button>
+            <button 
+                onClick={handleBuyNow} 
+                className="btn btn-primary" 
+                style={{ width: '100%', justifyContent: 'center', background: '#8B4513', border: 'none', color: 'white', padding: '6px', fontSize: '0.8rem', borderRadius: '4px' }}
+            >
+              اطلب الآن
+            </button>
         </div>
-        <button 
-            onClick={(e) => { e.stopPropagation(); onOpenCafeModal(product); }} 
-            className="btn btn-primary mobile-text-xs" 
-            style={{ width: '100%', justifyContent: 'center', background: '#8B4513', borderColor: '#8B4513', color: 'white', padding: '10px', borderRadius: 'var(--radius-md)', marginTop: '8px', fontWeight: 'bold' }}
-        >
-          طلب سريع
-        </button>
       </CardWrapper>
     );
   }
@@ -99,23 +113,34 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
   if (displayCategory === 'supermarket') {
     return (
       <CardWrapper>
-        <div style={{ height: '65%', width: '100%', position: 'relative' }}>
+        <div style={{ height: '42%', width: '100%', position: 'relative' }}>
           <img 
             src={product.image_url || product.image || '/placeholder-item.png'} 
             alt={product.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
           />
         </div>
-        <div className="mobile-padding-sm" style={{ padding: '12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', background: 'var(--bg-secondary)', justifyContent: 'center' }}>
-          <h4 className="mobile-text-lg" style={{ fontSize: '1.1rem', fontWeight: '900', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</h4>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <p className="mobile-text-sm" style={{ fontWeight: '900', color: 'var(--accent-primary)', fontSize: '1.1rem', margin: 0 }}>{product.price} ج</p>
-            <div className="mobile-hide" style={{ display: 'flex', gap: '4px' }}>
-                <button onClick={(e) => { e.stopPropagation(); setQty(q => q + 1); }} style={{ background: 'none', border: 'none', color: 'var(--success)' }}><Plus size={14} /></button>
-                <button onClick={(e) => { e.stopPropagation(); setQty(q => Math.max(1, q - 1)); }} style={{ background: 'none', border: 'none', color: 'var(--danger)' }}><Minus size={14} /></button>
-            </div>
+        <div className="mobile-padding-sm" style={{ padding: '8px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', background: 'var(--bg-secondary)' }}>
+          <h4 className="mobile-text-lg" style={{ fontSize: '1rem', fontWeight: '900', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</h4>
+          <p className="mobile-text-xs" style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 'bold', margin:0 }}>🧺 {product.store_name}</p>
+          <p className="mobile-text-sm" style={{ fontWeight: '900', color: 'var(--accent-primary)', fontSize: '1rem', margin: '2px 0' }}>{product.price} ج</p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'auto' }}>
+            <button 
+                onClick={handleAdd} 
+                className="btn btn-secondary" 
+                style={{ width: '100%', padding: '6px', fontSize: '0.8rem', borderRadius: '4px', justifyContent: 'center' }}
+            >
+              أضف للسلة
+            </button>
+            <button 
+                onClick={handleBuyNow} 
+                className="btn btn-primary" 
+                style={{ width: '100%', padding: '6px', fontSize: '0.8rem', background: 'var(--accent-primary)', border: 'none', borderRadius: '4px', justifyContent: 'center' }}
+            >
+               اطلب الآن
+            </button>
           </div>
-          <p className="mobile-text-xs" style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: 'bold', margin:0 }}>🧺 {product.store_name}</p>
         </div>
       </CardWrapper>
     );
@@ -123,9 +148,13 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
 
   // Fallback
   return (
-    <CardWrapper className="mobile-padding-sm" style={{ padding: '20px', textAlign: 'center', justifyContent: 'center' }}>
-        <h3 className="mobile-text-lg" style={{ fontWeight: '900', margin: 0 }}>{product.name}</h3>
-        <p className="mobile-text-sm" style={{ color: 'var(--accent-primary)', fontWeight: 'bold', fontSize: '1.2rem', margin: '8px 0' }}>{product.price} جنيه</p>
+    <CardWrapper className="mobile-padding-sm" style={{ padding: '12px', textAlign: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+        <h3 className="mobile-text-lg" style={{ fontWeight: '900', margin: 0, fontSize: '1rem' }}>{product.name}</h3>
+        <p className="mobile-text-sm" style={{ color: 'var(--accent-primary)', fontWeight: 'bold', fontSize: '1.1rem', margin: '4px 0' }}>{product.price} جنيه</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
+          <button onClick={handleAdd} className="btn btn-secondary" style={{ padding: '6px', fontSize: '0.8rem' }}>أضف</button>
+          <button onClick={handleBuyNow} className="btn btn-primary" style={{ padding: '6px', fontSize: '0.8rem' }}>اطلب</button>
+        </div>
     </CardWrapper>
   );
 };
