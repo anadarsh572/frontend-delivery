@@ -300,7 +300,10 @@ const AdminDashboard = () => {
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '0 8px' }}>
-                 <MapPin size={14} /> <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{order.customer_address || 'لا يوجد عنوان'}</span>
+                 <MapPin size={14} /> <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{order.customer_address || order.address || order.delivery_address || 'لا يوجد عنوان'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '0 8px', marginTop: '4px' }}>
+                 <Smartphone size={14} /> <span style={{ direction: 'ltr' }}>{order.customer_phone || order.phone || order.customerPhone || 'بدون رقم'}</span>
               </div>
             </div>
           </div>

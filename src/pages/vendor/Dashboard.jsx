@@ -201,7 +201,7 @@ const VendorDashboard = () => {
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                       <MapPin size={18} color="var(--accent-primary)" style={{ marginTop: '2px', flexShrink: 0 }} />
                       <p style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>
-                        {order.address || order.deliveryAddress || 'لا يوجد عنوان'}
+                        {order.customer_address || order.address || order.deliveryAddress || 'لا يوجد عنوان محدد'}
                       </p>
                     </div>
                   </div>
@@ -212,7 +212,7 @@ const VendorDashboard = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Phone size={18} color="var(--success)" />
                         <p style={{ fontWeight: 'bold', fontSize: '1.3rem', color: 'var(--text-primary)', letterSpacing: '1px', direction: 'ltr' }}>
-                          {order.customer_phone || order.customerPhone || 'N/A'}
+                          {order.customer_phone || order.phone || order.customerPhone || 'N/A'}
                         </p>
                       </div>
                       { (order.customer_phone || order.customerPhone) && (

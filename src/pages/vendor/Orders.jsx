@@ -140,10 +140,10 @@ const Orders = () => {
                     <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', opacity: 0.7 }}>بيانات العميل</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
-                        <User size={16} /> {order.customer_name || 'عميل مجهول'}
+                        <User size={16} /> {order.customer_name || order.name || 'عميل مجهول'}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                        <MapPin size={16} /> {order.customer_address || order.address || 'العنوان غير محدد'}
+                        <MapPin size={16} /> {order.customer_address || order.address || order.delivery_address || 'العنوان غير محدد'}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
                         <Phone size={16} /> {order.customer_phone || order.phone || 'بدون رقم هاتف'}

@@ -9,7 +9,7 @@ import apiClient from '../../api/client';
 
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
-  const { user, login } = useAuth();
+  const { user, login, updateUser } = useAuth();
   const navigate = useNavigate();
   
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -20,6 +20,15 @@ const Cart = () => {
   const [phone, setPhone] = useState(user?.phone || '');
   const [address, setAddress] = useState(user?.address || '');
   const [customerName, setCustomerName] = useState(user?.name || '');
+  
+  // Sync state with user data when it changes
+  useEffect(() => {
+    if (user) {
+      if (!phone) setPhone(user.phone || '');
+      if (!address) setAddress(user.address || '');
+      if (!customerName) setCustomerName(user.name || '');
+    }
+  }, [user]);
 
   // Auth Modal State
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -68,9 +77,10 @@ const Cart = () => {
         
         login(userObj);
 
-        // Pre-fill if we just registered/logged in and they have data (unlikely on fresh register but fits login)
+        // Pre-fill if we just registered/logged in and they have data
         setPhone(userObj.phone || '');
         setAddress(userObj.address || '');
+        setCustomerName(userObj.name || '');
 
         setShowAuthModal(false);
         // Instantly transition to delivery details modal
@@ -92,8 +102,8 @@ const Cart = () => {
     if (!user || !token) return;
     
     if (!phone.trim() || !address.trim() || !customerName.trim()) {
-      alert("يرجى إدخال الاسم، رقم التليفون، وعنوان التوصيل.");
-      return;
+       alert("يرجى إدخال الاسم، رقم التليفون، وعنوان التوصيل.");
+       return;
     }
     
     setIsPlacingOrder(true);
@@ -118,6 +128,8 @@ const Cart = () => {
         customer_name: customerName,
         customer_phone: phone,
         customer_address: address,
+        address: address, // Fallback for old schema
+        phone: phone,     // Fallback for old schema
         payment_method: 'cash'
       };
 
@@ -125,6 +137,26 @@ const Cart = () => {
       const response = await apiClient.post('/api/orders', payload);
 
       if (response.status === 200 || response.status === 201) {
+        
+        // Save those details to the account for next time
+        try {
+          const profileUpdate = {
+             name: customerName,
+             phone: phone,
+             address: address
+          };
+          
+          // Use the new updateUser function to persist locally
+          updateUser(profileUpdate);
+          
+          // Attempt but don't wait/block on backend profile update 
+          apiClient.patch('/api/user/profile', profileUpdate).catch(err => {
+              console.warn("Could not update profile on backend:", err);
+          });
+        } catch (profileErr) {
+            console.error("Error updating user details locally:", profileErr);
+        }
+
         // Clear cart and show success dialog
         clearCart();
         setShowModal(false);
