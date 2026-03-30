@@ -100,7 +100,8 @@ const Cart = () => {
     
     try {
       // Assuming all items in cart are from the same store for food delivery
-      const storeId = cartItems.length > 0 ? cartItems[0].storeId : null;
+      const firstItem = cartItems[0];
+      const storeId = firstItem.store_id || firstItem.storeId;
       
       const payload = {
         store_id: storeId, 
@@ -108,7 +109,8 @@ const Cart = () => {
           id: item.productId || item.product?.id || item.product?._id,
           name: item.product?.name,
           quantity: parseInt(item.quantity, 10),
-          price: Number(item.product?.price)
+          price: Number(item.product?.price),
+          store_id: item.store_id || item.storeId
         })),
         items_price: cartTotal,
         delivery_fee: deliveryFee,
