@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, PlusCircle, AlertCircle, CheckCircle2, Camera, Image as ImageIcon, Trash2, Upload } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, PlusCircle, AlertCircle, CheckCircle2, Camera, Trash2 } from 'lucide-react';
 import { API_URL } from '../../api/config';
 
 const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
@@ -14,8 +15,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  
-  const [status, setStatus] = useState(null); // { type: 'success' | 'error', text: '' }
+  const [status, setStatus] = useState(null); 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -31,26 +31,18 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB Limit
+      if (file.size > 5 * 1024 * 1024) {
         setStatus({ type: 'error', text: 'حجم الصورة كبير جداً! الحد الأقصى 5 ميجابايت.' });
         return;
       }
-
       setIsUploading(true);
       const reader = new FileReader();
-      
       reader.onloadend = () => {
         const base64String = reader.result;
         setImagePreview(base64String);
         setFormData(prev => ({ ...prev, image_url: base64String }));
         setIsUploading(false);
       };
-
-      reader.onerror = () => {
-        setStatus({ type: 'error', text: 'فشل في قراءة ملف الصورة.' });
-        setIsUploading(false);
-      };
-
       reader.readAsDataURL(file);
     }
   };
@@ -66,11 +58,10 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     setStatus(null);
 
     try {
-      // Ensure storeId is included in the payload
       const payload = { 
         ...formData, 
         price: Number(formData.price),
-        store_id: storeId || 1 // Changed storeId to store_id
+        store_id: storeId || 1
       };
 
       const response = await fetch(`${API_URL}/api/products`, {
@@ -89,15 +80,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
         setTimeout(() => {
           onSuccess();
           onClose();
-          // Reset form
-          setFormData({
-            name: '',
-            price: '',
-            description: '',
-            category: 'restaurant',
-            image_url: '',
-            is_available: true
-          });
+          setFormData({ name: '', price: '', description: '', category: 'restaurant', image_url: '', is_available: true });
           setImagePreview(null);
           setStatus(null);
         }, 1500);
@@ -112,32 +95,51 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
     }
   };
 
-  return (
-    <div className="modal-overlay">
-      <div className="glass-panel modal-content" style={{ padding: 'clamp(24px, 5vw, 40px)' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '50%', color: 'var(--text-secondary)', zIndex: 10 }}>
-          <X size={20} />
-        </button>
+  // Modal Content JSX
+  const modalContent = (
+    <div className="modal-overlay" style={{ perspective: '1000px' }}>
+      <div className="glass-panel modal-content" style={{ padding: 'clamp(24px, 5vw, 40px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+        {/* Header with improved close button */}
+        <div style={{ position: 'relative' }}>
+            <button 
+                onClick={onClose} 
+                className="card-hover"
+                style={{ 
+                    position: 'absolute', 
+                    top: '-10px', 
+                    right: '-10px', 
+                    background: 'var(--bg-tertiary)', 
+                    padding: '10px', 
+                    borderRadius: '12px', 
+                    color: 'var(--text-secondary)', 
+                    zIndex: 10,
+                    border: '1px solid var(--border-color)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                }}
+            >
+                <X size={20} />
+            </button>
 
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ width: '64px', height: '64px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--accent-primary)', boxShadow: '0 0 20px rgba(255, 90, 31, 0.2)' }}>
-            <PlusCircle size={32} />
-          </div>
-          <h2 style={{ fontSize: '1.8rem', marginBottom: '8px', color: 'var(--text-primary)' }}>إضافة منتج جديد</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>املأ البيانات لإضافة صنف جديد للمنيو الخاص بك.</p>
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{ width: '70px', height: '70px', background: 'linear-gradient(135deg, rgba(255, 90, 31, 0.2) 0%, rgba(255, 90, 31, 0.05) 100%)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--accent-primary)', border: '1px solid var(--border-glow)' }}>
+                    <PlusCircle size={36} />
+                </div>
+                <h2 className="gradient-text" style={{ fontSize: '2rem', marginBottom: '8px', fontWeight: '900' }}>إضافة منتج جديد</h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>املأ البيانات لإضافة صنف جديد للمنيو الخاص بك.</p>
+            </div>
         </div>
 
         {status && (
-          <div style={{ padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px', background: status.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: status.type === 'success' ? 'var(--success)' : 'var(--danger)' }}>
+          <div className="animate-fade-up" style={{ padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px', background: status.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', border: `1px solid ${status.type === 'success' ? 'var(--success)' : 'var(--danger)'}30`, color: status.type === 'success' ? 'var(--success)' : 'var(--danger)' }}>
             {status.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
             <p style={{ fontWeight: 'bold' }}>{status.text}</p>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '24px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>اسم المنتج</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>اسم المنتج</label>
               <input 
                 type="text" 
                 name="name" 
@@ -145,63 +147,64 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
                 onChange={handleInputChange} 
                 required 
                 placeholder="مثلاً: بيف برجر عائلي" 
-                style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} 
+                style={{ width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', transition: 'var(--transition)' }} 
+                className="input-focus"
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>السعر (جنيه)</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>السعر (جنيه)</label>
               <input 
                 type="number" 
                 name="price" 
                 value={formData.price} 
                 onChange={handleInputChange} 
                 required 
-                placeholder="مثلاً: 150" 
+                placeholder="0.00" 
                 min="0" 
                 step="0.01" 
-                style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} 
+                style={{ width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }} 
               />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>القسم (الفئة)</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>القسم (الفئة)</label>
             <select 
               name="category" 
               value={formData.category} 
               onChange={handleInputChange} 
-              style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', cursor: 'pointer' }}
+              style={{ width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', cursor: 'pointer' }}
             >
-              <option value="restaurant">مطعم (Restaurant)</option>
-              <option value="cafe">كافيه (Cafe)</option>
-              <option value="supermarket">سوبر ماركت (Supermarket)</option>
+              <option value="restaurant">🍱 مطعم (Restaurant)</option>
+              <option value="cafe">☕ كافيه (Cafe)</option>
+              <option value="supermarket">🛒 سوبر ماركت (Supermarket)</option>
             </select>
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>الوصف</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>الوصف</label>
             <textarea 
               name="description" 
               value={formData.description} 
               onChange={handleInputChange} 
               required 
               rows="3" 
-              placeholder="وصف مشهي للمنتج..." 
-              style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', resize: 'vertical' }} 
+              placeholder="اكتب وصفاً جذاباً لمنتجك يشد الزبون..." 
+              style={{ width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', resize: 'none' }} 
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>صورة المنتج</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>صورة المنتج</label>
             
             <div style={{ position: 'relative' }}>
               {!imagePreview ? (
                 <div 
-                  className="upload-area"
+                  className="upload-area card-hover"
                   style={{ 
                     width: '100%', 
-                    height: '160px', 
+                    height: '180px', 
                     borderRadius: 'var(--radius-lg)', 
                     border: '2px dashed var(--border-color)', 
                     display: 'flex', 
@@ -210,101 +213,79 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
                     justifyContent: 'center', 
                     gap: '12px',
                     cursor: 'pointer',
-                    transition: 'var(--transition)',
-                    background: 'var(--bg-tertiary)',
+                    background: 'rgba(255,255,255,0.02)',
                     overflow: 'hidden'
                   }}
                   onClick={() => document.getElementById('image-upload').click()}
                 >
-                  <div style={{ padding: '12px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: '50%', color: 'var(--accent-primary)' }}>
-                    <Camera size={28} />
+                  <div style={{ padding: '16px', background: 'rgba(255, 90, 31, 0.1)', borderRadius: '50%', color: 'var(--accent-primary)', border: '1px solid var(--border-glow)' }}>
+                    <Camera size={32} />
                   </div>
                   <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>اضغط هنا للتصوير أو اختيار صورة</p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>PNG, JPG حتى 5MB</p>
+                    <p style={{ fontWeight: 'bold', fontSize: '1rem' }}>اضغط للتصوير أو اختيار صورة</p>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>الحد الأقصى 5 ميجابايت (JPG, PNG)</p>
                   </div>
-                  <input 
-                    id="image-upload"
-                    type="file" 
-                    accept="image/*" 
-                    capture="environment"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }} 
-                  />
+                  <input id="image-upload" type="file" accept="image/*" capture="environment" onChange={handleFileChange} style={{ display: 'none' }} />
                 </div>
               ) : (
-                <div style={{ position: 'relative', width: '100%', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    style={{ width: '100%', height: '200px', objectFit: 'cover' }} 
-                  />
+                <div style={{ position: 'relative', width: '100%', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
+                  <img src={imagePreview} alt="Preview" style={{ width: '100%', height: '220px', objectFit: 'cover' }} />
                   <div 
                     style={{ 
                       position: 'absolute', 
                       bottom: 0, 
                       left: 0, 
                       right: 0, 
-                      background: 'rgba(0,0,0,0.6)', 
-                      backdropFilter: 'blur(5px)',
-                      padding: '8px 16px', 
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', 
+                      padding: '20px', 
                       display: 'flex', 
                       justifyContent: 'space-between', 
                       alignItems: 'center' 
                     }}
                   >
-                    <span style={{ fontSize: '0.8rem', color: 'white', fontWeight: 'bold' }}>تم اختيار الصورة ✓</span>
+                    <span style={{ fontSize: '0.9rem', color: 'white', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <CheckCircle2 size={18} color="var(--success)" /> جاهز للتحميل
+                    </span>
                     <button 
                       type="button"
                       onClick={removeImage}
-                      style={{ 
-                        background: 'rgba(239, 68, 68, 0.2)', 
-                        border: '1px solid var(--danger)', 
-                        color: 'var(--danger)', 
-                        padding: '6px 12px', 
-                        borderRadius: 'var(--radius-md)', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '6px',
-                        fontSize: '0.8rem',
-                        cursor: 'pointer'
-                      }}
+                      className="btn"
+                      style={{ background: 'var(--danger)', color: 'white', padding: '8px 16px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
                     >
-                      <Trash2 size={14} /> تغيير الصورة
+                      <Trash2 size={16} /> حذف
                     </button>
                   </div>
                 </div>
               )}
             </div>
-            
-            {/* Hidden fallback if they still want URL, but simplified */}
-            <input type="hidden" name="image_url" value={formData.image_url} />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--bg-tertiary)', padding: '12px 20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
             <input 
               type="checkbox" 
               id="is_available" 
               name="is_available" 
               checked={formData.is_available} 
               onChange={handleInputChange} 
-              style={{ width: '20px', height: '20px', cursor: 'pointer' }} 
+              style={{ width: '20px', height: '20px', accentColor: 'var(--accent-primary)', cursor: 'pointer' }} 
             />
-            <label htmlFor="is_available" style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}>المنتج متوفر حالياً</label>
+            <label htmlFor="is_available" style={{ color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 'bold' }}>المنتج متوفر حالياً بالمخزن</label>
           </div>
 
           <button 
             type="submit" 
             className="btn btn-primary" 
             disabled={isSubmitting} 
-            style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: '12px', justifyContent: 'center' }}
+            style={{ width: '100%', padding: '18px', fontSize: '1.2rem', marginTop: '12px', justifyContent: 'center', boxShadow: '0 0 20px var(--accent-glow)' }}
           >
-            {isSubmitting ? 'جاري الحفظ...' : 'إضافة المنتج'}
+            {isSubmitting ? 'جاري الحفظ...' : 'إضافة المنتج للمنيو ✨'}
           </button>
         </form>
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default AddProductModal;
