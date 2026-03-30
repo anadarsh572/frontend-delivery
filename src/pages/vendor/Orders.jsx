@@ -48,15 +48,15 @@ const Orders = () => {
   };
 
   const statusMap = {
-    'Pending': { label: 'قيد الانتظار', color: '#f59e0b', icon: <Clock size={16} /> },
-    'accepted': { label: 'تم القبول', color: '#3b82f6', icon: <CheckCircle size={16} /> },
-    'Preparing': { label: 'جاري التجهيز', color: '#8b5cf6', icon: <Package size={16} /> },
-    'Ready': { label: 'جاهز للاستلام', color: '#10b981', icon: <CheckCircle size={16} /> },
-    'OnTheWay': { label: 'في الطريق', color: '#06b6d4', icon: <Truck size={16} /> },
-    'Delivered': { label: 'تم التوصيل', color: '#10b981', icon: <CheckCircle size={16} /> },
-    'Completed': { label: 'مكتمل', color: '#10b981', icon: <CheckCircle size={16} /> },
-    'rejected': { label: 'مرفوض', color: '#ef4444', icon: <XCircle size={16} /> },
-    'Cancelled': { label: 'ملغي', color: '#ef4444', icon: <XCircle size={16} /> }
+    'Pending': { label: 'طلب جديد - قيد الانتظار', color: '#f59e0b', icon: <Clock size={16} /> },
+    'accepted': { label: 'تم القبول - بانتظار التجهيز', color: '#3b82f6', icon: <CheckCircle size={16} /> },
+    'Preparing': { label: 'جاري تجهيز الطلب الآن', color: '#8b5cf6', icon: <Package size={16} /> },
+    'Ready': { label: 'الطلب جاهز للاستلام', color: '#10b981', icon: <CheckCircle size={16} /> },
+    'OnTheWay': { label: 'تم التسليم للدليفري 🚚', color: '#06b6d4', icon: <Truck size={16} /> },
+    'Delivered': { label: 'تم التوصيل للعميل ✅', color: '#10b981', icon: <CheckCircle size={16} /> },
+    'Completed': { label: 'طلب مكتمل', color: '#10b981', icon: <CheckCircle size={16} /> },
+    'rejected': { label: 'طلب مرفوض', color: '#ef4444', icon: <XCircle size={16} /> },
+    'Cancelled': { label: 'طلب ملغي', color: '#ef4444', icon: <XCircle size={16} /> }
   };
 
   const getStatusInfo = (status) => statusMap[status] || { label: status, color: '#6b7280', icon: <Clock size={16} /> };
@@ -217,7 +217,15 @@ const Orders = () => {
                   )}
 
                   {order.status === 'Ready' && (
-                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic' }}>في انتظار مندوب التوصيل...</span>
+                    <button 
+                      onClick={() => updateStatus(order.id, 'OnTheWay')} 
+                      className="btn" 
+                      disabled={updatingId === order.id}
+                      style={{ background: '#06b6d4', color: 'white', fontSize: '0.9rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                      <Truck size={18} />
+                      {updatingId === order.id ? 'جاري...' : 'تم التسليم للدليفري'}
+                    </button>
                   )}
 
                   {order.status === 'OnTheWay' && (

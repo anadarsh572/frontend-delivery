@@ -81,13 +81,18 @@ const Profile = () => {
   const renderStatusBadge = (status) => {
     let color, bg, label;
     switch(status) {
-      case 'Pending': color = 'var(--text-secondary)'; bg = 'var(--bg-tertiary)'; label = 'قيد المراجعة'; break;
-      case 'Preparing': color = 'var(--warning)'; bg = 'rgba(245, 158, 11, 0.1)'; label = 'جاري التجهيز'; break;
-      case 'Delivered': color = 'var(--success)'; bg = 'rgba(16, 185, 129, 0.1)'; label = 'تم التوصيل'; break;
+      case 'Pending': color = '#f59e0b'; bg = 'rgba(245, 158, 11, 0.1)'; label = 'قيد المراجعة'; break;
+      case 'accepted': color = '#3b82f6'; bg = 'rgba(59, 130, 246, 0.1)'; label = 'تم قبول طلبك'; break;
+      case 'Preparing': color = '#8b5cf6'; bg = 'rgba(139, 92, 246, 0.1)'; label = 'جاري تجهيز الطلب'; break;
+      case 'Ready': color = '#10b981'; bg = 'rgba(16, 185, 129, 0.1)'; label = 'الطلب جاهز'; break;
+      case 'OnTheWay': color = '#06b6d4'; bg = 'rgba(6, 182, 212, 0.1)'; label = 'تم تسليم الطلب للدليفري وجاري التوصيل 🚀'; break;
+      case 'Delivered': color = 'var(--success)'; bg = 'rgba(16, 185, 129, 0.1)'; label = 'تم التوصيل بنجاح ✅'; break;
+      case 'rejected': color = 'var(--danger)'; bg = 'rgba(239, 68, 68, 0.1)'; label = 'مرفوض'; break;
+      case 'Cancelled': color = 'var(--danger)'; bg = 'rgba(239, 68, 68, 0.1)'; label = 'ملغي'; break;
       default: color = 'var(--text-primary)'; bg = 'var(--bg-tertiary)'; label = status || 'غير معروف';
     }
     return (
-      <span style={{ color, background: bg, padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 'bold' }}>
+      <span style={{ color, background: bg, padding: '6px 14px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '6px', border: `1px solid ${color}20` }}>
         {label}
       </span>
     );
@@ -168,6 +173,22 @@ const Profile = () => {
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '4px' }}>الإجمالي</p>
                   <p style={{ fontWeight: 'bold', fontSize: '1.4rem', color: 'var(--accent-primary)', marginBottom: '16px' }}>{order.total || order.total_price} جنيه</p>
                   
+                  {order.status === 'OnTheWay' && (
+                    <div style={{ 
+                      padding: '12px 16px', 
+                      background: 'rgba(6, 182, 212, 0.15)', 
+                      borderRadius: 'var(--radius-md)', 
+                      color: '#06b6d4', 
+                      fontSize: '0.9rem', 
+                      fontWeight: 'bold',
+                      animation: 'pulse 2s infinite',
+                      textAlign: 'center',
+                      border: '1px solid rgba(6, 182, 212, 0.3)'
+                    }}>
+                      طلبك في الطريق! المندوب قادم إليك الآن 🚀
+                    </div>
+                  )}
+
                   {order.status === 'Delivered' && (
                     <button className="btn btn-secondary" style={{ width: '100%', padding: '8px', fontSize: '0.9rem', justifyContent: 'center' }}>
                       <Star size={16} style={{ color: 'var(--warning)', fill: 'var(--warning)' }} /> تقييم الطلب

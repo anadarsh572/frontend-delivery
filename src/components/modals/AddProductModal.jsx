@@ -114,7 +114,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="glass-panel modal-content" style={{ padding: 'clamp(24px, 5vw, 40px)', maxHeight: '90vh' }}>
+      <div className="glass-panel modal-content" style={{ padding: 'clamp(24px, 5vw, 40px)' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '50%', color: 'var(--text-secondary)', zIndex: 10 }}>
           <X size={20} />
         </button>
