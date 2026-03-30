@@ -41,16 +41,11 @@ const AdminDashboard = () => {
   const fetchOrders = async () => {
     try {
       setLoadingOrders(true);
-      const response = await fetch(`${API_URL}/api/admin/orders`); // Adjust as per your real backend
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(Array.isArray(data) ? data : data.orders || []);
-      } else {
-        // Fallback or empty if endpoint missing
-        setOrders([]);
-      }
+      const response = await apiClient.get('/api/admin/orders');
+      setOrders(Array.isArray(response.data) ? response.data : response.data.orders || []);
     } catch (error) {
       console.error("Error fetching admin orders", error);
+      setOrders([]);
     } finally {
       setLoadingOrders(false);
     }
@@ -213,14 +208,20 @@ const AdminDashboard = () => {
     const filteredOrders = orders.filter(order => {
       if (orderFilter === 'all') return true;
       const status = order.status?.toLowerCase() || '';
+      
       if (orderFilter === 'completed') {
-        return status === 'delivered' || status === 'completed' || status === 'تم التوصيل' || status === 'مكتمل';
+        const completedStatuses = ['delivered', 'completed', 'تم التوصيل', 'مكتمل'];
+        return completedStatuses.includes(status);
       }
+      
       if (orderFilter === 'pending') {
-        return status === 'pending' || status === 'processing' || status === 'جاري التنفيذ' || status === 'قيد الانتظار';
+        const pendingStatuses = ['pending', 'processing', 'preparing', 'ready', 'ontheway', 'accepted', 'جاري التنفيذ', 'قيد الانتظار', 'جاري التوصيل'];
+        return pendingStatuses.includes(status);
       }
+      
       if (orderFilter === 'uncompleted') {
-        return status === 'cancelled' || status === 'rejected' || status === 'failed' || status === 'ملغي' || status === 'مرفوض';
+        const failedStatuses = ['cancelled', 'rejected', 'failed', 'ملغي', 'مرفوض'];
+        return failedStatuses.includes(status);
       }
       return true;
     });
@@ -235,34 +236,72 @@ const AdminDashboard = () => {
     );
 
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
         {filteredOrders.map(order => (
-          <div key={order.id || order._id} className="glass-panel" style={{ padding: '24px', borderTop: `4px solid var(--accent-primary)` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div key={order.id || order._id} className="glass-panel" style={{ padding: '24px', borderTop: `4px solid var(--accent-primary)`, position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
               <div>
-                <h4 style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>طلب #{order.id || (order._id && order._id.slice(-6))}</h4>
+                <h4 style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--text-primary)' }}>طلب #{order.id || (order._id && order._id.slice(-6))}</h4>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{order.date || new Date().toLocaleString()}</span>
               </div>
               <span style={{ 
-                padding: '4px 12px', 
+                padding: '6px 14px', 
                 borderRadius: 'var(--radius-full)', 
-                background: order.status?.toLowerCase().includes('delivered') || order.status?.toLowerCase().includes('completed') ? 'rgba(16, 185, 129, 0.1)' : 'var(--bg-tertiary)', 
-                color: order.status?.toLowerCase().includes('delivered') || order.status?.toLowerCase().includes('completed') ? 'var(--success)' : 'var(--text-primary)',
-                fontSize: '0.85rem', 
-                fontWeight: 'bold' 
+                background: order.status?.toLowerCase().includes('delivered') || order.status?.toLowerCase().includes('completed') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)', 
+                color: order.status?.toLowerCase().includes('delivered') || order.status?.toLowerCase().includes('completed') ? 'var(--success)' : 'var(--warning)',
+                fontSize: '0.9rem', 
+                fontWeight: 'bold',
+                border: '1px solid currentColor'
               }}>
                 {order.status}
               </span>
             </div>
-            <div style={{ marginBottom: '16px', background: 'var(--bg-primary)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-              <p style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>العميل:</span>
-                <strong>{order.customer_name || '...'}</strong>
-              </p>
-              <p style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>الإجمالي:</span>
-                <strong className="gradient-text" style={{ fontSize: '1.2rem' }}>{order.total || order.total_price} ج.م</strong>
-              </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ background: 'var(--bg-primary)', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <Users size={16} color="var(--info)" />
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>العميل:</span>
+                  <strong style={{ color: 'var(--text-primary)' }}>{order.customer_name || '...'}</strong>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <Store size={16} color="var(--success)" />
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>المتجر:</span>
+                  <strong style={{ color: 'var(--warning)' }}>{order.vendor_name || order.store_name || '...'}</strong>
+                </div>
+
+                {(() => {
+                  let itemsList = [];
+                  try {
+                    itemsList = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+                  } catch (e) { itemsList = []; }
+                  
+                  if (itemsList.length === 0) return null;
+                  
+                  return (
+                    <div style={{ margin: '8px 0', padding: '8px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px' }}>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '4px' }}>محتويات الطلب:</p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {itemsList.map((item, idx) => (
+                          <span key={idx} style={{ background: 'var(--bg-tertiary)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', border: '1px solid var(--border-color)' }}>
+                            {item.name} ({item.quantity}x)
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '14px', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>الإجمالي:</span>
+                  <strong className="gradient-text" style={{ fontSize: '1.4rem', fontWeight: '900' }}>{order.total_price || order.total} ج.م</strong>
+                </div>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '0.8rem', padding: '0 8px' }}>
+                 <MapPin size={14} /> <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{order.customer_address || 'لا يوجد عنوان'}</span>
+              </div>
             </div>
           </div>
         ))}
