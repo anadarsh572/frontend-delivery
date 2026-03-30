@@ -309,8 +309,8 @@ img {
 @media (max-width: 768px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    padding: 10px 0;
+    gap: 16px !important;
+    padding: 15px 5px;
   }
   
   .mobile-hide {
@@ -319,11 +319,12 @@ img {
   
   .mobile-text-lg {
     font-size: 1.1rem !important;
-    line-height: 1.2 !important;
+    font-weight: 800 !important;
+    line-height: 1.3 !important;
   }
   
   .mobile-text-sm {
-    font-size: 0.85rem !important;
+    font-size: 0.9rem !important;
   }
   
   .mobile-text-xs {
@@ -331,12 +332,44 @@ img {
   }
 
   .mobile-padding-sm {
-    padding: 10px !important;
+    padding: 12px !important;
   }
 }
 
-.product-card-square {
-  aspect-ratio: 1 / 1;
-  display: flex !important;
-  flex-direction: column !important;
+.btn-buy-full {
+  width: 100%;
+  padding: 10px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 900;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s ease;
+}
+
+.btn-buy-full:active {
+  transform: scale(0.96);
+}
+
+.btn-add-float {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white;
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: 1px solid var(--border-color);
+  z-index: 10;
+  cursor: pointer;
 }
