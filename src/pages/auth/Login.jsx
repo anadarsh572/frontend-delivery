@@ -79,45 +79,10 @@ const Login = () => {
     }
   };
 
-  /* 
+  /*
   const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true);
-    setError(null);
-    try {
-      const response = await apiClient.post('/api/auth/google', {
-        token: credentialResponse.credential
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        const data = response.data;
-        if (data.token) localStorage.setItem('token', data.token);
-        
-        const userObj = data.user || data;
-        login(userObj);
-
-        const role = userObj.role?.toLowerCase() || 'customer';
-        const returnUrl = location.state?.returnUrl;
-
-        if (returnUrl) {
-          navigate(returnUrl);
-        } else if (role === 'admin') {
-          navigate('/mustafa-admin-secret');
-        } else if (role === 'vendor' || role === 'seller') {
-          if (userObj.has_store === false || userObj.has_store === 0) {
-            navigate('/vendor/onboarding');
-          } else {
-            navigate('/vendor/dashboard');
-          }
-        } else {
-          navigate('/customer/home');
-        }
-      }
-    } catch (err) {
-      console.error('Google auth error:', err);
-      setError('فشل تسجيل الدخول بواسطة جوجل. حاول مرة أخرى.');
-    } finally {
-      setLoading(false);
-    }
+    // ... logic commented out ...
   };
   */
 
@@ -183,12 +148,12 @@ const Login = () => {
             {loading ? 'جاري الدخول...' : 'تسجيل الدخول'}
           </button>
 
+          {/* 
           <div style={{ margin: '20px 0', position: 'relative', textAlign: 'center' }}>
             <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: 'var(--border-color)', zIndex: 0 }} />
             <span style={{ position: 'relative', background: 'var(--bg-secondary)', padding: '0 12px', color: 'var(--text-secondary)', fontSize: '0.9rem', zIndex: 1 }}>أو</span>
           </div>
 
-          {/* 
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GoogleLogin 
               onSuccess={handleGoogleSuccess} 
