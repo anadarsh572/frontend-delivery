@@ -21,6 +21,9 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
             <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: 0 }}>{product.name}</h3>
             <p style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem', margin: 0 }}>{product.price} جنيه</p>
           </div>
+          {product.store_name && (
+            <p style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 'bold', margin: '0 0 4px' }}>بواسطة: {product.store_name}</p>
+          )}
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px', flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.description}</p>
           <button onClick={() => onAddToCart(product, 1)} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', marginBottom: '4px' }}>
             <ShoppingCart size={18} /> أضف للسلة
@@ -39,6 +42,9 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
         </div>
         <div style={{ flex: 1 }}>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '4px' }}>{product.name}</h3>
+          {product.store_name && (
+            <p style={{ fontSize: '0.75rem', color: '#8B4513', fontWeight: 'bold', marginBottom: '8px' }}>بواسطة: {product.store_name}</p>
+          )}
           <p style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{product.price} جنيه</p>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '8px' }}>{product.description}</p>
         </div>
@@ -62,6 +68,9 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
         </div>
         <div style={{ textAlign: 'right', flex: 1 }}>
           <h4 style={{ fontSize: '1rem', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</h4>
+          {product.store_name && (
+            <p style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: 'bold', marginBottom: '4px' }}>{product.store_name}</p>
+          )}
           <p style={{ fontWeight: 'bold', color: 'var(--accent-primary)', fontSize: '1.1rem' }}>{product.price} جنيه</p>
         </div>
         

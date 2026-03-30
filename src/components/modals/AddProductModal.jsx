@@ -70,7 +70,7 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
       const payload = { 
         ...formData, 
         price: Number(formData.price),
-        storeId: storeId || 1 // Fallback if storeId is missing
+        store_id: storeId || 1 // Changed storeId to store_id
       };
 
       const response = await fetch(`${API_URL}/api/products`, {

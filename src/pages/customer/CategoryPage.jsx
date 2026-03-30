@@ -26,7 +26,7 @@ const CategoryPage = () => {
         queryKey: ['products', 'category', category],
         queryFn: async () => {
             try {
-                const url = `/api/products?category=${category}`;
+                const url = `/api/products/category/${category}`;
                 const response = await apiClient.get(url);
                 const data = response.data;
                 return Array.isArray(data) ? data : data.products || [];
