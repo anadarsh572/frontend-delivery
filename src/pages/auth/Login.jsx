@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { LogIn, ArrowLeft, AlertCircle } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
+// import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
 import apiClient from '../../api/client';
 
@@ -79,6 +79,7 @@ const Login = () => {
     }
   };
 
+  /* 
   const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true);
     setError(null);
@@ -118,6 +119,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+  */
 
   return (
     <div className="landing-container animate-fade-up" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
@@ -186,6 +188,7 @@ const Login = () => {
             <span style={{ position: 'relative', background: 'var(--bg-secondary)', padding: '0 12px', color: 'var(--text-secondary)', fontSize: '0.9rem', zIndex: 1 }}>أو</span>
           </div>
 
+          {/* 
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <GoogleLogin 
               onSuccess={handleGoogleSuccess} 
@@ -196,6 +199,7 @@ const Login = () => {
               locale="ar"
             />
           </div>
+          */}
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
