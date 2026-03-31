@@ -6,15 +6,13 @@ import { useCart } from '../../context/CartContext';
 import apiClient from '../../api/client';
 import ProductCard from '../../components/products/ProductCard';
 import InfiniteProductList from '../../components/products/InfiniteProductList';
-import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
 const CategoryPage = () => {
     const { category } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useCart();
 
-    // Modal state for Cafe
-    const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
+    // Modal state
     const [activeProduct, setActiveProduct] = useState(null);
 
     // React Query for category products
@@ -45,14 +43,8 @@ const CategoryPage = () => {
         addToCart(product, storeId, quantity);
     }, [addToCart]);
 
-    const handleOpenCafeModal = useCallback((product) => {
-        setActiveProduct(product);
-        setIsCafeModalOpen(true);
-    }, []);
-
-    const handleConfirmCafeAdd = useCallback((customizedProduct) => {
+    const handleConfirmAdd = useCallback((customizedProduct) => {
         addToCart(customizedProduct, customizedProduct.store_id || customizedProduct.storeId || 1, 1);
-        setIsCafeModalOpen(false);
         navigate('/cart');
     }, [addToCart, navigate]);
 
@@ -63,7 +55,6 @@ const CategoryPage = () => {
     const getCategoryTitle = () => {
         switch (category) {
             case 'restaurant': return 'المطاعم 🍔';
-            case 'cafe': return 'الكافيهات ☕';
             case 'supermarket': return 'السوبر ماركت 🛒';
             default: return category;
         }
@@ -97,18 +88,9 @@ const CategoryPage = () => {
                     products={filteredProducts}
                     isLoading={isLoading}
                     onAddToCart={handleAddToCart}
-                    onOpenCafeModal={handleOpenCafeModal}
                 />
             )}
 
-            {activeProduct && (
-              <CafeCustomizationModal 
-                isOpen={isCafeModalOpen}
-                onClose={() => setIsCafeModalOpen(false)}
-                product={activeProduct}
-                onConfirm={handleConfirmCafeAdd}
-              />
-            )}
         </div>
     );
 };

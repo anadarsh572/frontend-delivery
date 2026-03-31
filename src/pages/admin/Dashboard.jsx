@@ -156,7 +156,7 @@ const AdminDashboard = () => {
               {isVendor && (
                 <td style={{ padding: '16px 24px' }}>
                   <span style={{ background: 'var(--bg-tertiary)', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontSize: '0.9rem', border: '1px dashed var(--accent-primary)', color: 'var(--text-primary)' }}>
-                    {u.store_category === 'restaurant' ? 'مطعم 🍔' : u.store_category === 'cafe' ? 'كافيه ☕' : u.store_category === 'supermarket' ? 'سوبر ماركت 🛒' : (u.store_category || 'غير محدد')}
+                    {u.store_category === 'restaurant' ? 'مطعم 🍔' : u.store_category === 'supermarket' ? 'سوبر ماركت 🛒' : (u.store_category || 'غير محدد')}
                   </span>
                 </td>
               )}

@@ -16,7 +16,7 @@ import SplashScreen from './components/common/SplashScreen';
 import ProductCard from './components/products/ProductCard';
 import ProductSkeleton from './components/common/ProductSkeleton';
 import InfiniteProductList from './components/products/InfiniteProductList';
-import CafeCustomizationModal from './components/modals/CafeCustomizationModal';
+import InfiniteProductList from './components/products/InfiniteProductList';
 
 // Pages
 import Cart from './pages/customer/Cart';
@@ -38,8 +38,7 @@ const LandingPage = () => {
     }
   }, [user, navigate]);
 
-  // Modal state for Cafe in search
-  const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
+  // Modal state
   const [activeProduct, setActiveProduct] = useState(null);
 
   // React Query for products and search
@@ -65,7 +64,7 @@ const LandingPage = () => {
 
   const categoryProducts = useMemo(() => {
     if (searchQuery.trim()) return { search: products };
-    const categories = ['restaurant', 'cafe', 'supermarket'];
+    const categories = ['restaurant', 'supermarket'];
     const result = {};
     categories.forEach(cat => {
       result[cat] = products.filter(p => p.category === cat).slice(0, 10);
@@ -82,14 +81,9 @@ const LandingPage = () => {
     addToCart(product, storeId, quantity);
   }, [addToCart]);
 
-  const handleOpenCafeModal = useCallback((product) => {
-    setActiveProduct(product);
-    setIsCafeModalOpen(true);
-  }, []);
 
-  const handleConfirmCafeAdd = useCallback((customizedProduct) => {
+  const handleConfirmAdd = useCallback((customizedProduct) => {
     addToCart(customizedProduct, customizedProduct.store_id || customizedProduct.storeId || 1, 1);
-    setIsCafeModalOpen(false);
     navigate('/cart');
   }, [addToCart, navigate]);
 
@@ -133,24 +127,21 @@ const LandingPage = () => {
                   products={products}
                   isLoading={isLoading}
                   onAddToCart={handleAddToCart}
-                  onOpenCafeModal={handleOpenCafeModal}
                 />
             </div>
           ) : (
             <div style={{ opacity: isFetching && !isLoading ? 0.7 : 1, transition: 'opacity 0.2s' }}>
-              {['restaurant', 'cafe', 'supermarket'].map(category => {
+              {['restaurant', 'supermarket'].map(category => {
                 const sectionProducts = categoryProducts[category];
                 if (!sectionProducts || sectionProducts.length === 0) return null;
 
                 const titles = {
                   'restaurant': 'أشهى الوجبات والمطاعم 🍔',
-                  'cafe': 'ركن القهوة والمزاج ☕',
                   'supermarket': 'احتياجات البيت والسوبر ماركت 🛒'
                 };
 
                 const colors = {
                   'restaurant': 'var(--accent-primary)',
-                  'cafe': '#8B4513', 
                   'supermarket': 'var(--success)'
                 };
 
@@ -167,7 +158,6 @@ const LandingPage = () => {
                           <ProductCard 
                             product={product}
                             onAddToCart={handleAddToCart}
-                            onOpenCafeModal={handleOpenCafeModal}
                           />
                         </div>
                       ))}
@@ -178,14 +168,6 @@ const LandingPage = () => {
             </div>
           )}
           
-          {activeProduct && (
-            <CafeCustomizationModal 
-              isOpen={isCafeModalOpen}
-              onClose={() => setIsCafeModalOpen(false)}
-              product={activeProduct}
-              onConfirm={handleConfirmCafeAdd}
-            />
-          )}
 
           {searchQuery && (
             <div style={{ textAlign: 'center', marginTop: '40px' }}>

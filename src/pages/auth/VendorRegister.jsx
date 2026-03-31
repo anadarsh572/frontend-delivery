@@ -179,7 +179,6 @@ const VendorRegister = () => {
               style={{ width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', appearance: 'none' }}
             >
               <option value="restaurant">مطعم (Restaurant)</option>
-              <option value="cafe">كافيه (Cafe)</option>
               <option value="supermarket">سوبر ماركت (Supermarket)</option>
             </select>
           </div>

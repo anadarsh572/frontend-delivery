@@ -8,15 +8,14 @@ import apiClient from '../../api/client';
 import ProductCard from '../../components/products/ProductCard';
 import InfiniteProductList from '../../components/products/InfiniteProductList';
 import ProductSkeleton from '../../components/common/ProductSkeleton';
-import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
+import ProductSkeleton from '../../components/common/ProductSkeleton';
 
 const StoreDetail = () => {
   const { storeId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   
-  // Modal state for Cafe
-  const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
+  // Modal state
   const [activeProduct, setActiveProduct] = useState(null);
 
   // Fetch Store Details
@@ -48,14 +47,8 @@ const StoreDetail = () => {
     addToCart(product, storeId, quantity);
   }, [addToCart, storeId]);
 
-  const handleOpenCafeModal = useCallback((product) => {
-    setActiveProduct(product);
-    setIsCafeModalOpen(true);
-  }, []);
-
-  const handleConfirmCafeAdd = useCallback((customizedProduct) => {
+  const handleConfirmAdd = useCallback((customizedProduct) => {
     addToCart(customizedProduct, customizedProduct.store_id || storeId, 1);
-    setIsCafeModalOpen(false);
   }, [addToCart, storeId]);
 
   const loading = storeLoading || (productsLoading && products.length === 0);
@@ -134,18 +127,9 @@ const StoreDetail = () => {
           products={products.map(p => ({ ...p, store_name: store.name }))}
           isLoading={productsLoading}
           onAddToCart={handleAddToCart}
-          onOpenCafeModal={handleOpenCafeModal}
         />
       )}
 
-      {activeProduct && (
-        <CafeCustomizationModal 
-          isOpen={isCafeModalOpen}
-          onClose={() => setIsCafeModalOpen(false)}
-          product={activeProduct}
-          onConfirm={handleConfirmCafeAdd}
-        />
-      )}
     </div>
   );
 };

@@ -17,8 +17,7 @@ const Onboarding = ({ onSuccess }) => {
 
   const categories = [
     { id: 'restaurant', label: 'مطعم', icon: <Utensils size={24} />, greeting: "أهلاً بيك يا شيف في منصة طلقة! 👨‍🍳 يلا نأسس مطعمك ونظبط المنيو بتاعك." },
-    { id: 'supermarket', label: 'سوبر ماركت', icon: <ShoppingBasket size={24} />, greeting: "يا هلا بيك في طلقة! 🛒 يلا نجهز الرفوف ونرص بضاعتك عشان الناس تطلب أسهل وفي السريع منه." },
-    { id: 'cafe', label: 'كافيه', icon: <Coffee size={24} />, greeting: "يا مساء الروقان والقهوة المظبوطة! ☕ يلا نفتح الكافيه بتاعك ونظبط مزاج عملائك." }
+    { id: 'supermarket', label: 'سوبر ماركت', icon: <ShoppingBasket size={24} />, greeting: "يا هلا بيك في طلقة! 🛒 يلا نجهز الرفوف ونرص بضاعتك عشان الناس تطلب أسهل وفي السريع منه." }
   ];
 
   const selectedCategory = categories.find(c => c.id === formData.store_category);

@@ -211,7 +211,6 @@ const AddProductModal = ({ isOpen, onClose, storeId, onSuccess }) => {
               style={{ width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', cursor: 'pointer' }}
             >
               <option value="restaurant">🍱 مطعم (Restaurant)</option>
-              <option value="cafe">☕ كافيه (Cafe)</option>
               <option value="supermarket">🛒 سوبر ماركت (Supermarket)</option>
             </select>
           </div>

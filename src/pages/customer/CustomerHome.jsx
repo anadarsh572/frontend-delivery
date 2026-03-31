@@ -8,14 +8,12 @@ import { useSearch } from '../../context/SearchContext';
 import { simulateDelay, MOCK_STORES } from '../../data/mockDb';
 import ProductCard from '../../components/products/ProductCard';
 import InfiniteProductList from '../../components/products/InfiniteProductList';
-import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
 const CustomerHome = () => {
   const { query } = useSearch();
   const { addToCart } = useCart();
   
-  // Modal state for Cafe
-  const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
+  // Modal state
   const [activeProduct, setActiveProduct] = useState(null);
 
   // Fetch Stores (Simulated)
@@ -42,14 +40,8 @@ const CustomerHome = () => {
     addToCart(product, storeId, quantity);
   }, [addToCart]);
 
-  const handleOpenCafeModal = useCallback((product) => {
-    setActiveProduct(product);
-    setIsCafeModalOpen(true);
-  }, []);
-
-  const handleConfirmCafeAdd = useCallback((customizedProduct) => {
+  const handleConfirmAdd = useCallback((customizedProduct) => {
     addToCart(customizedProduct, customizedProduct.store_id || customizedProduct.storeId || 1, 1);
-    setIsCafeModalOpen(false);
   }, [addToCart]);
 
   const filteredStores = useMemo(() => {
@@ -62,7 +54,7 @@ const CustomerHome = () => {
   }, [stores, query]);
 
   const categoryProducts = useMemo(() => {
-    const categories = ['restaurant', 'cafe', 'supermarket'];
+    const categories = ['restaurant', 'supermarket'];
     const result = {};
     categories.forEach(cat => {
       result[cat] = products.filter(p => p.category === cat).slice(0, 8);
@@ -130,19 +122,17 @@ const CustomerHome = () => {
       </section>
       
       {/* Dynamic Product Categories */}
-      {['restaurant', 'cafe', 'supermarket'].map(category => {
+      {['restaurant', 'supermarket'].map(category => {
         const sectionProducts = categoryProducts[category];
         if (!sectionProducts || sectionProducts.length === 0) return null;
 
         const titles = {
           'restaurant': 'أشهى الوجبات والمطاعم 🍔',
-          'cafe': 'ركن القهوة والمزاج ☕',
           'supermarket': 'احتياجات البيت والسوبر ماركت 🛒'
         };
 
         const colors = {
           'restaurant': 'var(--accent-primary)',
-          'cafe': '#8B4513', 
           'supermarket': 'var(--success)'
         };
 
@@ -164,7 +154,6 @@ const CustomerHome = () => {
                   <ProductCard 
                     product={product}
                     onAddToCart={handleQuickAdd}
-                    onOpenCafeModal={handleOpenCafeModal}
                   />
                 </div>
               ))}
@@ -179,14 +168,6 @@ const CustomerHome = () => {
         </div>
       )}
 
-      {activeProduct && (
-        <CafeCustomizationModal 
-          isOpen={isCafeModalOpen}
-          onClose={() => setIsCafeModalOpen(false)}
-          product={activeProduct}
-          onConfirm={handleConfirmCafeAdd}
-        />
-      )}
     </div>
   );
 };

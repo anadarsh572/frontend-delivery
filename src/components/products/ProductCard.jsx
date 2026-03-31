@@ -1,9 +1,9 @@
 import React, { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Check, Zap, Coffee } from 'lucide-react';
+import { Plus, Check, Zap } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 
-const ProductCard = memo(({ product, onAddToCart, onOpenCafeModal }) => {
+const ProductCard = memo(({ product, onAddToCart }) => {
   const [adding, setAdding] = useState(false);
   const navigate = useNavigate();
 
@@ -20,7 +20,6 @@ const ProductCard = memo(({ product, onAddToCart, onOpenCafeModal }) => {
     setTimeout(() => setAdding(false), 2000);
   };
 
-  const isCafe = product.category === 'cafe';
 
   return (
     <div 
@@ -36,36 +35,21 @@ const ProductCard = memo(({ product, onAddToCart, onOpenCafeModal }) => {
       }}
     >
       {/* Quick Add Button */}
-      {!isCafe && (
-        <button 
-          onClick={handleQuickAdd} 
-          className="btn-add-float"
-          aria-label="Add to cart"
-        >
-          {adding ? <Check size={20} color="var(--success)" /> : <Plus size={20} />}
-        </button>
-      )}
+      <button 
+        onClick={handleQuickAdd} 
+        className="btn-add-float"
+        aria-label="Add to cart"
+      >
+        {adding ? <Check size={20} color="var(--success)" /> : <Plus size={20} />}
+      </button>
 
       {/* Image Section */}
-      <div style={{ height: isCafe ? '140px' : '180px', width: '100%', position: 'relative' }}>
-        {isCafe ? (
-          <div style={{ 
-            height: '100%', 
-            background: 'var(--bg-tertiary)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            color: 'var(--accent-primary)'
-          }}>
-            <Coffee size={48} />
-          </div>
-        ) : (
-          <SafeImage 
-            src={product.image_url || product.image} 
-            alt={product.name}
-            fallback={product.category === 'restaurant' ? '/placeholder-food.png' : '/placeholder-item.png'}
-          />
-        )}
+      <div style={{ height: '180px', width: '100%', position: 'relative' }}>
+        <SafeImage 
+          src={product.image_url || product.image} 
+          alt={product.name}
+          fallback={product.category === 'restaurant' ? '/placeholder-food.png' : '/placeholder-item.png'}
+        />
       </div>
 
       {/* Content Section */}
@@ -74,7 +58,7 @@ const ProductCard = memo(({ product, onAddToCart, onOpenCafeModal }) => {
           margin: 0, 
           color: 'var(--text-primary)',
           display: '-webkit-box',
-          WebkitLineClamp: isCafe ? 1 : 2,
+          WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden'
         }}>
@@ -82,7 +66,7 @@ const ProductCard = memo(({ product, onAddToCart, onOpenCafeModal }) => {
         </h3>
         
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, fontWeight: '600', opacity: 0.8 }}>
-          {isCafe ? '🥤' : product.category === 'restaurant' ? '🏪' : '🧺'} {product.store_name}
+          {product.category === 'restaurant' ? '🏪' : '🧺'} {product.store_name}
         </p>
 
         <div style={{ 
@@ -95,24 +79,9 @@ const ProductCard = memo(({ product, onAddToCart, onOpenCafeModal }) => {
         </div>
 
         <div style={{ marginTop: 'auto', display: 'flex', gap: '8px' }}>
-          {isCafe ? (
-            <>
-              <button 
-                onClick={(e) => { e.stopPropagation(); onOpenCafeModal(product); }} 
-                className="btn btn-secondary mobile-padding-sm" 
-                style={{ flex: 1, padding: '10px', fontSize: '0.9rem' }}
-              >
-                تخصيص
-              </button>
-              <button onClick={handleBuyNow} className="btn-buy-full" style={{ flex: 2 }}>
-                اطلب <Zap size={14} fill="white" />
-              </button>
-            </>
-          ) : (
-            <button onClick={handleBuyNow} className="btn-buy-full">
-              اطلب الآن <Zap size={18} fill="white" />
-            </button>
-          )}
+          <button onClick={handleBuyNow} className="btn-buy-full">
+            اطلب الآن <Zap size={18} fill="white" />
+          </button>
         </div>
       </div>
     </div>

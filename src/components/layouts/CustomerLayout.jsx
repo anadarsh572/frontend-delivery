@@ -115,9 +115,6 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
           <Link to="/category/restaurant" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)' }} className="card-hover">
             <Utensils size={20} color="var(--accent-primary)" /> مطاعم
           </Link>
-          <Link to="/category/cafe" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)' }} className="card-hover">
-            <Coffee size={20} color="var(--info)" /> كافيهات
-          </Link>
           <Link to="/category/supermarket" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)' }} className="card-hover">
             <ShoppingBasket size={20} color="var(--success)" /> سوبر ماركت
           </Link>
