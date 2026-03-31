@@ -122,13 +122,13 @@ img {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   transition: var(--transition);
 }
 
 .glass-panel:hover {
   border-color: var(--border-glow);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
 .gradient-text {
@@ -215,14 +215,14 @@ img {
 .card-hover:hover {
   transform: translateY(-4px);
   border-color: var(--accent-primary);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 /* Modal Globals */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
