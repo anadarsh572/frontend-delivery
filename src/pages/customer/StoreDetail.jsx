@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useCart } from '../../context/CartContext';
-import { MOCK_STORES, MOCK_PRODUCTS, simulateDelay } from '../../data/mockDb';
-import { Star, Clock, MapPin, Plus, ArrowLeft } from 'lucide-react';
-import { API_URL } from '../../api/config';
-
-import CategoryProductCard from '../../components/products/CategoryProductCard';
+import { MOCK_STORES, simulateDelay } from '../../data/mockDb';
+import { Star, Clock, MapPin, ArrowLeft } from 'lucide-react';
+import apiClient from '../../api/client';
+import ProductCard from '../../components/products/ProductCard';
+import InfiniteProductList from '../../components/products/InfiniteProductList';
+import ProductSkeleton from '../../components/common/ProductSkeleton';
 import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
 const StoreDetail = () => {
@@ -13,64 +15,62 @@ const StoreDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   
-  const [store, setStore] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
   // Modal state for Cafe
   const [isCafeModalOpen, setIsCafeModalOpen] = useState(false);
   const [activeProduct, setActiveProduct] = useState(null);
 
-  useEffect(() => {
-    const fetchStoreDetails = async () => {
-      // Fetch mock store details for aesthetics
+  // Fetch Store Details
+  const { data: store, isLoading: storeLoading } = useQuery({
+    queryKey: ['store', storeId],
+    queryFn: async () => {
       await simulateDelay(300);
-      const foundStore = MOCK_STORES.find(s => s.id === storeId);
-      setStore(foundStore);
+      return MOCK_STORES.find(s => s.id?.toString() === storeId?.toString());
+    }
+  });
 
-      // Fetch LIVE products from DB
-      try {
-        const response = await fetch(`${API_URL}/api/products`);
-        if (response.ok) {
-          const data = await response.json();
-          const productsArray = data.data || data.products || (Array.isArray(data) ? data : []);
-          
-          // Filter to only match THIS store
-          const storeProducts = productsArray.filter(p => 
-            (p.store_id?.toString() === storeId?.toString()) || 
-            (p.storeId?.toString() === storeId?.toString())
-          );
-          
-          setProducts(storeProducts.length > 0 ? storeProducts : []);
-        } else {
-          // Fallback if API fails
-          setProducts(MOCK_PRODUCTS.filter(p => p.storeId === storeId));
-        }
-      } catch (error) {
-        console.error("API Error:", error);
-        setProducts(MOCK_PRODUCTS.filter(p => p.storeId === storeId));
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStoreDetails();
-  }, [storeId]);
+  // Fetch Store Products
+  const { data: products = [], isLoading: productsLoading } = useQuery({
+    queryKey: ['store-products', storeId],
+    queryFn: async () => {
+      const response = await apiClient.get('/api/products');
+      const data = response.data;
+      const productsArray = Array.isArray(data) ? data : data.products || [];
+      
+      return productsArray.filter(p => 
+        (p.store_id?.toString() === storeId?.toString()) || 
+        (p.storeId?.toString() === storeId?.toString())
+      );
+    },
+    enabled: !!storeId
+  });
 
-  const handleQuickAdd = (product, quantity = 1) => {
-    addToCart(product, store?.id || storeId, quantity);
-  };
+  const handleAddToCart = useCallback((product, quantity = 1) => {
+    addToCart(product, storeId, quantity);
+  }, [addToCart, storeId]);
 
-  const handleOpenCafeModal = (product) => {
+  const handleOpenCafeModal = useCallback((product) => {
     setActiveProduct(product);
     setIsCafeModalOpen(true);
-  };
+  }, []);
 
-  const handleConfirmCafeAdd = (customizedProduct) => {
+  const handleConfirmCafeAdd = useCallback((customizedProduct) => {
     addToCart(customizedProduct, customizedProduct.store_id || storeId, 1);
     setIsCafeModalOpen(false);
-  };
+  }, [addToCart, storeId]);
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text-secondary)' }}>جاري تحميل المنيو...</div>;
+  const loading = storeLoading || (productsLoading && products.length === 0);
+
+  if (loading && !store) {
+    return (
+      <div style={{ padding: '40px 20px' }}>
+        <div className="skeleton" style={{ height: '300px', width: '100%', borderRadius: 'var(--radius-lg)', marginBottom: '32px' }} />
+        <div className="product-grid">
+          {[1, 2, 3, 4].map(i => <ProductSkeleton key={i} />)}
+        </div>
+      </div>
+    );
+  }
+
   if (!store) return <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--danger)' }}>عذراً، المتجر غير موجود.</div>;
 
   return (
@@ -78,9 +78,9 @@ const StoreDetail = () => {
       <button 
         onClick={() => navigate(-1)} 
         className="btn btn-secondary"
-        style={{ marginBottom: '24px', padding: '8px 16px', borderRadius: 'var(--radius-md)' }}
+        style={{ marginBottom: '24px', padding: '8px 16px', borderRadius: 'var(--radius-md)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
       >
-        <ArrowLeft size={18} style={{ marginLeft: '8px' }} /> رجوع
+        <ArrowLeft size={18} style={{ transform: 'rotate(180deg)' }} /> رجوع
       </button>
 
       {/* Store Header */}
@@ -90,45 +90,53 @@ const StoreDetail = () => {
           padding: '0', 
           overflow: 'hidden', 
           marginBottom: '40px',
-          position: 'relative'
+          position: 'relative',
+          borderRadius: 'var(--radius-lg)'
         }}
       >
-        <div style={{ height: '300px', width: '100%' }}>
+        <div style={{ height: 'clamp(200px, 40vw, 350px)', width: '100%', position: 'relative' }}>
           <img 
             src={store.image} 
             alt={store.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to top, var(--bg-primary), transparent)' }} />
-        </div>
-        
-        <div style={{ position: 'absolute', bottom: '24px', right: '32px', left: '32px' }}>
-          <h1 style={{ fontSize: '3rem', marginBottom: '8px' }}>{store.name}</h1>
-          <div style={{ display: 'flex', gap: '24px', color: 'var(--text-secondary)' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Star size={18} color="var(--warning)" fill="var(--warning)"/> {store.averageRating} تقييم</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={18}/> {store.location}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={18}/> توصيل في ٢٥-٣٥ دقيقة</span>
+          <div style={{ 
+            position: 'absolute', 
+            inset: 0, 
+            background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)' 
+          }} />
+          
+          <div style={{ 
+            position: 'absolute', 
+            bottom: '24px', 
+            right: '24px', 
+            left: '24px',
+            color: 'white'
+          }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 6vw, 3.5rem)', marginBottom: '8px', fontWeight: '900' }}>{store.name}</h1>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '0.95rem', opacity: 0.9 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Star size={18} color="var(--warning)" fill="var(--warning)"/> {store.averageRating} تقييم</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={18}/> {store.location}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16}/> ٢٥-٣٥ دقيقة</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <h2 style={{ marginBottom: '24px', fontSize: '2rem' }}>المنيو</h2>
+      <h2 style={{ marginBottom: '32px', fontSize: '1.8rem', fontWeight: '800' }}>قائمة الأصناف</h2>
       
-      {/* Products Grid */}
-      <div className="product-grid">
-        {products.map(product => (
-          <CategoryProductCard 
-            key={product.id || product._id}
-            product={{...product, store_name: store.name}} 
-            category={store.id.includes('cafe') ? 'cafe' : (store.id.includes('supermarket') ? 'supermarket' : 'restaurant')}
-            onAddToCart={handleQuickAdd}
-            onOpenCafeModal={handleOpenCafeModal}
-          />
-        ))}
-        {products.length === 0 && (
-          <p style={{ color: 'var(--text-secondary)', padding: '40px 0' }}>لا توجد منتجات متاحة في هذا المتجر حالياً.</p>
-        )}
-      </div>
+      {products.length === 0 && !productsLoading ? (
+        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-secondary)' }}>
+           <p style={{ fontSize: '1.1rem' }}>لا توجد منتجات متاحة في هذا المتجر حالياً.</p>
+        </div>
+      ) : (
+        <InfiniteProductList 
+          products={products.map(p => ({ ...p, store_name: store.name }))}
+          isLoading={productsLoading}
+          onAddToCart={handleAddToCart}
+          onOpenCafeModal={handleOpenCafeModal}
+        />
+      )}
 
       {activeProduct && (
         <CafeCustomizationModal 
@@ -143,3 +151,4 @@ const StoreDetail = () => {
 };
 
 export default StoreDetail;
+

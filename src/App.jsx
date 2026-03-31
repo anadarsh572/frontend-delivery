@@ -1,26 +1,31 @@
-import { useState, useEffect, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate, Outlet } from 'react-router-dom';
 import { ShoppingBag, Store, Navigation, ShieldCheck, Plus, ShoppingCart, LogIn, Search, X, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from './api/client';
 import './App.css';
 
-// Placeholder Components
+// Context & Providers
 import { useCart } from './context/CartContext';
+import { SearchProvider, useSearch } from './context/SearchContext';
+import { useAuth } from './context/AuthContext';
+
+// Components & Layouts
 import CustomerLayout from './components/layouts/CustomerLayout';
-import Cart from './pages/customer/Cart';
-import CategoryPage from './pages/customer/CategoryPage';
-import { Utensils, Coffee, ShoppingBasket } from 'lucide-react';
-import CategoryProductCard from './components/products/CategoryProductCard';
+import SplashScreen from './components/common/SplashScreen';
+import ProductCard from './components/products/ProductCard';
+import ProductSkeleton from './components/common/ProductSkeleton';
+import InfiniteProductList from './components/products/InfiniteProductList';
 import CafeCustomizationModal from './components/modals/CafeCustomizationModal';
 
-import { SearchProvider, useSearch } from './context/SearchContext';
-import SplashScreen from './components/common/SplashScreen';
+// Pages
+import Cart from './pages/customer/Cart';
+import CategoryPage from './pages/customer/CategoryPage';
 
 const LandingPage = () => {
   const { query: searchQuery, setQuery: setSearchQuery } = useSearch();
   const navigate = useNavigate();
-  const { user } = useAuth(); // Retrieve user for redirection
+  const { user } = useAuth();
   const { addToCart } = useCart();
 
   // Redirect Vendors & Admins away from Customer Landing Page
@@ -43,7 +48,6 @@ const LandingPage = () => {
     isLoading, 
     isFetching,
     isError, 
-    error,
     refetch 
   } = useQuery({
     queryKey: ['products', searchQuery],
@@ -56,7 +60,6 @@ const LandingPage = () => {
       const productsArray = Array.isArray(data) ? data : data.products || [];
       return productsArray.filter(p => p.isAvailable !== false);
     },
-    // Don't fetch if it's just a space or something
     enabled: true,
   });
 
@@ -64,26 +67,25 @@ const LandingPage = () => {
     setSearchQuery('');
   };
 
-  const handleAddToCart = (product, quantity = 1) => {
+  const handleAddToCart = useCallback((product, quantity = 1) => {
     const storeId = product.store_id || product.storeId || 1;
     addToCart(product, storeId, quantity);
-    navigate('/cart');
-  };
+  }, [addToCart]);
 
-  const handleOpenCafeModal = (product) => {
+  const handleOpenCafeModal = useCallback((product) => {
     setActiveProduct(product);
     setIsCafeModalOpen(true);
-  };
+  }, []);
 
-  const handleConfirmCafeAdd = (customizedProduct) => {
+  const handleConfirmCafeAdd = useCallback((customizedProduct) => {
     addToCart(customizedProduct, customizedProduct.store_id || customizedProduct.storeId || 1, 1);
     setIsCafeModalOpen(false);
     navigate('/cart');
-  };
+  }, [addToCart, navigate]);
 
   return (
     <div className="landing-container animate-fade-up">
-      <div className="hero-section" style={{ minHeight: 'auto', padding: 'clamp(40px, 10vw, 80px) 20px' }}>
+      <div className="hero-section" style={{ minHeight: 'auto', padding: 'clamp(40px, 10vw, 80px) 20px', textAlign: 'center' }}>
         <h1 className="gradient-text hero-title" style={{ fontSize: 'clamp(2.5rem, 10vw, 4.5rem)', lineHeight: 1.1, marginBottom: '24px' }}>
           طلقة ⚡
         </h1>
@@ -91,57 +93,41 @@ const LandingPage = () => {
           في السريع منه ⚡
         </p>
         
-          {!localStorage.getItem('token') && (
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link to="/login" className="btn btn-secondary" style={{ minWidth: '140px' }}>
-                تسجيل الدخول
-              </Link>
-              <Link to="/register" className="btn btn-primary" style={{ minWidth: '140px' }}>
-                إنشاء حساب جديد
-              </Link>
-            </div>
-          )}
+        {!localStorage.getItem('token') && (
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/login" className="btn btn-secondary" style={{ minWidth: '140px' }}>
+              تسجيل الدخول
+            </Link>
+            <Link to="/register" className="btn btn-primary" style={{ minWidth: '140px' }}>
+              إنشاء حساب جديد
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="container" style={{ padding: '0 20px 80px' }}>
         <div style={{ marginTop: '20px' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '32px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '32px', textAlign: 'center', fontWeight: '800' }}>
             {searchQuery ? 'نتائج البحث' : 'جميع المنتجات'}
           </h2>
           
-          {isLoading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="glass-panel animate-pulse" style={{ height: '350px', borderRadius: 'var(--radius-lg)' }}>
-                  <div style={{ height: '200px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }} />
-                  <div style={{ padding: '20px' }}>
-                    <div style={{ height: '20px', background: 'var(--bg-tertiary)', borderRadius: '4px', width: '70%', marginBottom: '12px' }} />
-                    <div style={{ height: '16px', background: 'var(--bg-tertiary)', borderRadius: '4px', width: '40%', marginBottom: '20px' }} />
-                    <div style={{ height: '40px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : isError ? (
+          {isError ? (
             <div style={{ textAlign: 'center', color: 'var(--danger)', padding: '40px 0' }}>
               <p>حدث خطأ أثناء تحميل البيانات.</p>
               <button onClick={() => refetch()} className="btn btn-secondary" style={{ marginTop: '16px' }}>إعادة المحاولة</button>
             </div>
-          ) : products.length === 0 ? (
+          ) : products.length === 0 && !isLoading ? (
             <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', padding: '40px 0' }}>
               {searchQuery ? 'عذراً، لم نجد أكلات تطابق بحثك' : 'لا يوجد منتجات متاحة حالياً'}
             </div>
           ) : (
-            <div className="product-grid" style={{ opacity: isFetching ? 0.7 : 1, transition: 'opacity 0.2s' }}>
-              {products.map((product) => (
-                <CategoryProductCard 
-                  key={product.id || product._id}
-                  product={product}
-                  category={product.category || 'restaurant'} 
-                  onAddToCart={handleAddToCart}
-                  onOpenCafeModal={handleOpenCafeModal}
-                />
-              ))}
+            <div style={{ opacity: isFetching && !isLoading ? 0.7 : 1, transition: 'opacity 0.2s' }}>
+              <InfiniteProductList 
+                products={products}
+                isLoading={isLoading}
+                onAddToCart={handleAddToCart}
+                onOpenCafeModal={handleOpenCafeModal}
+              />
             </div>
           )}
           
@@ -165,14 +151,13 @@ const LandingPage = () => {
   );
 };
 
+
 import CustomerApp from './pages/customer';
 import VendorApp from './pages/vendor';
 import AdminApp from './pages/admin';
 import Register from './pages/auth/Register';
 import VendorRegister from './pages/auth/VendorRegister';
 import Login from './pages/auth/Login';
-import { useAuth } from './context/AuthContext';
-import { Navigate, Outlet } from 'react-router-dom';
 import AdminGuard from './components/guards/AdminGuard';
 import VendorGuard from './components/guards/VendorGuard';
 

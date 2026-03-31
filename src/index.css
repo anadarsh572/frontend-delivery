@@ -30,9 +30,10 @@
   --radius-lg: 16px;
   --radius-full: 9999px;
   
+/* ... existing variables ... */
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --font-family: 'Cairo', sans-serif;
-  direction: rtl; /* نقلناها هنا لحل التحذير */
+  direction: rtl;
 }
 
 * {
@@ -113,6 +114,23 @@ img {
   .grid-responsive-4 {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* Skeleton Animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, 
+    var(--bg-tertiary) 25%, 
+    var(--bg-secondary) 50%, 
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 4px;
 }
 
 /* Utilities */
@@ -304,52 +322,43 @@ img {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   width: 100%;
+  padding: 20px 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .product-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-    padding: 15px 5px;
-  }
-  
-  .mobile-hide {
-    display: none !important;
-  }
-  
-  .mobile-text-lg {
-    font-size: 1.1rem !important;
-    font-weight: 800 !important;
-    line-height: 1.3 !important;
-  }
-  
-  .mobile-text-sm {
-    font-size: 0.9rem !important;
-  }
-  
-  .mobile-text-xs {
-    font-size: 0.75rem !important;
-  }
-
-  .mobile-padding-sm {
-    padding: 12px !important;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
+@media (max-width: 992px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 10px 0;
+  }
+}
+
+/* Specific button styles */
 .btn-buy-full {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: var(--accent-primary);
   color: white;
-  border: none;
   border-radius: var(--radius-md);
-  font-weight: 900;
-  font-size: 0.9rem;
+  font-weight: 700;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 0.2s ease;
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 .btn-buy-full:active {
@@ -358,18 +367,22 @@ img {
 
 .btn-add-float {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: white;
   color: var(--accent-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   z-index: 10;
-  cursor: pointer;
 }
+
+.mobile-text-lg {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+

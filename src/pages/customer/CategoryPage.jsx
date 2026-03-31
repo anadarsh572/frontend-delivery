@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '../../context/CartContext';
 import apiClient from '../../api/client';
-import CategoryProductCard from '../../components/products/CategoryProductCard';
+import ProductCard from '../../components/products/ProductCard';
+import InfiniteProductList from '../../components/products/InfiniteProductList';
 import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
 
 const CategoryPage = () => {
@@ -39,28 +40,31 @@ const CategoryPage = () => {
         },
     });
 
-    const handleQuickAdd = (product, quantity = 1) => {
+    const handleAddToCart = useCallback((product, quantity = 1) => {
         const storeId = product.store_id || product.storeId || 1;
         addToCart(product, storeId, quantity);
-        navigate('/cart');
-    };
+    }, [addToCart]);
 
-    const handleOpenCafeModal = (product) => {
+    const handleOpenCafeModal = useCallback((product) => {
         setActiveProduct(product);
         setIsCafeModalOpen(true);
-    };
+    }, []);
 
-    const handleConfirmCafeAdd = (customizedProduct) => {
+    const handleConfirmCafeAdd = useCallback((customizedProduct) => {
         addToCart(customizedProduct, customizedProduct.store_id || customizedProduct.storeId || 1, 1);
         setIsCafeModalOpen(false);
         navigate('/cart');
-    };
+    }, [addToCart, navigate]);
+
+    const filteredProducts = useMemo(() => {
+        return products.filter(p => p.category === category);
+    }, [products, category]);
 
     const getCategoryTitle = () => {
         switch (category) {
-            case 'restaurant': return 'المطاعم';
-            case 'cafe': return 'الكافيهات';
-            case 'supermarket': return 'السوبر ماركت';
+            case 'restaurant': return 'المطاعم 🍔';
+            case 'cafe': return 'الكافيهات ☕';
+            case 'supermarket': return 'السوبر ماركت 🛒';
             default: return category;
         }
     };
@@ -69,50 +73,32 @@ const CategoryPage = () => {
         <div className="container animate-fade-up" style={{ padding: '40px 20px 80px' }}>
             <button 
                 onClick={() => navigate('/')} 
-                className="btn" 
-                style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                className="btn btn-secondary" 
+                style={{ marginBottom: '32px', display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px' }}
             >
                 <ArrowRight size={18} style={{ transform: 'rotate(180deg)' }} /> العودة للرئيسية
             </button>
 
-            <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '40px' }}>
+            <h1 className="gradient-text" style={{ fontSize: 'clamp(2rem, 8vw, 3rem)', marginBottom: '40px', fontWeight: '900' }}>
                 {getCategoryTitle()}
             </h1>
 
-            {isLoading ? (
-                <div style={{ display: 'grid', gridTemplateColumns: category === 'supermarket' ? 'repeat(auto-fill, minmax(200px, 1fr))' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: category === 'supermarket' ? '16px' : '24px' }}>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                        <div key={i} className="glass-panel animate-pulse" style={{ height: '300px', borderRadius: 'var(--radius-lg)' }}>
-                            <div style={{ height: '180px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }} />
-                            <div style={{ padding: '15px' }}>
-                                <div style={{ height: '18px', background: 'var(--bg-tertiary)', borderRadius: '4px', width: '80%', marginBottom: '10px' }} />
-                                <div style={{ height: '14px', background: 'var(--bg-tertiary)', borderRadius: '4px', width: '50%', marginBottom: '15px' }} />
-                                <div style={{ height: '36px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }} />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : isError ? (
+            {isError ? (
                 <div style={{ textAlign: 'center', color: 'var(--danger)', padding: '40px' }}>
                     <p>حدث خطأ أثناء تحميل المنتجات.</p>
                     <button onClick={() => refetch()} className="btn btn-secondary" style={{ marginTop: '16px' }}>إعادة المحاولة</button>
                 </div>
-            ) : products.length === 0 ? (
+            ) : filteredProducts.length === 0 && !isLoading ? (
                 <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', padding: '100px 0' }}>
                     {category === 'restaurant' ? 'لا توجد مطاعم متاحة حالياً' : 'عذراً، لا توجد منتجات متاحة في هذا القسم حالياً.'}
                 </div>
             ) : (
-                <div className="product-grid">
-                    {products.filter(p => p.category === category).map((product) => (
-                        <CategoryProductCard 
-                            key={product.id || product._id}
-                            product={product}
-                            category={product.category || category}
-                            onAddToCart={handleQuickAdd}
-                            onOpenCafeModal={handleOpenCafeModal}
-                        />
-                    ))}
-                </div>
+                <InfiniteProductList 
+                    products={filteredProducts}
+                    isLoading={isLoading}
+                    onAddToCart={handleAddToCart}
+                    onOpenCafeModal={handleOpenCafeModal}
+                />
             )}
 
             {activeProduct && (
@@ -128,4 +114,5 @@ const CategoryPage = () => {
 };
 
 export default CategoryPage;
+
 
