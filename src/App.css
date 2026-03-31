@@ -5,7 +5,7 @@
   justify-content: center;
   min-height: 100vh;
   padding: 40px 20px;
-  background: radial-gradient(circle at top, var(--bg-secondary), var(--bg-primary));
+  background: var(--bg-secondary);
 }
 
 .hero-section {
@@ -78,9 +78,9 @@
   transform: scale(1.1);
 }
 
-.icon-wrapper.primary { color: var(--accent-primary); background: rgba(0, 209, 255, 0.1); }
+.icon-wrapper.primary { color: var(--accent-primary); background: rgba(141, 110, 99, 0.1); }
 .icon-wrapper.secondary { color: var(--success); background: rgba(16, 185, 129, 0.1); }
-.icon-wrapper.tertiary { color: var(--info); background: rgba(0, 209, 255, 0.1); }
+.icon-wrapper.tertiary { color: var(--accent-secondary); background: rgba(0, 209, 255, 0.1); }
 .icon-wrapper.danger { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
 
 .role-card h2 {

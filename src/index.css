@@ -1,29 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* Premium Breeze, Brown, and Lead Palette */
-  --bg-primary: #1A1C1E;     /* Deep Lead */
-  --bg-secondary: #263238;   /* Medium Lead */
-  --bg-tertiary: #37474F;    /* Light Lead */
+  /* Modern Light Theme: White, Breeze, Brown, and Black */
+  --bg-primary: #FFFFFF;     
+  --bg-secondary: #F0FBFF;   /* Soft Breeze */
+  --bg-tertiary: #E8F8FF;    
   
-  --accent-primary: #00D1FF;  /* Breeze Blue */
-  --accent-secondary: #8D6E63; /* Brown Earth */
-  --accent-glow: rgba(0, 209, 255, 0.3);
+  --accent-primary: #8D6E63;  /* Warm Brown (Buttons) */
+  --accent-secondary: #00D1FF; /* Sky Breeze (Highlights) */
+  --accent-glow: rgba(141, 110, 99, 0.2);
   
-  --text-primary: #F5F5F5;
-  --text-secondary: #B0BEC5;   /* Grayish Text */
-  --text-tertiary: #78909C;
+  --text-primary: #1A1A1A;     /* Black */
+  --text-secondary: #4A4A4A;   
+  --text-tertiary: #6C757D;
   
-  --border-color: rgba(144, 164, 174, 0.15);
-  --border-glow: rgba(0, 209, 255, 0.2);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-glow: rgba(141, 110, 99, 0.1);
   
   --success: #10B981;
   --warning: #F59E0B;
   --danger: #EF4444;
   --info: #00D1FF;
   
-  --glass-bg: rgba(38, 50, 56, 0.7);
-  --glass-border: rgba(144, 164, 174, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
   
   --radius-sm: 8px;
   --radius-md: 12px;
