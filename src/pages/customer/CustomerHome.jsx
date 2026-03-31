@@ -89,17 +89,19 @@ const CustomerHome = () => {
     <div className="animate-fade-up">
 
       {/* Featured Stores Section */}
-      <section style={{ marginBottom: '80px', padding: '24px 0' }}>
-        <h2 style={{ marginBottom: '40px', fontSize: '2.2rem', textAlign: 'center', fontWeight: '900' }}>
-          <span className="gradient-text">المطاعم المميزة</span> ✨
-        </h2>
+      <section style={{ marginBottom: '60px', padding: '24px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+             <h2 style={{ fontSize: '1.8rem', fontWeight: '900', margin: 0 }}>
+               المطاعم المميزة ✨
+             </h2>
+        </div>
         
-        <div className="grid-responsive-2 grid-responsive-3" style={{ display: 'grid', gap: '32px' }}>
+        <div className="grid-responsive-2 grid-responsive-3 scroll-container" style={{ display: 'grid', gap: '32px' }}>
           {filteredStores.map(store => (
             <Link 
               key={store.id} 
               to={`/customer/store/${store.id}`} 
-              className="card-hover glass-panel"
+              className="card-hover glass-panel scroll-item store-scroll-item"
               style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '1px solid var(--border-color)' }}
             >
               <div style={{ height: '220px', width: '100%', position: 'relative' }}>
@@ -156,14 +158,15 @@ const CustomerHome = () => {
               </Link>
             </div>
             
-            <div className="product-grid">
+            <div className="product-grid scroll-container">
               {sectionProducts.map(product => (
-                <ProductCard 
-                  key={product.id || product._id}
-                  product={product}
-                  onAddToCart={handleQuickAdd}
-                  onOpenCafeModal={handleOpenCafeModal}
-                />
+                <div key={product.id || product._id} className="scroll-item">
+                  <ProductCard 
+                    product={product}
+                    onAddToCart={handleQuickAdd}
+                    onOpenCafeModal={handleOpenCafeModal}
+                  />
+                </div>
               ))}
             </div>
           </section>

@@ -63,6 +63,16 @@ const LandingPage = () => {
     enabled: true,
   });
 
+  const categoryProducts = useMemo(() => {
+    if (searchQuery.trim()) return { search: products };
+    const categories = ['restaurant', 'cafe', 'supermarket'];
+    const result = {};
+    categories.forEach(cat => {
+      result[cat] = products.filter(p => p.category === cat).slice(0, 10);
+    });
+    return result;
+  }, [products, searchQuery]);
+
   const clearSearch = () => {
     setSearchQuery('');
   };
@@ -107,10 +117,6 @@ const LandingPage = () => {
 
       <div className="container" style={{ padding: '0 20px 80px' }}>
         <div style={{ marginTop: '20px' }}>
-          <h2 style={{ fontSize: '1.8rem', marginBottom: '32px', textAlign: 'center', fontWeight: '800' }}>
-            {searchQuery ? 'نتائج البحث' : 'جميع المنتجات'}
-          </h2>
-          
           {isError ? (
             <div style={{ textAlign: 'center', color: 'var(--danger)', padding: '40px 0' }}>
               <p>حدث خطأ أثناء تحميل البيانات.</p>
@@ -120,14 +126,55 @@ const LandingPage = () => {
             <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.2rem', padding: '40px 0' }}>
               {searchQuery ? 'عذراً، لم نجد أكلات تطابق بحثك' : 'لا يوجد منتجات متاحة حالياً'}
             </div>
+          ) : searchQuery.trim() ? (
+            <div>
+               <h2 style={{ fontSize: '1.8rem', marginBottom: '32px', textAlign: 'center', fontWeight: '800' }}>نتائج البحث</h2>
+               <InfiniteProductList 
+                  products={products}
+                  isLoading={isLoading}
+                  onAddToCart={handleAddToCart}
+                  onOpenCafeModal={handleOpenCafeModal}
+                />
+            </div>
           ) : (
             <div style={{ opacity: isFetching && !isLoading ? 0.7 : 1, transition: 'opacity 0.2s' }}>
-              <InfiniteProductList 
-                products={products}
-                isLoading={isLoading}
-                onAddToCart={handleAddToCart}
-                onOpenCafeModal={handleOpenCafeModal}
-              />
+              {['restaurant', 'cafe', 'supermarket'].map(category => {
+                const sectionProducts = categoryProducts[category];
+                if (!sectionProducts || sectionProducts.length === 0) return null;
+
+                const titles = {
+                  'restaurant': 'أشهى الوجبات والمطاعم 🍔',
+                  'cafe': 'ركن القهوة والمزاج ☕',
+                  'supermarket': 'احتياجات البيت والسوبر ماركت 🛒'
+                };
+
+                const colors = {
+                  'restaurant': 'var(--accent-primary)',
+                  'cafe': '#8B4513', 
+                  'supermarket': 'var(--success)'
+                };
+
+                return (
+                  <section key={category} className="glass-panel" style={{ marginBottom: '40px', padding: '24px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderRight: `5px solid ${colors[category]}`, paddingRight: '12px' }}>
+                      <h2 style={{ fontSize: '1.5rem', fontWeight: '800', margin: 0 }}>{titles[category]}</h2>
+                      <Link to={`/category/${category}`} className="mobile-hide" style={{ color: colors[category], fontSize: '0.9rem', fontWeight: '600' }}>عرض الكل</Link>
+                    </div>
+                    
+                    <div className="product-grid scroll-container">
+                      {sectionProducts.map(product => (
+                        <div key={product.id || product._id} className="scroll-item">
+                          <ProductCard 
+                            product={product}
+                            onAddToCart={handleAddToCart}
+                            onOpenCafeModal={handleOpenCafeModal}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           )}
           

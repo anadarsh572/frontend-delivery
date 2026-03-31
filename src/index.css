@@ -337,11 +337,48 @@ img {
   }
 }
 
+/* Horizontal Scroll for Mobile */
+@media (max-width: 768px) {
+  .scroll-container {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    gap: 16px !important;
+    padding: 10px 4px 20px !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    grid-template-columns: none !important;
+  }
+  
+  .scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  .scroll-item {
+    flex: 0 0 280px !important;
+    scroll-snap-align: start;
+    min-width: 280px;
+  }
+  
+  /* Feature Store cards slightly wider or specific width */
+  .store-scroll-item {
+    flex: 0 0 300px !important;
+    min-width: 300px;
+  }
+}
+
 @media (max-width: 480px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     padding: 10px 0;
+  }
+
+  /* Even smaller items for mobile scroll if needed */
+  .scroll-item {
+    flex: 0 0 240px !important;
+    min-width: 240px;
   }
 }
 
