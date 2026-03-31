@@ -1,29 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* Premium Dark/Orange Palette */
-  --bg-primary: #0F1014;
-  --bg-secondary: #17181C;
-  --bg-tertiary: #202227;
+  /* Premium Breeze, Brown, and Lead Palette */
+  --bg-primary: #1A1C1E;     /* Deep Lead */
+  --bg-secondary: #263238;   /* Medium Lead */
+  --bg-tertiary: #37474F;    /* Light Lead */
   
-  --accent-primary: #FF5A1F;
-  --accent-secondary: #FF8A50;
-  --accent-glow: rgba(255, 90, 31, 0.4);
+  --accent-primary: #00D1FF;  /* Breeze Blue */
+  --accent-secondary: #8D6E63; /* Brown Earth */
+  --accent-glow: rgba(0, 209, 255, 0.3);
   
-  --text-primary: #FFFFFF;
-  --text-secondary: #9BA1A6;
-  --text-tertiary: #687076;
+  --text-primary: #F5F5F5;
+  --text-secondary: #B0BEC5;   /* Grayish Text */
+  --text-tertiary: #78909C;
   
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(255, 90, 31, 0.2);
+  --border-color: rgba(144, 164, 174, 0.15);
+  --border-glow: rgba(0, 209, 255, 0.2);
   
   --success: #10B981;
   --warning: #F59E0B;
   --danger: #EF4444;
-  --info: #3B82F6;
+  --info: #00D1FF;
   
-  --glass-bg: rgba(23, 24, 28, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(38, 50, 56, 0.7);
+  --glass-border: rgba(144, 164, 174, 0.1);
   
   --radius-sm: 8px;
   --radius-md: 12px;

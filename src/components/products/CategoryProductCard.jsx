@@ -77,27 +77,27 @@ const CategoryProductCard = ({ product, category, onAddToCart, onOpenCafeModal }
   if (displayCategory === 'cafe') {
     return (
       <CardWrapper style={{ paddingBottom: '12px' }}>
-        <div style={{ height: '130px', background: 'rgba(139, 69, 19, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-           <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(139, 69, 19, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B4513' }}>
+        <div style={{ height: '130px', background: 'rgba(141, 110, 99, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+           <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(141, 110, 99, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-secondary)' }}>
               <Coffee size={35} />
            </div>
-           <button onClick={handleAdd} className="btn-add-float" style={{ color: '#8B4513' }}>
+           <button onClick={handleAdd} className="btn-add-float" style={{ color: 'var(--accent-secondary)' }}>
              {adding ? <Check size={18} /> : <Plus size={18} />}
            </button>
         </div>
         <div style={{ padding: '12px', flex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <h3 className="mobile-text-lg" style={{ margin: 0, color: '#8B4513' }}>{product.name}</h3>
-          <p style={{ fontSize: '0.8rem', color: '#8B4513', opacity: 0.8, margin: 0 }}>🥤 {product.store_name}</p>
-          <div style={{ fontWeight: '900', color: '#8B4513', fontSize: '1.2rem', margin: '4px 0' }}>{product.price} ج.م</div>
+          <h3 className="mobile-text-lg" style={{ margin: 0, color: 'var(--accent-secondary)' }}>{product.name}</h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--accent-secondary)', opacity: 0.8, margin: 0 }}>🥤 {product.store_name}</p>
+          <div style={{ fontWeight: '900', color: 'var(--accent-secondary)', fontSize: '1.2rem', margin: '4px 0' }}>{product.price} ج.م</div>
           <div style={{ display: 'flex', gap: '8px' }}>
               <button 
                 onClick={(e) => { e.stopPropagation(); onOpenCafeModal(product); }} 
                 className="btn btn-secondary" 
-                style={{ flex: 1, padding: '8px', fontSize: '0.8rem', borderColor: '#8B4513', color: '#8B4513' }}
+                style={{ flex: 1, padding: '8px', fontSize: '0.8rem', borderColor: 'var(--accent-secondary)', color: 'var(--accent-secondary)' }}
               >
                 تخصيص
               </button>
-              <button onClick={handleBuyNow} className="btn-buy-full" style={{ flex: 2, background: '#8B4513' }}>
+              <button onClick={handleBuyNow} className="btn-buy-full" style={{ flex: 2, background: 'var(--accent-secondary)' }}>
                 اطلب <Zap size={14} fill="white" />
               </button>
           </div>
