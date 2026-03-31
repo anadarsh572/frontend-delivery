@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { Trash2, Plus, Minus, Banknote, ArrowRight, X, LogIn, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 import { simulateDelay } from '../../data/mockDb';
+import { API_URL } from '../../api/config';
 
 import apiClient from '../../api/client';
 

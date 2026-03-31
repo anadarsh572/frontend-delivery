@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { MOCK_STORES, MOCK_PRODUCTS, simulateDelay } from '../../data/mockDb';
 import { Star, Clock, MapPin, Plus, ArrowLeft } from 'lucide-react';
+import { API_URL } from '../../api/config';
 
 import CategoryProductCard from '../../components/products/CategoryProductCard';
 import CafeCustomizationModal from '../../components/modals/CafeCustomizationModal';
