@@ -73,7 +73,7 @@ const Cart = () => {
         if (data.token) localStorage.setItem('token', data.token);
         
         const userObj = data.user || data; 
-        const role = userObj.role?.toLowerCase() || data.role?.toLowerCase() || 'user';
+        const role = userObj.role?.toLowerCase() || data.role?.toLowerCase() || 'customer';
         if (!userObj.role && data.role) userObj.role = data.role;
         
         login(userObj);

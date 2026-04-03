@@ -1,8 +1,8 @@
 export const MOCK_USERS = [
-  { id: 'u1', name: 'Ahmed Customer', email: 'customer@test.com', phone: '01000000001', role: 'Customer', address: 'Cairo, Egypt', password: 'password', walletBalance: 0 },
-  { id: 'u2', name: 'KFC Vendor', email: 'vendor@test.com', phone: '01000000002', role: 'Vendor', address: 'Maadi, Cairo', password: 'password', walletBalance: 5000 },
-  { id: 'u3', name: 'Ali Driver', email: 'driver@test.com', phone: '01000000003', role: 'Driver', address: 'Nasr City', password: 'password', walletBalance: 200 },
-  { id: 'u4', name: 'Super Admin', email: 'admin@test.com', phone: '01000000004', role: 'Admin', address: 'HQ', password: 'password', walletBalance: 15000 },
+  { id: 'u1', name: 'Ahmed Customer', email: 'customer@test.com', phone: '01000000001', role: 'customer', address: 'Cairo, Egypt', password: 'password', walletBalance: 0 },
+  { id: 'u2', name: 'KFC Vendor', email: 'vendor@test.com', phone: '01000000002', role: 'vendor', address: 'Maadi, Cairo', password: 'password', walletBalance: 5000 },
+  { id: 'u3', name: 'Ali Driver', email: 'driver@test.com', phone: '01000000003', role: 'driver', address: 'Nasr City', password: 'password', walletBalance: 200 },
+  { id: 'u4', name: 'Super Admin', email: 'admin@test.com', phone: '01000000004', role: 'admin', address: 'HQ', password: 'password', walletBalance: 15000 },
 ];
 
 export const MOCK_STORES = [

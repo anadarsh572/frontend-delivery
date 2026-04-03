@@ -17,7 +17,7 @@ const VendorRegister = () => {
     password: '',
     storeName: '',
     store_category: 'restaurant',
-    role: 'Vendor'
+    role: 'vendor'
   });
   
   const [loading, setLoading] = useState(false);

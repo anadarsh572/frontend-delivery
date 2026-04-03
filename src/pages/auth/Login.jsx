@@ -65,7 +65,7 @@ const Login = () => {
           navigate(returnUrl);
         } else if (role === 'admin') {
           navigate('/mustafa-admin-secret');
-        } else if (role === 'vendor' || role === 'seller') {
+        } else if (role === 'vendor') {
           if (userObj.has_store === false || userObj.has_store === 0) {
             navigate('/vendor/onboarding');
           } else {

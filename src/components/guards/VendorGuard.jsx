@@ -12,8 +12,7 @@ const VendorGuard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const userRole = user.role?.toLowerCase();
-  const isVendor = userRole === 'vendor' || userRole === 'seller';
+  const isVendor = user.role?.toLowerCase() === 'vendor';
 
   if (!isVendor) {
     return <Navigate to="/" replace />;

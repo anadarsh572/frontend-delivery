@@ -127,7 +127,7 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
             </Link>
           ) : (
             <>
-              {(user.role?.toLowerCase() === 'user' || user.role?.toLowerCase() === 'customer') && (
+              {user.role?.toLowerCase() === 'customer' && (
                 <>
                   <Link to="/customer/profile" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: 'var(--radius-md)' }} className="card-hover">
                     <User size={20} /> بروفيلي (Profile)
@@ -156,7 +156,7 @@ const CustomerLayout = ({ children, fullWidth = false }) => {
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
                 <p style={{ fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{(user.role === 'vendor' || user.role === 'seller') ? 'حساب تاجر' : 'حساب عميل'}</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.role === 'vendor' ? 'حساب تاجر' : 'حساب عميل'}</p>
               </div>
             </div>
             <button onClick={handleLogout} className="btn" style={{ width: '100%', color: 'var(--danger)', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)' }}>

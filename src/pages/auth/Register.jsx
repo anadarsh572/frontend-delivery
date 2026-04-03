@@ -15,8 +15,8 @@ const Register = () => {
     phone: '',
     address: '',
     password: '',
-    role: 'user',
-    store_category: 'restaurant' // Default category if seller
+    role: 'customer',
+    store_category: 'restaurant' // Default category if vendor
   });
   
   const [loading, setLoading] = useState(false);
@@ -162,13 +162,13 @@ const Register = () => {
                 <input 
                   type="radio" 
                   name="role" 
-                  value="user" 
-                  checked={formData.role === 'user'} 
+                  value="customer" 
+                  checked={formData.role === 'customer'} 
                   onChange={handleChange} 
                   style={{ display: 'none' }}
                 />
                 <span style={{ fontSize: '1.2rem' }}>👤</span>
-                <span style={{ fontWeight: 'bold', color: formData.role === 'user' ? 'var(--info)' : 'var(--text-primary)' }}>تسجيل كعميل</span>
+                <span style={{ fontWeight: 'bold', color: formData.role === 'customer' ? 'var(--info)' : 'var(--text-primary)' }}>تسجيل كعميل</span>
               </label>
 
               <label 
@@ -179,8 +179,8 @@ const Register = () => {
                   gap: '8px',
                   padding: '16px',
                   borderRadius: 'var(--radius-md)',
-                  border: `2px solid ${formData.role === 'seller' ? 'var(--accent-primary)' : 'var(--border-color)'}`,
-                  background: formData.role === 'seller' ? 'rgba(255, 90, 31, 0.05)' : 'var(--bg-tertiary)',
+                  border: `2px solid ${formData.role === 'vendor' ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                  background: formData.role === 'vendor' ? 'rgba(255, 90, 31, 0.05)' : 'var(--bg-tertiary)',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   textAlign: 'center'
@@ -189,19 +189,19 @@ const Register = () => {
                 <input 
                   type="radio" 
                   name="role" 
-                  value="seller" 
-                  checked={formData.role === 'seller'} 
+                  value="vendor" 
+                  checked={formData.role === 'vendor'} 
                   onChange={handleChange} 
                   style={{ display: 'none' }}
                 />
                 <span style={{ fontSize: '1.2rem' }}>🏪</span>
-                <span style={{ fontWeight: 'bold', color: formData.role === 'seller' ? 'var(--accent-primary)' : 'var(--text-primary)' }}>تسجيل كبائع</span>
+                <span style={{ fontWeight: 'bold', color: formData.role === 'vendor' ? 'var(--accent-primary)' : 'var(--text-primary)' }}>تسجيل كتاجر</span>
               </label>
             </div>
           </div>
 
-          {/* Conditional Store Category Dropdown for Sellers */}
-          {formData.role === 'seller' && (
+          {/* Conditional Store Category Dropdown for Vendors */}
+          {formData.role === 'vendor' && (
             <div className="animate-fade-down" style={{ marginTop: '-8px' }}>
               <label style={{ display: 'block', marginBottom: '8px', color: 'var(--accent-primary)', fontWeight: 'bold' }}>تصنيف المتجر</label>
               <select 

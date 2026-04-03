@@ -64,7 +64,7 @@ const VendorLayout = ({ children }) => {
         <div className="sidebar-header">
           {isDesktopExpanded ? (
             <div className="sidebar-brand">
-              <span style={{fontWeight: 800, fontSize: '1.2rem', letterSpacing: '1px'}}>OWNER</span>
+              <span style={{fontWeight: 800, fontSize: '1.2rem', letterSpacing: '1px'}}>VENDOR</span>
               <button className="toggle-btn" onClick={() => setIsDesktopExpanded(false)}><Menu size={20} /></button>
             </div>
           ) : (
@@ -84,7 +84,7 @@ const VendorLayout = ({ children }) => {
             );
           })}
           
-          <div className="nav-divider" data-label="مالك"></div>
+          <div className="nav-divider" data-label="تاجر"></div>
           
           <Link to="/vendor/settings" className={`nav-item ${location.pathname.includes('/vendor/settings') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} title={!isDesktopExpanded ? 'إعدادات الموقع' : ''}>
             <div className="nav-icon"><Settings size={22} className={location.pathname.includes('/vendor/settings') ? 'active-icon' : 'inactive-icon'} /></div>
@@ -121,7 +121,7 @@ const VendorLayout = ({ children }) => {
             {user && (
               <div className="user-profile-badge">
                 <span className="user-name">{user.name?.split(' ')[0] || 'Clark'}</span>
-                <span className="user-role-tag">مالك</span>
+                <span className="user-role-tag">تاجر</span>
               </div>
             )}
           </div>

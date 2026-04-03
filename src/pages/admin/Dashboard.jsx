@@ -144,8 +144,8 @@ const AdminDashboard = () => {
 
   if (!user) return <div style={{ textAlign: 'center', paddingTop: '100px' }}>Log in as Admin</div>;
 
-  const customers = data.users.filter(u => u.role?.toLowerCase() === 'user' || u.role?.toLowerCase() === 'customer' || !u.role);
-  const vendors = data.users.filter(u => u.role?.toLowerCase() === 'vendor' || u.role?.toLowerCase() === 'seller');
+  const customers = data.users.filter(u => u.role?.toLowerCase() === 'customer' || !u.role);
+  const vendors = data.users.filter(u => u.role?.toLowerCase() === 'vendor');
   const admins = data.users.filter(u => u.role?.toLowerCase() === 'admin');
 
   const renderUsersTable = (userList, isVendor = false) => (

@@ -33,7 +33,7 @@ const LandingPage = () => {
     if (token && user) {
       const role = user.role?.toLowerCase();
       if (role === 'admin') navigate('/mustafa-admin-secret');
-      else if (role === 'vendor' || role === 'seller') navigate('/vendor/dashboard');
+      else if (role === 'vendor') navigate('/vendor/dashboard');
     }
   }, [user, navigate]);
 
@@ -196,16 +196,8 @@ const PrivateRoute = ({ allowedRoles }) => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  const userRole = user.role?.toLowerCase();
-  const normalizedAllowed = allowedRoles.map(r => r.toLowerCase());
-
-  // Dynamic Role Normalization (seller == vendor)
-  const isAuthorized = normalizedAllowed.some(role => {
-    if (role === 'vendor' || role === 'seller') {
-      return userRole === 'vendor' || userRole === 'seller';
-    }
-    return userRole === role;
-  });
+  const userRole = user.role?.toLowerCase() || 'customer';
+  const isAuthorized = allowedRoles.map(r => r.toLowerCase()).includes(userRole);
 
   if (!isAuthorized) {
     return <Navigate to="/" replace />;
