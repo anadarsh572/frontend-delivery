@@ -16,7 +16,6 @@ import SplashScreen from './components/common/SplashScreen';
 import ProductCard from './components/products/ProductCard';
 import ProductSkeleton from './components/common/ProductSkeleton';
 import InfiniteProductList from './components/products/InfiniteProductList';
-import InfiniteProductList from './components/products/InfiniteProductList';
 
 // Pages
 import Cart from './pages/customer/Cart';
@@ -42,16 +41,16 @@ const LandingPage = () => {
   const [activeProduct, setActiveProduct] = useState(null);
 
   // React Query for products and search
-  const { 
-    data: products = [], 
-    isLoading, 
+  const {
+    data: products = [],
+    isLoading,
     isFetching,
-    isError, 
-    refetch 
+    isError,
+    refetch
   } = useQuery({
     queryKey: ['products', searchQuery],
     queryFn: async () => {
-      const url = searchQuery.trim() 
+      const url = searchQuery.trim()
         ? `/api/products/search?q=${encodeURIComponent(searchQuery)}`
         : '/api/products';
       const response = await apiClient.get(url);
@@ -96,7 +95,7 @@ const LandingPage = () => {
         <p className="hero-subtitle" style={{ marginBottom: '32px', fontSize: 'clamp(1.1rem, 4vw, 1.4rem)', color: 'var(--text-secondary)' }}>
           في السريع منه ⚡
         </p>
-        
+
         {!localStorage.getItem('token') && (
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/login" className="btn btn-secondary" style={{ minWidth: '140px' }}>
@@ -122,12 +121,12 @@ const LandingPage = () => {
             </div>
           ) : searchQuery.trim() ? (
             <div>
-               <h2 style={{ fontSize: '1.8rem', marginBottom: '32px', textAlign: 'center', fontWeight: '800' }}>نتائج البحث</h2>
-               <InfiniteProductList 
-                  products={products}
-                  isLoading={isLoading}
-                  onAddToCart={handleAddToCart}
-                />
+              <h2 style={{ fontSize: '1.8rem', marginBottom: '32px', textAlign: 'center', fontWeight: '800' }}>نتائج البحث</h2>
+              <InfiniteProductList
+                products={products}
+                isLoading={isLoading}
+                onAddToCart={handleAddToCart}
+              />
             </div>
           ) : (
             <div style={{ opacity: isFetching && !isLoading ? 0.7 : 1, transition: 'opacity 0.2s' }}>
@@ -151,11 +150,11 @@ const LandingPage = () => {
                       <h2 style={{ fontSize: '1.5rem', fontWeight: '800', margin: 0 }}>{titles[category]}</h2>
                       <Link to={`/category/${category}`} className="mobile-hide" style={{ color: colors[category], fontSize: '0.9rem', fontWeight: '600' }}>عرض الكل</Link>
                     </div>
-                    
+
                     <div className="product-grid scroll-container">
                       {sectionProducts.map(product => (
                         <div key={product.id || product._id} className="scroll-item">
-                          <ProductCard 
+                          <ProductCard
                             product={product}
                             onAddToCart={handleAddToCart}
                           />
@@ -167,7 +166,7 @@ const LandingPage = () => {
               })}
             </div>
           )}
-          
+
 
           {searchQuery && (
             <div style={{ textAlign: 'center', marginTop: '40px' }}>
@@ -192,14 +191,14 @@ import VendorGuard from './components/guards/VendorGuard';
 
 const PrivateRoute = ({ allowedRoles }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-secondary)' }}>جاري التحميل...</div>;
-  
+
   if (!user) return <Navigate to="/login" replace />;
-  
+
   const userRole = user.role?.toLowerCase();
   const normalizedAllowed = allowedRoles.map(r => r.toLowerCase());
-  
+
   // Dynamic Role Normalization (seller == vendor)
   const isAuthorized = normalizedAllowed.some(role => {
     if (role === 'vendor' || role === 'seller') {
@@ -222,27 +221,27 @@ function App() {
     <SearchProvider>
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <Router>
-      <Routes>
-        <Route path="/" element={<CustomerLayout fullWidth><LandingPage /></CustomerLayout>} />
-        <Route path="/category/:category" element={<CustomerLayout><CategoryPage /></CustomerLayout>} />
-        <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/vendor/register" element={<VendorRegister />} />
-        <Route path="/login" element={<Login />} />
-        
-        <Route element={<PrivateRoute allowedRoles={['customer', 'user', 'admin']} />}>
-          <Route path="/customer/*" element={<CustomerApp />} />
-        </Route>
+        <Routes>
+          <Route path="/" element={<CustomerLayout fullWidth><LandingPage /></CustomerLayout>} />
+          <Route path="/category/:category" element={<CustomerLayout><CategoryPage /></CustomerLayout>} />
+          <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/vendor/register" element={<VendorRegister />} />
+          <Route path="/login" element={<Login />} />
 
-        <Route element={<VendorGuard />}>
-          <Route path="/vendor/*" element={<VendorApp />} />
-        </Route>
+          <Route element={<PrivateRoute allowedRoles={['customer', 'user', 'admin']} />}>
+            <Route path="/customer/*" element={<CustomerApp />} />
+          </Route>
 
-        <Route element={<AdminGuard />}>
-          <Route path="/mustafa-admin-secret/*" element={<AdminApp />} />
-        </Route>
-      </Routes>
-    </Router>
+          <Route element={<VendorGuard />}>
+            <Route path="/vendor/*" element={<VendorApp />} />
+          </Route>
+
+          <Route element={<AdminGuard />}>
+            <Route path="/mustafa-admin-secret/*" element={<AdminApp />} />
+          </Route>
+        </Routes>
+      </Router>
     </SearchProvider>
   );
 }

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ClipboardList, Clock, CheckCircle, Package, Truck, XCircle, ChevronDown, User, MapPin, Phone } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Search, Clock, CheckCircle, Truck, Package, XCircle, Search as SearchIcon, Image as ImageIcon } from 'lucide-react';
 import apiClient from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
@@ -8,7 +8,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [updatingId, setUpdatingId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchOrders = async () => {
     try {
@@ -22,68 +22,69 @@ const Orders = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 30000); // تحديث تلقائي كل 30 ثانية
+    const interval = setInterval(fetchOrders, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const updateStatus = async (orderId, newStatus) => {
-    try {
-      setUpdatingId(orderId);
-      await apiClient.patch(`/api/orders/${orderId}/status`, { status: newStatus });
-      
-      // تحديث الحالة محلياً بدلاً من إعادة الجلب بالكامل
-      setOrders(prev => prev.map(order => 
-        order.id === orderId ? { ...order, status: newStatus } : order
-      ));
-    } catch (err) {
-      console.error('Error updating status:', err);
-      alert('فشل تحديث حالة الطلب');
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
-  const statusMap = {
-    'Pending': { label: 'طلب جديد - قيد الانتظار', color: '#f59e0b', icon: <Clock size={16} /> },
-    'accepted': { label: 'تم القبول - بانتظار التجهيز', color: '#3b82f6', icon: <CheckCircle size={16} /> },
-    'Preparing': { label: 'جاري تجهيز الطلب الآن', color: '#8b5cf6', icon: <Package size={16} /> },
-    'Ready': { label: 'الطلب جاهز للاستلام', color: '#10b981', icon: <CheckCircle size={16} /> },
-    'OnTheWay': { label: 'تم التسليم للدليفري 🚚', color: '#06b6d4', icon: <Truck size={16} /> },
-    'Delivered': { label: 'تم التوصيل للعميل ✅', color: '#10b981', icon: <CheckCircle size={16} /> },
-    'Completed': { label: 'طلب مكتمل', color: '#10b981', icon: <CheckCircle size={16} /> },
-    'rejected': { label: 'طلب مرفوض', color: '#ef4444', icon: <XCircle size={16} /> },
-    'Cancelled': { label: 'طلب ملغي', color: '#ef4444', icon: <XCircle size={16} /> }
-  };
-
-  const getStatusInfo = (status) => statusMap[status] || { label: status, color: '#6b7280', icon: <Clock size={16} /> };
-
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('ar-EG', options);
   };
 
-  if (loading && orders.length === 0) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '16px' }}>
-        <div className="spinner" />
-        <p style={{ color: 'var(--text-secondary)' }}>جاري تحميل طلباتك الجديدة...</p>
-      </div>
+  const columns = [
+    { id: 'pending', title: 'جديد / معلق', statuses: ['Pending'], color: '#F59E0B' },
+    { id: 'verified', title: 'تم التحقق', statuses: ['accepted', 'Preparing', 'Ready'], color: '#3B82F6' },
+    { id: 'shipped', title: 'تم الشحن', statuses: ['OnTheWay'], color: '#8B5CF6' },
+    { id: 'delivered', title: 'تم التوصيل', statuses: ['Delivered', 'Completed'], color: '#10B981' },
+    { id: 'returned', title: 'مرتجع', statuses: ['rejected', 'Cancelled'], color: '#EF4444' }
+  ];
+
+  const filteredOrders = useMemo(() => {
+    if (!searchQuery) return orders;
+    return orders.filter(o => 
+      o.id?.toString().includes(searchQuery) ||
+      o.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      o.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }
+  }, [orders, searchQuery]);
+
+  const ordersByColumn = useMemo(() => {
+    const grouped = {};
+    columns.forEach(col => {
+      grouped[col.id] = filteredOrders.filter(order => col.statuses.includes(order.status));
+    });
+    return grouped;
+  }, [filteredOrders]);
 
   return (
-    <div className="orders-container animate-fade-in" dir="rtl">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-        <div style={{ padding: '12px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px', color: 'var(--info)' }}>
-          <ClipboardList size={28} />
-        </div>
-        <div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: '800' }}>إدارة الطلبات (Orders)</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>تابع طلبات عملائك من هنا وحدث حالتها أول بأول.</p>
+    <div className="admin-page animate-fade-in" dir="rtl" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* Header Area */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+        <h1 style={{ fontSize: '1.2rem', fontWeight: '800' }}>عرض لوحة كانبان</h1>
+        
+        <div style={{ position: 'relative', width: '300px', maxWidth: '100%' }}>
+          <div style={{position: 'absolute', top: '50%', right: '16px', transform: 'translateY(-50%)', color: 'var(--text-tertiary)'}}>
+             <SearchIcon size={18} />
+          </div>
+          <input 
+            type="text" 
+            placeholder="بحث..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%', 
+              padding: '12px 40px 12px 16px', 
+              borderRadius: 'var(--radius-lg)', 
+              border: '1px solid var(--border-color)',
+              background: 'white',
+              fontSize: '0.9rem'
+            }}
+          />
         </div>
       </div>
 
@@ -93,184 +94,125 @@ const Orders = () => {
         </div>
       )}
 
-      {orders.length === 0 ? (
-        <div className="glass-panel" style={{ padding: '60px 20px', textAlign: 'center' }}>
-          <div style={{ opacity: 0.3, marginBottom: '16px' }}><ClipboardList size={64} /></div>
-          <h3>مفيش طلبات حالياً</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>لما حد يطلب من مطعمك، الأوردر هيظهر هنا فورا.</p>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gap: '24px' }}>
-          {orders.map((order) => {
-            const statusInfo = getStatusInfo(order.status);
-            const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-
-            return (
-              <div key={order.id} className="glass-panel order-card" style={{ padding: '24px', borderRight: `4px solid ${statusInfo.color}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: '800', fontSize: '1.2rem' }}>طلب رقم #{order.id}</span>
-                      <div style={{ 
-                        padding: '4px 12px', 
-                        borderRadius: '20px', 
-                        fontSize: '0.8rem', 
-                        fontWeight: 'bold', 
-                        background: `${statusInfo.color}15`, 
-                        color: statusInfo.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                      }}>
-                        {statusInfo.icon} {statusInfo.label}
-                      </div>
-                    </div>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{formatDate(order.created_at)}</span>
-                  </div>
-                  
-                  <div style={{ textAlign: 'left', minWidth: '100px' }}>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>إجمالي المبلغ:</span>
-                    <p style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--info)' }}>{order.total_price} ج.م</p>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '24px' }}>
-                  {/* Customer Info */}
-                  <div style={{ background: 'var(--bg-tertiary)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-                    <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', opacity: 0.7 }}>بيانات العميل</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
-                        <User size={16} /> {order.customer_name || order.name || 'عميل مجهول'}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                        <MapPin size={16} /> {order.customer_address || order.address || order.delivery_address || 'العنوان غير محدد'}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                        <Phone size={16} /> {order.customer_phone || order.phone || 'بدون رقم هاتف'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Order Items */}
-                  <div style={{ background: 'var(--bg-tertiary)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-                    <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', opacity: 0.7 }}>محتويات الطلب ({items?.length || 0})</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {items && Array.isArray(items) && items.map((item, idx) => (
-                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem' }}>
-                          <span>{item.name} <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>× {item.quantity}</span></span>
-                          <span style={{ fontWeight: 'bold' }}>{item.price * item.quantity} ج.م</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Status Update Actions */}
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '12px', 
-                  flexWrap: 'wrap', 
-                  borderTop: '1px solid var(--border-color)', 
-                  paddingTop: '20px' 
-                }}>
-                  {order.status === 'Pending' && (
-                    <>
-                      <button 
-                        onClick={() => updateStatus(order.id, 'accepted')} 
-                        className="btn btn-primary" 
-                        disabled={updatingId === order.id}
-                        style={{ background: 'var(--info)' }}
-                      >
-                        {updatingId === order.id ? 'جاري...' : 'قبول الطلب'}
-                      </button>
-                      <button 
-                        onClick={() => updateStatus(order.id, 'rejected')} 
-                        className="btn" 
-                        disabled={updatingId === order.id}
-                        style={{ color: 'var(--danger)', background: 'rgba(239, 68, 68, 0.1)' }}
-                      >
-                        رفض الطلب
-                      </button>
-                    </>
-                  )}
-
-                  {order.status === 'accepted' && (
-                    <button 
-                      onClick={() => updateStatus(order.id, 'Preparing')} 
-                      className="btn" 
-                      disabled={updatingId === order.id}
-                      style={{ background: '#8b5cf6', color: 'white' }}
-                    >
-                      بدء التجهيز
-                    </button>
-                  )}
-
-                  {order.status === 'Preparing' && (
-                    <button 
-                      onClick={() => updateStatus(order.id, 'Ready')} 
-                      className="btn" 
-                      disabled={updatingId === order.id}
-                      style={{ background: '#10b981', color: 'white' }}
-                    >
-                      جاهز للاستلام
-                    </button>
-                  )}
-
-                  {order.status === 'Ready' && (
-                    <button 
-                      onClick={() => updateStatus(order.id, 'OnTheWay')} 
-                      className="btn" 
-                      disabled={updatingId === order.id}
-                      style={{ background: '#06b6d4', color: 'white', fontSize: '0.9rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}
-                    >
-                      <Truck size={18} />
-                      {updatingId === order.id ? 'جاري...' : 'تم التسليم للدليفري'}
-                    </button>
-                  )}
-
-                  {order.status === 'OnTheWay' && (
-                    <span style={{ color: '#06b6d4', fontWeight: 'bold' }}>الطلب حالياً في الطريق للعميل 🚀</span>
-                  )}
-                  
-                  {['Delivered', 'Completed'].includes(order.status) && (
-                    <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>تم إنهاء هذا الطلب بنجاح ✅</span>
-                  )}
-
-                  {['rejected', 'Cancelled'].includes(order.status) && (
-                    <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>هذا الطلب ملغي ❌</span>
-                  )}
-                </div>
+      {/* Kanban Board Container */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '24px', 
+        overflowX: 'auto', 
+        paddingBottom: '20px',
+        flex: 1,
+        alignItems: 'flex-start'
+      }}>
+        {columns.map(col => {
+          const colOrders = ordersByColumn[col.id] || [];
+          return (
+            <div key={col.id} style={{ 
+              minWidth: '280px', 
+              width: '280px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              background: 'transparent'
+             }}>
+               
+               {/* Column Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                 <div style={{display: 'flex', alignItems: 'center', gap: '8px', color: col.color}}>
+                   {col.id === 'pending' && <Clock size={18} />}
+                   {col.id === 'verified' && <CheckCircle size={18} />}
+                   {col.id === 'shipped' && <Truck size={18} />}
+                   {col.id === 'delivered' && <CheckCircle size={18} />}
+                   {col.id === 'returned' && <XCircle size={18} />}
+                   <h3 style={{ fontSize: '1.05rem', fontWeight: '800' }}>{col.title}</h3>
+                 </div>
+                 <span style={{ 
+                   background: '#F3F4F6', 
+                   color: '#6B7280', 
+                   padding: '2px 8px', 
+                   borderRadius: 'var(--radius-full)', 
+                   fontSize: '0.8rem', 
+                   fontWeight: 'bold' 
+                 }}>
+                   {colOrders.length}
+                 </span>
               </div>
-            );
-          })}
-        </div>
-      )}
 
+              {/* Column Content */}
+              {loading && colOrders.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-tertiary)' }}>جاري التحميل...</div>
+              ) : colOrders.length === 0 ? (
+                <div style={{ 
+                   border: '1px dashed var(--border-color)', 
+                   borderRadius: 'var(--radius-md)', 
+                   height: '150px', 
+                   display: 'flex', 
+                   flexDirection: 'column',
+                   alignItems: 'center', 
+                   justifyContent: 'center',
+                   color: 'var(--text-tertiary)',
+                   background: 'rgba(255,255,255,0.5)'
+                }}>
+                  <Package size={24} style={{ opacity: 0.5, marginBottom: '8px' }}/>
+                  <span style={{ fontSize: '0.85rem' }}>فارغ</span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {colOrders.map(order => (
+                    <div key={order.id} style={{ 
+                      background: 'white', 
+                      borderRadius: 'var(--radius-md)', 
+                      padding: '16px', 
+                      border: '1px solid var(--border-color)',
+                      borderTop: `3px solid ${col.color}`,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                      cursor: 'grab',
+                      transition: 'transform 0.2s',
+                    }} className="kanban-card">
+                      
+                      {/* Card Header */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                         <span style={{ fontSize: '0.75rem', padding: '2px 8px', background: '#F3F4F6', borderRadius: '4px', fontWeight: 'bold' }}>معالجة</span>
+                         <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-primary)' }}>#{order.id}</span>
+                      </div>
+                      
+                      {/* Customer Details */}
+                      <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                        <p style={{ fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-primary)' }}>{order.customer_name || order.name || 'عميل'}</p>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', letterSpacing: '0.5px' }}>{order.customer_email || 'example@email.com'}</p>
+                      </div>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '0.75rem', marginBottom: '16px' }}>
+                        <Clock size={12} /> {formatDate(order.created_at)}
+                      </div>
+
+                      <hr style={{border: 'none', borderTop: '1px solid var(--border-color)', margin: '16px 0'}} />
+
+                      {/* Footer */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <span style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--text-primary)' }}>{order.total_price} ج.م</span>
+                         <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', background: '#F3F4F6', padding: '4px 8px', borderRadius: '4px' }}>Cash</span>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+      
       <style dangerouslySetInnerHTML={{ __html: `
-        .order-card {
-           transition: all 0.3s ease;
-        }
-        .order-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid rgba(59, 130, 246, 0.1);
-          border-left-color: var(--info);
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
+        .kanban-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
         }
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-          animation: fade-in 0.5s ease forwards;
+          animation: fade-in 0.4s ease forwards;
         }
       `}} />
     </div>

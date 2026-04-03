@@ -1,14 +1,16 @@
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Store, Package, Settings, LogOut, Wallet, Menu, X, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { Store, Package, Settings, LogOut, Tags, Menu, X, LayoutDashboard, ClipboardList, Clock, Truck, MessageSquare, Moon, Globe, CreditCard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../api/config';
 
 const VendorLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [pendingCount, setPendingCount] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -17,7 +19,6 @@ const VendorLayout = ({ children }) => {
 
   useEffect(() => {
     if (!user) return;
-
     const fetchPendingCount = async () => {
       try {
         const storeId = user.storeId || user.id || user._id;
@@ -32,144 +33,107 @@ const VendorLayout = ({ children }) => {
         console.error('Error fetching pending count:', error);
       }
     };
-
     fetchPendingCount();
     const interval = setInterval(fetchPendingCount, 10000);
     return () => clearInterval(interval);
   }, [user]);
 
+  const navItems = [
+    { path: '/vendor/dashboard', icon: LayoutDashboard, label: 'لوحة التحكم' },
+    { path: '/vendor/products', icon: Package, label: 'المنتجات' },
+    { path: '/vendor/categories', icon: Tags, label: 'الفئات' },
+    { path: '/vendor/coupons', icon: Clock, label: 'إدارة الكوبونات' },
+    { path: '/vendor/store', icon: Store, label: 'الملفات' },
+    { path: '/vendor/payments', icon: CreditCard, label: 'الدفعات' },
+    { path: '/vendor/shipping', icon: Truck, label: 'الشحن' },
+    { path: '/vendor/messages', icon: MessageSquare, label: 'التقييمات والتعليقات' },
+    { path: '/vendor/orders', icon: ClipboardList, label: 'الطلبات', badge: pendingCount },
+  ];
+
   return (
-    <div className="admin-app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }} dir="rtl">
-      {/* Mobile Header */}
-      <header className="glass-panel desktop-hidden" style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        padding: '16px 20px', 
-        position: 'fixed', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        zIndex: 1000,
-        borderRadius: 0,
-        borderBottom: '1px solid var(--border-color)',
-        background: 'var(--bg-secondary)',
-        height: '70px'
-      }}>
-        <Link to="/vendor" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.4rem', fontWeight: '800' }}>
-          <span className="gradient-text">لوحة</span>التاجر ⚡
-        </Link>
-        <button 
-          onClick={() => setIsMenuOpen(!isMenuOpen)} 
-          style={{ color: 'var(--text-primary)', background: 'var(--bg-tertiary)', padding: '8px', borderRadius: 'var(--radius-md)' }}
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </header>
-
-      <div style={{ display: 'flex', flex: 1 }}>
-        {/* Sidebar / Drawer */}
-        <>
-          {isMenuOpen && (
-            <div 
-              onClick={() => setIsMenuOpen(false)}
-              className="desktop-hidden"
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1400 }} 
-            />
-          )}
-
-          <aside className={`glass-panel vendor-sidebar ${isMenuOpen ? 'open' : ''}`} style={{ 
-            width: '280px',
-            borderRadius: 0, 
-            borderTop: 'none', 
-            borderRight: 'none', 
-            borderBottom: 'none', 
-            borderLeft: '1px solid var(--border-color)',
-            display: 'flex', 
-            flexDirection: 'column',
-            zIndex: 1500,
-            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}>
-            <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }} className="mobile-hidden">
-              <Link to="/vendor" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.8rem', fontWeight: '800' }}>
-                <span className="gradient-text">لوحة</span>التاجر ⚡
-              </Link>
+    <div className="new-dashboard-layout" dir="rtl">
+      {/* Sidebar */}
+      {isMobileMenuOpen && (
+        <div 
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="desktop-hidden sidebar-overlay"
+        />
+      )}
+      
+      <aside className={`new-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''} ${isDesktopExpanded ? 'desktop-expanded' : 'desktop-collapsed'}`}>
+        <div className="sidebar-header">
+          {isDesktopExpanded ? (
+            <div className="sidebar-brand">
+              <span style={{fontWeight: 800, fontSize: '1.2rem', letterSpacing: '1px'}}>OWNER</span>
+              <button className="toggle-btn" onClick={() => setIsDesktopExpanded(false)}><Menu size={20} /></button>
             </div>
+          ) : (
+            <button className="toggle-btn collapsed-toggle" onClick={() => setIsDesktopExpanded(true)}><Menu size={20} /></button>
+          )}
+        </div>
 
-            <nav style={{ flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {user ? (
-                <>
-                  <Link to="/vendor/dashboard" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
-                    <LayoutDashboard size={20} /> نظرة عامة (Dashboard)
-                  </Link>
-                  <Link to="/vendor/products" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
-                    <Package size={20} /> منتجاتي (My Products)
-                  </Link>
-                  <Link to="/vendor/orders" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'space-between', border: 'none', background: 'transparent' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <ClipboardList size={20} /> الطلبات (Orders)
-                    </div>
-                    {pendingCount > 0 && (
-                      <span style={{ background: 'var(--danger)', color: 'white', borderRadius: 'var(--radius-full)', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                        {pendingCount}
-                      </span>
-                    )}
-                  </Link>
-                  <Link to="/vendor/settings" onClick={() => setIsMenuOpen(false)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', border: 'none', background: 'transparent' }}>
-                    <Settings size={20} /> إعدادات المتجر (Store Settings)
-                  </Link>
-                </>
-              ) : (
-                <div style={{ padding: '20px', textAlign: 'center' }}>
-                  <Link to="/login" className="btn btn-primary">دخول التجار</Link>
-                </div>
-              )}
-            </nav>
+        <nav className="sidebar-nav">
+          {navItems.map((item) => {
+            const isActive = location.pathname.includes(item.path);
+            return (
+              <Link key={item.path} to={item.path} className={`nav-item ${isActive ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} title={!isDesktopExpanded ? item.label : ''}>
+                <div className="nav-icon"><item.icon size={22} className={isActive ? 'active-icon' : 'inactive-icon'} /></div>
+                <span className="nav-label">{item.label}</span>
+                {item.badge > 0 && <span className="nav-badge">{item.badge}</span>}
+              </Link>
+            );
+          })}
+          
+          <div className="nav-divider" data-label="مالك"></div>
+          
+          <Link to="/vendor/settings" className={`nav-item ${location.pathname.includes('/vendor/settings') ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} title={!isDesktopExpanded ? 'إعدادات الموقع' : ''}>
+            <div className="nav-icon"><Settings size={22} className={location.pathname.includes('/vendor/settings') ? 'active-icon' : 'inactive-icon'} /></div>
+            <span className="nav-label">إعدادات الموقع</span>
+          </Link>
+        </nav>
 
+        <div className="sidebar-footer">
+          <button className="nav-item">
+            <div className="nav-icon"><Moon size={22} className="inactive-icon" /></div>
+            <span className="nav-label">الوضع الداكن</span>
+          </button>
+          <button className="nav-item">
+            <div className="nav-icon"><Globe size={22} className="inactive-icon" /></div>
+            <span className="nav-label">English</span>
+          </button>
+          <button onClick={handleLogout} className="nav-item logout-item">
+            <div className="nav-icon"><LogOut size={22} className="danger-icon" /></div>
+            <span className="nav-label">تسجيل الخروج</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="main-content-wrapper">
+        <header className="main-header">
+          <div className="header-left">
+            {isMobileMenuOpen ? (
+              <button className="mobile-toggle desktop-hidden" onClick={() => setIsMobileMenuOpen(false)}><X size={24} /></button>
+            ) : (
+              <button className="mobile-toggle desktop-hidden" onClick={() => setIsMobileMenuOpen(true)}><Menu size={24} /></button>
+            )}
+            
             {user && (
-              <div style={{ padding: '24px', borderTop: '1px solid var(--border-color)', marginTop: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-full)', background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                    {user.name.charAt(0)}
-                  </div>
-                  <div style={{ flex: 1, overflow: 'hidden' }}>
-                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>حساب تاجر</p>
-                  </div>
-                </div>
-                <button onClick={handleLogout} className="btn" style={{ width: '100%', color: 'var(--danger)', justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)' }}>
-                  <LogOut size={18} /> تسجيل الخروج
-                </button>
+              <div className="user-profile-badge">
+                <span className="user-name">{user.name?.split(' ')[0] || 'Clark'}</span>
+                <span className="user-role-tag">مالك</span>
               </div>
             )}
-          </aside>
-        </>
-
-        {/* Main Content */}
-        <main style={{ flex: 1, padding: 'clamp(16px, 5vw, 40px)', background: 'var(--bg-primary)', minHeight: '100vh', overflowX: 'hidden' }}>
-          <div className="desktop-hidden" style={{ height: '70px' }} />
+          </div>
+          <div className="header-right">
+            {/* Any right aligned top-header items */}
+          </div>
+        </header>
+        
+        <main className="page-content">
           {children}
         </main>
       </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media (max-width: 767px) {
-          .vendor-sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            transform: translateX(100%);
-            background: var(--bg-secondary) !important;
-          }
-          .vendor-sidebar.open {
-            transform: translateX(0);
-          }
-        }
-        @media (min-width: 768px) {
-          .vendor-sidebar { transform: none !important; }
-        }
-      `}} />
     </div>
   );
 };

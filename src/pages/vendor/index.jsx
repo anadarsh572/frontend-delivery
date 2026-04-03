@@ -3,7 +3,8 @@ import VendorLayout from '../../components/layouts/VendorLayout';
 import VendorDashboard from './Dashboard';
 import VendorProducts from './Products';
 import VendorOrders from './Orders';
-import VendorWallet from './Wallet';
+import VendorPayments from './Payments';
+import VendorShipping from './Shipping';
 import VendorOnboarding from './Onboarding';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,7 +21,9 @@ const VendorApp = () => {
       <Routes>
         <Route path="/dashboard" element={<VendorDashboard />} />
         <Route path="/products" element={<VendorProducts />} />
-        <Route path="/wallet" element={<VendorWallet />} />
+        <Route path="/payments" element={<VendorPayments />} />
+        <Route path="/wallet" element={<Navigate to="/vendor/payments" replace />} />
+        <Route path="/shipping" element={<VendorShipping />} />
         <Route path="/orders" element={<VendorOrders />} />
         <Route path="/settings" element={<div style={{ padding: '40px', textAlign: 'center' }}><h2>إعدادات المتجر (Store Settings)</h2></div>} />
         <Route path="/onboarding" element={<VendorOnboarding />} />

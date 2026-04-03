@@ -8,13 +8,12 @@ import apiClient from '../../api/client';
 import ProductCard from '../../components/products/ProductCard';
 import InfiniteProductList from '../../components/products/InfiniteProductList';
 import ProductSkeleton from '../../components/common/ProductSkeleton';
-import ProductSkeleton from '../../components/common/ProductSkeleton';
 
 const StoreDetail = () => {
   const { storeId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  
+
   // Modal state
   const [activeProduct, setActiveProduct] = useState(null);
 
@@ -34,9 +33,9 @@ const StoreDetail = () => {
       const response = await apiClient.get('/api/products');
       const data = response.data;
       const productsArray = Array.isArray(data) ? data : data.products || [];
-      
-      return productsArray.filter(p => 
-        (p.store_id?.toString() === storeId?.toString()) || 
+
+      return productsArray.filter(p =>
+        (p.store_id?.toString() === storeId?.toString()) ||
         (p.storeId?.toString() === storeId?.toString())
       );
     },
@@ -68,8 +67,8 @@ const StoreDetail = () => {
 
   return (
     <div className="animate-fade-up">
-      <button 
-        onClick={() => navigate(-1)} 
+      <button
+        onClick={() => navigate(-1)}
         className="btn btn-secondary"
         style={{ marginBottom: '24px', padding: '8px 16px', borderRadius: 'var(--radius-md)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
       >
@@ -77,53 +76,53 @@ const StoreDetail = () => {
       </button>
 
       {/* Store Header */}
-      <div 
-        className="glass-panel" 
-        style={{ 
-          padding: '0', 
-          overflow: 'hidden', 
+      <div
+        className="glass-panel"
+        style={{
+          padding: '0',
+          overflow: 'hidden',
           marginBottom: '40px',
           position: 'relative',
           borderRadius: 'var(--radius-lg)'
         }}
       >
         <div style={{ height: 'clamp(200px, 40vw, 350px)', width: '100%', position: 'relative' }}>
-          <img 
-            src={store.image} 
-            alt={store.name} 
+          <img
+            src={store.image}
+            alt={store.name}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          <div style={{ 
-            position: 'absolute', 
-            inset: 0, 
-            background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)' 
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)'
           }} />
-          
-          <div style={{ 
-            position: 'absolute', 
-            bottom: '24px', 
-            right: '24px', 
+
+          <div style={{
+            position: 'absolute',
+            bottom: '24px',
+            right: '24px',
             left: '24px',
             color: 'white'
           }}>
             <h1 style={{ fontSize: 'clamp(1.8rem, 6vw, 3.5rem)', marginBottom: '8px', fontWeight: '900' }}>{store.name}</h1>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '0.95rem', opacity: 0.9 }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Star size={18} color="var(--warning)" fill="var(--warning)"/> {store.averageRating} تقييم</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={18}/> {store.location}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16}/> ٢٥-٣٥ دقيقة</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Star size={18} color="var(--warning)" fill="var(--warning)" /> {store.averageRating} تقييم</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={18} /> {store.location}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16} /> ٢٥-٣٥ دقيقة</span>
             </div>
           </div>
         </div>
       </div>
 
       <h2 style={{ marginBottom: '32px', fontSize: '1.8rem', fontWeight: '800' }}>قائمة الأصناف</h2>
-      
+
       {products.length === 0 && !productsLoading ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-secondary)' }}>
-           <p style={{ fontSize: '1.1rem' }}>لا توجد منتجات متاحة في هذا المتجر حالياً.</p>
+          <p style={{ fontSize: '1.1rem' }}>لا توجد منتجات متاحة في هذا المتجر حالياً.</p>
         </div>
       ) : (
-        <InfiniteProductList 
+        <InfiniteProductList
           products={products.map(p => ({ ...p, store_name: store.name }))}
           isLoading={productsLoading}
           onAddToCart={handleAddToCart}
