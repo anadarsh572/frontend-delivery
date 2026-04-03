@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Users, Store, Activity, Trash2, CheckCircle, XCircle, Search, ShieldAlert, Package, MapPin, RefreshCw, Smartphone } from 'lucide-react';
 import apiClient from '../../api/client';
@@ -6,6 +7,8 @@ import { API_URL } from '../../api/config';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [data, setData] = useState({ users: [] });
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,6 +17,13 @@ const AdminDashboard = () => {
   const [orderFilter, setOrderFilter] = useState('all'); // 'all', 'completed', 'pending', 'uncompleted'
   
   const [adminEmailSearch, setAdminEmailSearch] = useState('');
+
+  // Sync tab with URL
+  useEffect(() => {
+    if (location.pathname.endsWith('/users')) setActiveTab('users');
+    else if (location.pathname.endsWith('/vendors')) setActiveTab('vendors');
+    else if (location.pathname.endsWith('/orders')) setActiveTab('orders');
+  }, [location.pathname]);
 
   useEffect(() => {
     if (user) {
@@ -29,10 +39,20 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       const response = await apiClient.get('/api/admin/users');
-      let usersList = Array.isArray(response.data) ? response.data : (response.data.users || []);
+      console.log("Admin API Response (Users):", response.data);
+      
+      let usersList = [];
+      if (Array.isArray(response.data)) {
+        usersList = response.data;
+      } else if (response.data && Array.isArray(response.data.users)) {
+        usersList = response.data.users;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        usersList = response.data.data;
+      }
+      
       setData(prev => ({ ...prev, users: usersList }));
     } catch (error) {
-      console.error("Failed to fetch users:", error);
+      console.error("Failed to fetch users at /api/admin/users:", error);
     } finally {
       setLoading(false);
     }
@@ -42,9 +62,20 @@ const AdminDashboard = () => {
     try {
       setLoadingOrders(true);
       const response = await apiClient.get('/api/admin/orders');
-      setOrders(Array.isArray(response.data) ? response.data : response.data.orders || []);
+      console.log("Admin API Response (Orders):", response.data);
+      
+      let ordersList = [];
+      if (Array.isArray(response.data)) {
+        ordersList = response.data;
+      } else if (response.data && Array.isArray(response.data.orders)) {
+        ordersList = response.data.orders;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        ordersList = response.data.data;
+      }
+      
+      setOrders(ordersList);
     } catch (error) {
-      console.error("Error fetching admin orders", error);
+      console.error("Error fetching admin orders at /api/admin/orders", error);
       setOrders([]);
     } finally {
       setLoadingOrders(false);
@@ -316,9 +347,20 @@ const AdminDashboard = () => {
     <div className="animate-fade-up" dir="rtl">
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '24px' }}>
-        <div>
-          <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '8px', fontWeight: '900' }}>مركز السيطرة المركزي</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>إدارة شاملة للمستخدمين، المتاجر، وعمليات المنصة.</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div>
+            <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '8px', fontWeight: '900' }}>مركز السيطرة المركزي</h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>إدارة شاملة للمستخدمين، المتاجر، وعمليات المنصة.</p>
+          </div>
+          <button 
+            onClick={() => activeTab === 'orders' ? fetchOrders() : fetchUsers()} 
+            className="btn btn-secondary" 
+            style={{ borderRadius: '50%', width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0' }}
+            title="تحديث البيانات"
+            disabled={loading || loadingOrders}
+          >
+            <RefreshCw size={20} className={loading || loadingOrders ? 'spinning' : ''} />
+          </button>
         </div>
 
         {/* Add Admin Feature */}
@@ -365,21 +407,21 @@ const AdminDashboard = () => {
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
         <button 
-          onClick={() => setActiveTab('users')}
+          onClick={() => navigate('/mustafa-admin-secret/users')}
           className={`btn ${activeTab === 'users' ? 'btn-primary' : 'btn-secondary'}`}
           style={{ padding: '10px 24px', fontSize: '1.1rem', borderRadius: 'var(--radius-full)' }}
         >
           <Users size={18} style={{ marginRight: '8px' }} /> إدارة العملاء
         </button>
         <button 
-          onClick={() => setActiveTab('vendors')}
+          onClick={() => navigate('/mustafa-admin-secret/vendors')}
           className={`btn ${activeTab === 'vendors' ? 'btn-primary' : 'btn-secondary'}`}
           style={{ padding: '10px 24px', fontSize: '1.1rem', borderRadius: 'var(--radius-full)' }}
         >
           <Store size={18} style={{ marginRight: '8px' }} /> البائعين والمنشآت
         </button>
         <button 
-          onClick={() => setActiveTab('orders')}
+          onClick={() => navigate('/mustafa-admin-secret/orders')}
           className={`btn ${activeTab === 'orders' ? 'btn-primary' : 'btn-secondary'}`}
           style={{ padding: '10px 24px', fontSize: '1.1rem', borderRadius: 'var(--radius-full)' }}
         >

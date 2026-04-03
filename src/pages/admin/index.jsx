@@ -8,6 +8,9 @@ const AdminApp = () => {
     <AdminLayout>
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
+        <Route path="/users" element={<AdminDashboard />} />
+        <Route path="/vendors" element={<AdminDashboard />} />
+        <Route path="/orders" element={<AdminDashboard />} />
         <Route path="/settlements" element={<AdminSettlements />} />
       </Routes>
     </AdminLayout>
