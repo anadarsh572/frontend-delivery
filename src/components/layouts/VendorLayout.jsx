@@ -42,12 +42,11 @@ const VendorLayout = ({ children }) => {
     { path: '/vendor/dashboard', icon: LayoutDashboard, label: 'لوحة التحكم' },
     { path: '/vendor/products', icon: Package, label: 'المنتجات' },
     { path: '/vendor/categories', icon: Tags, label: 'الفئات' },
-    { path: '/vendor/coupons', icon: Clock, label: 'إدارة الكوبونات' },
-    { path: '/vendor/store', icon: Store, label: 'الملفات' },
-    { path: '/vendor/payments', icon: CreditCard, label: 'الدفعات' },
-    { path: '/vendor/shipping', icon: Truck, label: 'الشحن' },
-    { path: '/vendor/messages', icon: MessageSquare, label: 'التقييمات والتعليقات' },
     { path: '/vendor/orders', icon: ClipboardList, label: 'الطلبات', badge: pendingCount },
+    { path: '/vendor/coupons', icon: Clock, label: 'الكوبونات' },
+    { path: '/vendor/reviews', icon: MessageSquare, label: 'التقييمات' },
+    { path: '/vendor/payments', icon: CreditCard, label: 'الدفعات' },
+    { path: '/vendor/shipping', icon: Truck, label: 'خيارات التوصيل' },
   ];
 
   return (

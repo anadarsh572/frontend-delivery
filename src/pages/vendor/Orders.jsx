@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Clock, CheckCircle, Truck, Package, XCircle, Search as SearchIcon, Image as ImageIcon } from 'lucide-react';
+import { Search, Clock, CheckCircle, Package, XCircle, Search as SearchIcon, Coffee, MapPin } from 'lucide-react';
 import apiClient from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
@@ -9,6 +9,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [updatingId, setUpdatingId] = useState(null);
 
   const fetchOrders = async () => {
     try {
@@ -30,17 +31,40 @@ const Orders = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      setUpdatingId(orderId);
+      await apiClient.put(`/api/vendor/orders/${orderId}/status`, { status: newStatus });
+      setOrders((prevOrders) => 
+        prevOrders.map(order => order.id === orderId ? { ...order, status: newStatus } : order)
+      );
+    } catch (err) {
+      console.error('Error updating status:', err);
+      alert('فشل في تحديث حالة الطلب');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString('ar-EG', options);
   };
 
+  const parseItems = (items) => {
+    try {
+      return typeof items === 'string' ? JSON.parse(items) : (items || []);
+    } catch (e) {
+      return [];
+    }
+  };
+
   const columns = [
-    { id: 'pending', title: 'جديد / معلق', statuses: ['Pending'], color: '#F59E0B' },
-    { id: 'verified', title: 'تم التحقق', statuses: ['accepted', 'Preparing', 'Ready'], color: '#3B82F6' },
-    { id: 'shipped', title: 'تم الشحن', statuses: ['OnTheWay'], color: '#8B5CF6' },
-    { id: 'delivered', title: 'تم التوصيل', statuses: ['Delivered', 'Completed'], color: '#10B981' },
-    { id: 'returned', title: 'مرتجع', statuses: ['rejected', 'Cancelled'], color: '#EF4444' }
+    { id: 'pending', title: 'جديد ومُعلّق', statuses: ['Pending'], color: '#F59E0B' },
+    { id: 'preparing', title: 'جاري التجهيز', statuses: ['Preparing'], color: '#3B82F6' },
+    { id: 'ready', title: 'جاهز للاستلام 🚶', statuses: ['Ready for Pickup'], color: '#8B5CF6' },
+    { id: 'completed', title: 'مكتمل ✅', statuses: ['Completed'], color: '#10B981' },
+    { id: 'cancelled', title: 'ملغي ❌', statuses: ['Cancelled'], color: '#EF4444' }
   ];
 
   const filteredOrders = useMemo(() => {
@@ -48,7 +72,7 @@ const Orders = () => {
     return orders.filter(o => 
       o.id?.toString().includes(searchQuery) ||
       o.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      o.customer_phone?.toString().includes(searchQuery)
     );
   }, [orders, searchQuery]);
 
@@ -65,7 +89,10 @@ const Orders = () => {
       
       {/* Header Area */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-        <h1 style={{ fontSize: '1.2rem', fontWeight: '800' }}>عرض لوحة كانبان</h1>
+        <div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: '800' }}>إدارة الطلبات (استلام من الفرع)</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>تحديث حالات ومتابعة تجهيز الطلبات الخاصة بالعملاء.</p>
+        </div>
         
         <div style={{ position: 'relative', width: '300px', maxWidth: '100%' }}>
           <div style={{position: 'absolute', top: '50%', right: '16px', transform: 'translateY(-50%)', color: 'var(--text-tertiary)'}}>
@@ -73,7 +100,7 @@ const Orders = () => {
           </div>
           <input 
             type="text" 
-            placeholder="بحث..." 
+            placeholder="بحث برقم الطلب، اسم العميل، التليفون..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -107,8 +134,8 @@ const Orders = () => {
           const colOrders = ordersByColumn[col.id] || [];
           return (
             <div key={col.id} style={{ 
-              minWidth: '280px', 
-              width: '280px',
+              minWidth: '300px', 
+              width: '300px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
@@ -119,10 +146,10 @@ const Orders = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                  <div style={{display: 'flex', alignItems: 'center', gap: '8px', color: col.color}}>
                    {col.id === 'pending' && <Clock size={18} />}
-                   {col.id === 'verified' && <CheckCircle size={18} />}
-                   {col.id === 'shipped' && <Truck size={18} />}
-                   {col.id === 'delivered' && <CheckCircle size={18} />}
-                   {col.id === 'returned' && <XCircle size={18} />}
+                   {col.id === 'preparing' && <Coffee size={18} />}
+                   {col.id === 'ready' && <Package size={18} />}
+                   {col.id === 'completed' && <CheckCircle size={18} />}
+                   {col.id === 'cancelled' && <XCircle size={18} />}
                    <h3 style={{ fontSize: '1.05rem', fontWeight: '800' }}>{col.title}</h3>
                  </div>
                  <span style={{ 
@@ -142,59 +169,101 @@ const Orders = () => {
                 <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-tertiary)' }}>جاري التحميل...</div>
               ) : colOrders.length === 0 ? (
                 <div style={{ 
-                   border: '1px dashed var(--border-color)', 
+                   border: '2px dashed var(--border-color)', 
                    borderRadius: 'var(--radius-md)', 
-                   height: '150px', 
+                   height: '100px', 
                    display: 'flex', 
                    flexDirection: 'column',
                    alignItems: 'center', 
                    justifyContent: 'center',
                    color: 'var(--text-tertiary)',
-                   background: 'rgba(255,255,255,0.5)'
+                   background: 'rgba(255,255,255,0.3)'
                 }}>
-                  <Package size={24} style={{ opacity: 0.5, marginBottom: '8px' }}/>
                   <span style={{ fontSize: '0.85rem' }}>فارغ</span>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {colOrders.map(order => (
-                    <div key={order.id} style={{ 
-                      background: 'white', 
-                      borderRadius: 'var(--radius-md)', 
-                      padding: '16px', 
-                      border: '1px solid var(--border-color)',
-                      borderTop: `3px solid ${col.color}`,
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-                      cursor: 'grab',
-                      transition: 'transform 0.2s',
-                    }} className="kanban-card">
-                      
-                      {/* Card Header */}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                         <span style={{ fontSize: '0.75rem', padding: '2px 8px', background: '#F3F4F6', borderRadius: '4px', fontWeight: 'bold' }}>معالجة</span>
-                         <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-primary)' }}>#{order.id}</span>
-                      </div>
-                      
-                      {/* Customer Details */}
-                      <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                        <p style={{ fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-primary)' }}>{order.customer_name || order.name || 'عميل'}</p>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', letterSpacing: '0.5px' }}>{order.customer_email || 'example@email.com'}</p>
-                      </div>
-                      
-                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '0.75rem', marginBottom: '16px' }}>
-                        <Clock size={12} /> {formatDate(order.created_at)}
-                      </div>
+                  {colOrders.map(order => {
+                     const parsedItems = parseItems(order.items);
+                     return (
+                      <div key={order.id} style={{ 
+                        background: 'white', 
+                        borderRadius: 'var(--radius-md)', 
+                        padding: '16px', 
+                        border: '1px solid var(--border-color)',
+                        borderTop: `4px solid ${col.color}`,
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+                        transition: 'var(--transition)',
+                        opacity: updatingId === order.id ? 0.6 : 1
+                      }} className="kanban-card">
+                        
+                        {/* Card Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <span style={{ fontSize: '0.75rem', padding: '4px 8px', background: '#F3F4F6', borderRadius: '4px', fontWeight: 'bold' }}>
+                            <MapPin size={12} style={{display: 'inline', marginLeft: '4px'}}/> استلام من الفرع
+                          </span>
+                          <span style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--accent-primary)' }}>#{order.id}</span>
+                        </div>
+                        
+                        {/* Customer Details */}
+                        <div style={{ marginBottom: '16px', background: 'var(--bg-tertiary)', padding: '10px', borderRadius: '8px' }}>
+                          <p style={{ fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{order.customer_name || 'عميل محلي'}</p>
+                          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{order.customer_phone || 'بدون رقم'}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-tertiary)', fontSize: '0.75rem', marginTop: '6px' }}>
+                          <Clock size={12} /> {formatDate(order.created_at)}
+                          </div>
+                        </div>
 
-                      <hr style={{border: 'none', borderTop: '1px solid var(--border-color)', margin: '16px 0'}} />
+                        {/* Order Items Summary */}
+                        <div style={{ marginBottom: '16px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                           <p style={{ fontWeight: 'bold', marginBottom: '4px' }}>التفاصيل ({parsedItems.length} أصناف):</p>
+                           <ul style={{ paddingRight: '16px', margin: 0 }}>
+                              {parsedItems.map((item, idx) => (
+                                <li key={idx}>
+                                  {item.quantity}x {item.name || item.product_name}
+                                  {item.size ? ` (${item.size})` : ''} 
+                                </li>
+                              ))}
+                           </ul>
+                        </div>
+                        
+                        <hr style={{border: 'none', borderTop: '1px solid var(--border-color)', margin: '16px 0'}} />
 
-                      {/* Footer */}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                         <span style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--text-primary)' }}>{order.total_price} ج.م</span>
-                         <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', background: '#F3F4F6', padding: '4px 8px', borderRadius: '4px' }}>Cash</span>
+                        {/* Order Total */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>الإجمالي:</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--text-primary)' }}>{order.total_price} ج.م</span>
+                        </div>
+
+                        {/* Status Update Dropdown */}
+                        <div style={{ width: '100%' }}>
+                          <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>تحديث الحالة:</label>
+                          <select 
+                            value={order.status}
+                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                            disabled={updatingId === order.id}
+                            style={{
+                              width: '100%',
+                              padding: '8px',
+                              borderRadius: 'var(--radius-sm)',
+                              border: '1px solid var(--border-color)',
+                              background: 'var(--bg-secondary)',
+                              fontSize: '0.85rem',
+                              fontWeight: 'bold',
+                              outline: 'none',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <option value="Pending">جديد ومُعلّق</option>
+                            <option value="Preparing">جاري التجهيز</option>
+                            <option value="Ready for Pickup">جاهز للاستلام</option>
+                            <option value="Completed">مكتمل، تم الاستلام</option>
+                            <option value="Cancelled">إلغاء الطلب</option>
+                          </select>
+                        </div>
                       </div>
-
-                    </div>
-                  ))}
+                     );
+                  })}
                 </div>
               )}
             </div>
@@ -205,14 +274,7 @@ const Orders = () => {
       <style dangerouslySetInnerHTML={{ __html: `
         .kanban-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.4s ease forwards;
+          box-shadow: 0 8px 25px rgba(0,0,0,0.05) !important;
         }
       `}} />
     </div>

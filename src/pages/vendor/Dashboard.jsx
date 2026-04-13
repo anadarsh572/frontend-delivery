@@ -58,13 +58,13 @@ const StatCard = ({ title, value, icon, customColor = 'var(--text-primary)', ico
 const VendorDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({ 
-    total_orders: 34, 
-    pending_info: 0, 
-    total_products: 1, 
+    total_orders: 0, 
+    pending_orders: 0, 
+    total_products: 0, 
     net_profit: 0, 
-    total_revenue: 10790, 
-    delivered_orders: 11,
-    total_users: 4 
+    total_revenue: 0, 
+    delivered_orders: 0,
+    total_users: 0 
   });
   const [loading, setLoading] = useState(true);
   const [timeFilter, setTimeFilter] = useState('all'); // all, year, month, week, day
@@ -142,13 +142,12 @@ const VendorDashboard = () => {
         gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', 
         gap: '24px' 
       }}>
-        <StatCard title="إجمالي الطلبات" value={stats.total_orders || 34} icon={<Package size={20} />} />
-        <StatCard title="معلومات معلقة" value={stats.pending_info || 0} icon={<FileText size={20} />} />
-        <StatCard title="إجمالي المنتجات" value={stats.total_products || 1} icon={<RefreshCw size={20} />} />
-        <StatCard title="إجمالي صافي الربح" value={`${stats.net_profit || 0} ج.م`} icon={<Wallet size={20} />} customColor="var(--success)" iconBg="rgba(16, 185, 129, 0.1)" />
-        <StatCard title="إجمالي الإيرادات" value={`${stats.total_revenue || 10790} ج.م`} icon={<DollarSign size={20} />} />
-        <StatCard title="إجمالي الطلبيات" value={stats.delivered_orders || 11} icon={<CheckCircle size={20} />} />
-        <StatCard title="إجمالي المستخدمين" value={stats.total_users || 4} icon={<Users size={20} />} />
+        <StatCard title="إجمالي الطلبات" value={stats.total_orders || 0} icon={<Package size={20} />} />
+        <StatCard title="طلبات معلقة وجديدة" value={stats.pending_orders || 0} icon={<Clock size={20} />} customColor="#F59E0B" iconBg="#FEF3C7" />
+        <StatCard title="المنتجات المتوفرة" value={stats.total_products || 0} icon={<RefreshCw size={20} />} />
+        <StatCard title="إجمالي العملاء" value={stats.total_users || 0} icon={<Users size={20} />} />
+        <StatCard title="طلبات جاهزة ومكتملة" value={stats.delivered_orders || 0} icon={<CheckCircle size={20} />} customColor="var(--success)" iconBg="rgba(16, 185, 129, 0.1)" />
+        <StatCard title="إجمالي الإيرادات" value={`${stats.total_revenue || 0} ج.م`} icon={<DollarSign size={20} />} customColor="var(--accent-primary)" iconBg="rgba(255, 90, 31, 0.1)" />
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `

@@ -6,6 +6,10 @@ import VendorOrders from './Orders';
 import VendorPayments from './Payments';
 import VendorShipping from './Shipping';
 import VendorOnboarding from './Onboarding';
+import VendorCategories from './Categories';
+import VendorCoupons from './Coupons';
+import VendorReviews from './Reviews';
+import VendorSettings from './Settings';
 import { useAuth } from '../../context/AuthContext';
 
 const VendorApp = () => {
@@ -21,11 +25,14 @@ const VendorApp = () => {
       <Routes>
         <Route path="/dashboard" element={<VendorDashboard />} />
         <Route path="/products" element={<VendorProducts />} />
+        <Route path="/categories" element={<VendorCategories />} />
         <Route path="/payments" element={<VendorPayments />} />
         <Route path="/wallet" element={<Navigate to="/vendor/payments" replace />} />
         <Route path="/shipping" element={<VendorShipping />} />
         <Route path="/orders" element={<VendorOrders />} />
-        <Route path="/settings" element={<div style={{ padding: '40px', textAlign: 'center' }}><h2>إعدادات المتجر (Store Settings)</h2></div>} />
+        <Route path="/coupons" element={<VendorCoupons />} />
+        <Route path="/reviews" element={<VendorReviews />} />
+        <Route path="/settings" element={<VendorSettings />} />
         <Route path="/onboarding" element={<VendorOnboarding />} />
         <Route path="/" element={<Navigate to="/vendor/dashboard" replace />} />
       </Routes>
