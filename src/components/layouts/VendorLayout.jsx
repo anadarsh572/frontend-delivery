@@ -1,6 +1,6 @@
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Store, Package, Settings, LogOut, Tags, Menu, X, LayoutDashboard, ClipboardList, Clock, Truck, MessageSquare, Moon, Globe, CreditCard } from 'lucide-react';
+import { Store, Package, Settings, LogOut, Tags, Menu, X, LayoutDashboard, ClipboardList, Clock, Truck, MessageSquare, Moon, Sun, Globe, CreditCard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../api/config';
 
@@ -11,6 +11,32 @@ const VendorLayout = ({ children }) => {
   const [pendingCount, setPendingCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('vendor-theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    if (isDarkMode) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('vendor-theme', 'light');
+      setIsDarkMode(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('vendor-theme', 'dark');
+      setIsDarkMode(true);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -92,9 +118,11 @@ const VendorLayout = ({ children }) => {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="nav-item">
-            <div className="nav-icon"><Moon size={22} className="inactive-icon" /></div>
-            <span className="nav-label">الوضع الداكن</span>
+          <button onClick={toggleDarkMode} className="nav-item">
+            <div className="nav-icon">
+              {isDarkMode ? <Sun size={22} className="inactive-icon" /> : <Moon size={22} className="inactive-icon" />}
+            </div>
+            <span className="nav-label">{isDarkMode ? 'الوضع المضيء' : 'الوضع الداكن'}</span>
           </button>
           <button className="nav-item">
             <div className="nav-icon"><Globe size={22} className="inactive-icon" /></div>
