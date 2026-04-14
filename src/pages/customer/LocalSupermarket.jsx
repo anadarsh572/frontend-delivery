@@ -16,6 +16,18 @@ export default function LocalSupermarket() {
   const [cartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState([]);
   const [orderMethod, setOrderMethod] = useState('delivery'); // 'delivery' | 'pickup'
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+
+  const applyCoupon = () => {
+    if(couponCode === 'MENNO10') {
+      setDiscount(0.10); // 10% discount
+      alert('تم بنجاح! خصم 10%');
+    } else {
+      setDiscount(0);
+      alert('كوبون غير صالح');
+    }
+  };
 
   const addToCart = (product) => {
     if(product.stock_quantity <= 0) return;
@@ -210,9 +222,35 @@ export default function LocalSupermarket() {
             </div>
 
             <div className="bg-white p-4 border-t border-gray-200 pb-8">
-              <div className="flex justify-between items-center mb-4 text-sm font-semibold text-gray-700">
-                <span>الإجمالي</span>
-                <span className="text-lg text-emerald-600 font-bold">{cart.reduce((sum, item) => sum + item.price, 0)} ج.م</span>
+              
+              {/* Coupon Field */}
+              <div className="flex gap-2 mb-4">
+                <input 
+                  type="text" 
+                  placeholder="كوبون الخصم (جرب: MENNO10)" 
+                  value={couponCode}
+                  onChange={e => setCouponCode(e.target.value)}
+                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-emerald-500 font-bold uppercase transition"
+                />
+                <button onClick={applyCoupon} className="px-4 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 font-bold rounded-xl transition">تطبيق</button>
+              </div>
+
+              <div className="flex justify-between items-center mb-1 text-sm font-medium text-gray-500">
+                <span>المجموع الفرعي</span>
+                <span>{cart.reduce((sum, item) => sum + item.price, 0)} ج.م</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between items-center mb-2 text-sm font-bold text-emerald-500">
+                  <span>الخصم (10%)</span>
+                  <span>-{(cart.reduce((sum, item) => sum + item.price, 0) * discount).toFixed(2)} ج.م</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center mb-4 text-sm font-black text-gray-800 border-t pt-2 mt-2">
+                <span>الإجمالي الصافي</span>
+                <span className="text-lg text-emerald-600 font-black">
+                  {(cart.reduce((sum, item) => sum + item.price, 0) * (1 - discount)).toFixed(2)} ج.م
+                </span>
               </div>
               <button onClick={handleCheckout} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
                 تأكيد الطلب
