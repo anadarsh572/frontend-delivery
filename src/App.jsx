@@ -21,7 +21,7 @@ import InfiniteProductList from './components/products/InfiniteProductList';
 import Cart from './pages/customer/Cart';
 import CategoryPage from './pages/customer/CategoryPage';
 
-import Home from './pages/Home';
+import CustomerLanding from './pages/CustomerLanding';
 
 
 import CustomerApp from './pages/customer';
@@ -58,7 +58,7 @@ function App() {
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<CustomerLanding />} />
           <Route path="/category/:category" element={<CustomerLayout><CategoryPage /></CustomerLayout>} />
           <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
           <Route path="/register" element={<Register />} />
