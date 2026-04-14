@@ -134,4 +134,3 @@ export const SupermarketProvider = ({ children }) => {
 };
 
 export const useSupermarket = () => useContext(SupermarketContext);
-
