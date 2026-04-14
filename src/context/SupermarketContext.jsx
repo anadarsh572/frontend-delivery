@@ -2,71 +2,131 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 
 export const SupermarketContext = createContext();
 
-const erpProducts = [
-  { id: 1, name: 'طماطم بلدي طازجة', purchase_price: 10, selling_price: 15, min_stock: 10, current_stock: 50, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500', unit: '1 كيلو', barcode: '1001' },
-  { id: 2, name: 'حليب كامل الدسم', purchase_price: 25, selling_price: 35, min_stock: 5, current_stock: 5, image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500', unit: '1 لتر', barcode: '1002' },
-  { id: 3, name: 'خبز فرنسي طازج', purchase_price: 12, selling_price: 20, min_stock: 15, current_stock: 30, image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500', unit: '3 قطع', barcode: '1003' },
-  { id: 4, name: 'موز استيراد', purchase_price: 30, selling_price: 40, min_stock: 5, current_stock: 20, image: 'https://images.unsplash.com/photo-1481349518771-20055b2a7b24?w=500', unit: '1 كيلو', barcode: '1004' },
+const defaultProducts = [
+  { id: 1, name: 'طماطم بلدي طازجة', price: 15, low_stock_threshold: 10, total_physical_stock: 0, reserved_quantity: 0, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500', unit: '1 كيلو', discount: null, barcode: '1001' },
+  { id: 2, name: 'حليب كامل الدسم', price: 35, low_stock_threshold: 5, total_physical_stock: 5, reserved_quantity: 2, image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500', unit: '1 لتر', discount: null, barcode: '1002' },
+  { id: 3, name: 'خبز فرنسي طازج', price: 20, low_stock_threshold: 15, total_physical_stock: 0, reserved_quantity: 0, image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500', unit: '3 قطع', discount: null, barcode: '1003' },
+  { id: 4, name: 'موز استيراد', price: 40, low_stock_threshold: 5, total_physical_stock: 20, reserved_quantity: 0, image: 'https://images.unsplash.com/photo-1481349518771-20055b2a7b24?w=500', unit: '1 كيلو', discount: 'عروض اليوم', barcode: '1004' },
+];
+
+const mockSalesAnalytics = [
+  { productId: 1, online_sales: 120, instore_sales: 30 },
+  { productId: 2, online_sales: 50, instore_sales: 150 },
+  { productId: 4, online_sales: 200, instore_sales: 200 },
+];
+
+const initialOrders = [
+  { id: 101, customer: "أحمد علي", total: 120, status: "Pending", method: "delivery", time: "10:30 AM" },
+  { id: 102, customer: "عمر خالد", total: 45, status: "Preparing", method: "pickup", time: "11:00 AM" }
 ];
 
 export const SupermarketProvider = ({ children }) => {
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('erp_products');
-    return saved ? JSON.parse(saved) : erpProducts;
+  const [internalProducts, setInternalProducts] = useState(() => {
+    const saved = localStorage.getItem('supermarket_products');
+    return saved ? JSON.parse(saved) : defaultProducts;
   });
 
-  const [revenue, setRevenue] = useState(0); 
-  const [cogs, setCogs] = useState(0); // Cost of Goods Sold
-  const [salesCount, setSalesCount] = useState(0);
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem('supermarket_orders');
+    return saved ? JSON.parse(saved) : initialOrders;
+  });
+
+  const [revenue, setRevenue] = useState(4250); // Daily mock revenue
+
+  // Cross-Tab Sync
+  useEffect(() => {
+    localStorage.setItem('supermarket_products', JSON.stringify(internalProducts));
+  }, [internalProducts]);
 
   useEffect(() => {
-    localStorage.setItem('erp_products', JSON.stringify(products));
-  }, [products]);
+    localStorage.setItem('supermarket_orders', JSON.stringify(orders));
+  }, [orders]);
 
-  const alerts = products.filter(p => p.current_stock <= p.min_stock).map(p => ({
-    id: p.id,
-    title: `طلب شراء عاجل: ${p.name}`,
-    message: `الرصيد المتاح (${p.current_stock}) وصل لحد الأمان المستهدف (${p.min_stock}). تواصل مع المورد.`,
-    severity: p.current_stock === 0 ? 'critical' : 'warning'
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'supermarket_products') setInternalProducts(JSON.parse(e.newValue));
+      if (e.key === 'supermarket_orders') setOrders(JSON.parse(e.newValue));
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const products = internalProducts.map(p => ({
+    ...p,
+    stock_quantity: Math.max(0, p.total_physical_stock - p.reserved_quantity)
   }));
 
-  const profitMargin = revenue > 0 ? (((revenue - cogs) / revenue) * 100).toFixed(1) : 0;
-  
+  const alerts = products.filter(p => p.stock_quantity <= p.low_stock_threshold).map(p => ({
+    id: p.id,
+    title: `تنبيه حد الأمان: ${p.name}`,
+    message: `الرصيد المتاح (${p.stock_quantity}) حرج جداً!`,
+    severity: p.stock_quantity === 0 ? 'critical' : 'warning'
+  }));
+
   const kpis = {
     revenue,
-    cogs,
-    profitMargin,
-    salesCount,
-    lowStockCount: alerts.length
+    ordersCount: orders.length,
+    pendingCount: orders.filter(o => o.status === 'Pending' || o.status === 'Preparing').length,
+    deliveredCount: orders.filter(o => o.status === 'Completed').length,
+  };
+
+  const updateInventoryAndPrice = (productId, addedStock, newPrice) => {
+    setInternalProducts((prevProducts) =>
+      prevProducts.map((p) => {
+        if (p.id === productId) {
+          return {
+            ...p,
+            total_physical_stock: p.total_physical_stock + parseInt(addedStock || 0),
+            price: parseFloat(newPrice)
+          };
+        }
+        return p;
+      })
+    );
   };
 
   const inlineUpdateProduct = (productId, updates) => {
-    setProducts((prevProducts) =>
+    setInternalProducts((prevProducts) =>
       prevProducts.map((p) => (p.id === productId ? { ...p, ...updates } : p))
     );
   };
 
-  const processPOSOrder = (cartItems, totalSale, totalCost) => {
-    // Pure ERP: Deduct stock directly and log financials immediately
-    setProducts(prev => prev.map(p => {
+  const updateOrderStatus = (orderId, newStatus) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+    if (newStatus === 'Completed') {
+       // Mock Revenue generation
+       setRevenue(r => r + orders.find(o => o.id === orderId).total);
+    }
+  };
+
+  const processPOSOrder = (cartItems, total) => {
+    // Deduct physical stock
+    setInternalProducts(prev => prev.map(p => {
        const cartItem = cartItems.find(i => i.id === p.id);
        if(cartItem) {
-          return { ...p, current_stock: Math.max(0, p.current_stock - 1) }; // Assuming qty 1 for demo
+          return { ...p, total_physical_stock: Math.max(0, p.total_physical_stock - 1) }; // mock deducting quantity
        }
        return p;
     }));
-    
-    setRevenue(r => r + totalSale);
-    setCogs(c => c + totalCost);
-    setSalesCount(s => s + 1);
-    
-    alert("تم تدوين المبيعات وتحديث المخزون ودفتر الأستاذ بنجاح!");
+    setRevenue(r => r + total);
+    alert("تم الدفع بنجاح وتسجيل المبيعات!");
+  };
+
+  const reserveStock = (orderItems) => {
+    setInternalProducts((prevProducts) =>
+      prevProducts.map((p) => {
+        const itemInOrder = orderItems.find(item => item.id === p.id);
+        if (itemInOrder) return { ...p, reserved_quantity: p.reserved_quantity + 1 };
+        return p;
+      })
+    );
   };
 
   return (
     <SupermarketContext.Provider value={{ 
-      products, alerts, kpis, 
-      inlineUpdateProduct, processPOSOrder 
+      products, alerts, orders, kpis, 
+      updateInventoryAndPrice, inlineUpdateProduct, 
+      reserveStock, updateOrderStatus, processPOSOrder 
     }}>
       {children}
     </SupermarketContext.Provider>
@@ -74,3 +134,4 @@ export const SupermarketProvider = ({ children }) => {
 };
 
 export const useSupermarket = () => useContext(SupermarketContext);
+
