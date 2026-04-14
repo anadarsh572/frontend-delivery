@@ -189,6 +189,10 @@ import Login from './pages/auth/Login';
 import AdminGuard from './components/guards/AdminGuard';
 import VendorGuard from './components/guards/VendorGuard';
 
+// Real-time Storefront Demo Imports
+import LocalSupermarket from './pages/customer/LocalSupermarket';
+import AdminSupermarket from './pages/admin/AdminSupermarket';
+
 const PrivateRoute = ({ allowedRoles }) => {
   const { user, loading } = useAuth();
 
@@ -220,6 +224,11 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/vendor/register" element={<VendorRegister />} />
           <Route path="/login" element={<Login />} />
+
+          {/* Supermarket Real-time Demo Routes */}
+          <Route path="/supermarket-customer" element={<LocalSupermarket />} />
+          <Route path="/supermarket-admin" element={<AdminSupermarket />} />
+
 
           <Route element={<PrivateRoute allowedRoles={['customer', 'user', 'admin']} />}>
             <Route path="/customer/*" element={<CustomerApp />} />

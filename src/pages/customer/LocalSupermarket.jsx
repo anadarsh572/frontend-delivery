@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, ShoppingCart, User, Home as HomeIcon, Menu, ArrowRight, ChevronDown, Check, Clock, MapPin, CreditCard, ChevronLeft } from 'lucide-react';
+import { useSupermarket } from '../../context/SupermarketContext';
 
 const mockCategories = [
   { id: 1, name: 'خضروات وفواكه', icon: '🥬' },
@@ -9,22 +10,26 @@ const mockCategories = [
   { id: 5, name: 'منظفات', icon: '🧼' },
 ];
 
-const mockProducts = [
-  { id: 1, name: 'طماطم بلدي طازجة', price: 15, unit: '1 كيلو', image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500', inStock: true, discount: null },
-  { id: 2, name: 'حليب كامل الدسم', price: 35, unit: '1 لتر', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500', inStock: true, discount: null },
-  { id: 3, name: 'خبز فرنسي طازج', price: 20, unit: '3 قطع', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500', inStock: false, discount: null },
-  { id: 4, name: 'موز استيراد', price: 40, unit: '1 كيلو', image: 'https://images.unsplash.com/photo-1481349518771-20055b2a7b24?w=500', inStock: true, discount: 'عروض اليوم' },
-];
-
 export default function LocalSupermarket() {
+  const { products, reserveStock } = useSupermarket();
   const [activeTab, setActiveTab] = useState('home');
   const [cartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState([]);
   const [orderMethod, setOrderMethod] = useState('delivery'); // 'delivery' | 'pickup'
 
   const addToCart = (product) => {
-    if(!product.inStock) return;
+    if(product.stock_quantity <= 0) return;
     setCart([...cart, product]);
+  };
+
+  const handleCheckout = () => {
+    if(cart.length > 0) {
+      reserveStock(cart);
+      setCart([]);
+      setCartOpen(false);
+      setActiveTab('profile'); // Send them to dashboard preview
+      alert("تم تأكيد الطلب بنجاح! تم حجز المنتجات.");
+    }
   };
 
   return (
@@ -98,7 +103,7 @@ export default function LocalSupermarket() {
             <h3 className="font-bold text-lg text-gray-800">عروض اليوم</h3>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {mockProducts.filter(p => p.discount).map(product => (
+            {products.filter(p => p.discount).map(product => (
               <ProductCard key={product.id} product={product} onAdd={() => addToCart(product)} />
             ))}
           </div>
@@ -110,7 +115,7 @@ export default function LocalSupermarket() {
             <h3 className="font-bold text-lg text-gray-800">وصل حديثاً</h3>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {mockProducts.filter(p => !p.discount).map(product => (
+            {products.filter(p => !p.discount).map(product => (
               <ProductCard key={product.id} product={product} onAdd={() => addToCart(product)} />
             ))}
           </div>
@@ -175,6 +180,17 @@ export default function LocalSupermarket() {
                         <span className={`text-sm mt-2 font-semibold ${orderMethod === 'pickup' ? 'text-emerald-700' : 'text-gray-600'}`}>استلام من الفرع</span>
                       </button>
                     </div>
+
+                    {orderMethod === 'delivery' && (
+                      <div className="mt-3 animate-fade-up">
+                        <label className="block text-xs font-bold text-gray-600 mb-1">المنطقة (رسوم التوصيل)</label>
+                        <select className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800">
+                          <option>مدينتي - المنطقة الأولى (20 ج.م)</option>
+                          <option>الرحاب - المرحلة الثانية (25 ج.م)</option>
+                          <option>الشروق - الحي المجاور (30 ج.م)</option>
+                        </select>
+                      </div>
+                    )}
                   </div>
 
                   <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-4">
@@ -198,7 +214,7 @@ export default function LocalSupermarket() {
                 <span>الإجمالي</span>
                 <span className="text-lg text-emerald-600 font-bold">{cart.reduce((sum, item) => sum + item.price, 0)} ج.م</span>
               </div>
-              <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+              <button onClick={handleCheckout} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
                 تأكيد الطلب
                 <ArrowRight size={20} className="mr-2 rotate-180" />
               </button>
@@ -243,14 +259,27 @@ export default function LocalSupermarket() {
 
 // Subcomponents
 function ProductCard({ product, onAdd }) {
+  const isOutOfStock = product.stock_quantity <= 0;
+  const isOnlyOneLeft = product.stock_quantity === 1;
+  const isLowStock = product.stock_quantity > 1 && product.stock_quantity <= 3;
+
   return (
     <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 relative group overflow-hidden flex flex-col h-full">
-      {product.discount && (
-        <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md z-10">
-          {product.discount}
-        </span>
-      )}
-      {!product.inStock && (
+      
+      {/* Urgency & Discount Badges */}
+      <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
+        {isOnlyOneLeft && (
+          <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-md animate-pulse">آخر قطعة!</span>
+        )}
+        {isLowStock && (
+          <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-md">باقي {product.stock_quantity} فقط</span>
+        )}
+        {product.discount && (
+          <span className="bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-md">{product.discount}</span>
+        )}
+      </div>
+
+      {isOutOfStock && (
         <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-20 flex items-center justify-center rounded-2xl">
           <span className="bg-gray-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg">نفدت الكمية</span>
         </div>
@@ -260,16 +289,25 @@ function ProductCard({ product, onAdd }) {
         <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
       </div>
       
-      <div className="flex-1 flex flex-col">
-        <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">{product.name}</h4>
-        <span className="text-xs text-gray-500 mb-2">{product.unit}</span>
+      <div className="flex-1 flex flex-col pt-1">
+        <h4 className="font-bold text-gray-800 text-sm leading-tight mb-2">{product.name}</h4>
+        
+        {/* Unit Selector */}
+        <div className="mb-3">
+          <select className="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-lg py-1 px-2 outline-none font-semibold focus:border-emerald-500 transition">
+            <option value="1">{product.unit || '1 وحدة'}</option>
+            {product.unit?.includes('كيلو') && <option value="0.5">0.5 كيلو</option>}
+            {product.unit?.includes('كيلو') && <option value="2">2 كيلو</option>}
+            {product.unit?.includes('قطعة') && <option value="6">6 قطع</option>}
+          </select>
+        </div>
         
         <div className="mt-auto flex items-center justify-between">
           <span className="font-extrabold text-emerald-600 text-lg">{product.price} <span className="text-xs font-medium">ج.م</span></span>
           <button 
-            disabled={!product.inStock} 
+            disabled={isOutOfStock} 
             onClick={onAdd}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${product.inStock ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${!isOutOfStock ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
             <span className="text-xl leading-none -mt-1">+</span>
           </button>
         </div>

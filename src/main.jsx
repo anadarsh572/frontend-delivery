@@ -6,6 +6,7 @@ import App from './App.jsx'
 import './index.css'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
+import { SupermarketProvider } from './context/SupermarketContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +23,9 @@ createRoot(document.getElementById('root')).render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <CartProvider>
-            <App />
+            <SupermarketProvider>
+              <App />
+            </SupermarketProvider>
           </CartProvider>
         </AuthProvider>
       </QueryClientProvider>
